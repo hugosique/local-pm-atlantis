@@ -30,15 +30,15 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3010}
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
     container_name: local-pm-app
     restart: unless-stopped
     ports:
-      - "${LOCAL_PM_BIND:-127.0.0.1}:8080:3010"
+      - '100.85.148.78:8080:3010'
     environment:
       DATABASE_URI: mongodb://mongodb:27017/local-pm
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-local-pm-secret-key-for-development-only}
-      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3010}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
       LOCAL_PM_REQUIRE_AUTH: ${LOCAL_PM_REQUIRE_AUTH:-false}
       MONGO_SERVER_SELECTION_TIMEOUT_MS: ${MONGO_SERVER_SELECTION_TIMEOUT_MS:-10000}
       LOCAL_PM_UPLOADS_DIR: /app/uploads
