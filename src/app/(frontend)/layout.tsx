@@ -12,6 +12,8 @@ import config from '@payload-config'
 import { sortStatuses } from '@/lib/workflow'
 import type { Status } from '@/payload-types'
 
+export const dynamic = 'force-dynamic'
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',

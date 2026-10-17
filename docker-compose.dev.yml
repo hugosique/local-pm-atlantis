@@ -1,0 +1,42 @@
+name: local-pm-atlantis-dev
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps
+    command: npm run dev -- --hostname 0.0.0.0
+    ports:
+      - '127.0.0.1:${LOCAL_PM_DEV_PORT:-3011}:3010'
+    environment:
+      DATABASE_URI: mongodb://mongodb:27017/local-pm?replicaSet=rs0
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Set PAYLOAD_SECRET in .env}
+      NEXT_PUBLIC_SERVER_URL: http://localhost:${LOCAL_PM_DEV_PORT:-3011}
+      LOCAL_PM_REQUIRE_AUTH: ${LOCAL_PM_REQUIRE_AUTH:-false}
+      MONGO_SERVER_SELECTION_TIMEOUT_MS: ${MONGO_SERVER_SELECTION_TIMEOUT_MS:-10000}
+      LOCAL_PM_UPLOADS_DIR: /app/uploads
+    volumes:
+      - .:/app
+      - node-modules:/app/node_modules
+      - uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"try { rs.status() } catch (e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]}) }; db.hello().isWritablePrimary\" | grep -q true"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  mongodb-data:
+  node-modules:
+  uploads:

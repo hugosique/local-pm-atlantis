@@ -2,6 +2,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['isomorphic-dompurify'],
   // Build output directory, overridable per process.
   //
   // `next dev` and `next build` each own this directory exclusively: starting a

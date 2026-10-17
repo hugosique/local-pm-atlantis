@@ -71,4 +71,4 @@ EXPOSE 3010
 ENV PORT=3010
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["npm", "run", "start", "--", "--port", "3010"]
+CMD ["npm", "run", "start"]

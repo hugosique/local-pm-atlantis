@@ -54,27 +54,28 @@ A lightweight, self-hosted project management tool with a built-in MCP (Model Co
 
 ## Installation
 
-### Using Docker (Recommended)
+### Local development with Docker Compose
 
-1. Clone the repository:
+Create `.env` from `.env.example` and replace `PAYLOAD_SECRET` with a random value. Then run:
+
 ```bash
-git clone https://github.com/your-username/local-pm.git
-cd local-pm
+docker compose -f docker-compose.dev.yml up --build -d
 ```
 
-2. Start the containers:
-```bash
-docker-compose up -d
-```
+Open http://localhost:3011. Source files are mounted into the app container, so Next.js reloads changes. Set `LOCAL_PM_DEV_PORT` in `.env` if port 3011 is occupied. Use `docker compose -f docker-compose.dev.yml down` to stop the local services.
 
-3. Access the app at http://localhost:3010
+### Coolify deployment
+
+Coolify uses `docker-compose.yml` and the production Dockerfile. Its app port remains `100.85.148.78:8080:3010`; set `NEXT_PUBLIC_SERVER_URL` and `PAYLOAD_SECRET` in Coolify's environment.
 
 ### Manual Installation
 
-1. Clone the repository and install dependencies:
+1. Clone the repository, select Node 20 with `nvm`, and install dependencies:
 ```bash
 git clone https://github.com/your-username/local-pm.git
 cd local-pm
+nvm install
+nvm use
 npm install
 ```
 
@@ -286,9 +287,9 @@ password).
 
 ### Network exposure
 
-`docker compose` publishes the app on `127.0.0.1` and gives MongoDB no host
-port at all. To expose the app deliberately, set `LOCAL_PM_BIND=0.0.0.0` — and
-enable `LOCAL_PM_REQUIRE_AUTH` before you do.
+`docker-compose.dev.yml` publishes the app on `127.0.0.1` and gives MongoDB no
+host port. The Coolify compose file retains its configured host IP and port;
+enable `LOCAL_PM_REQUIRE_AUTH` when that address is reachable by other users.
 
 Secrets (`PAYLOAD_SECRET`, `DATABASE_URI`) are passed at runtime only, never as
 Docker build args, since build args are baked into image layers and readable

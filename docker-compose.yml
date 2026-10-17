@@ -1,4 +1,4 @@
-# Local PM — local-first by default.
+# Local PM — Coolify deployment.
 #
 # Hardening adapted from Victor Gonzalez (@aficiomaquinas) in
 # aficiomaquinas/local-pm (ADR-001 "local-first loopback binding",
@@ -6,12 +6,8 @@
 #
 # Three deliberate choices, each of which was a real exposure before:
 #
-#   1. Published ports bind to 127.0.0.1, not 0.0.0.0. A bare "3010:3010"
-#      publishes on every interface, so a laptop on cafe wifi served its
-#      whole ticket database — and, with the default access rules, full
-#      write access — to that network. Set LOCAL_PM_BIND=0.0.0.0 only when
-#      you actually intend to expose it, and put auth in front of it first
-#      (see LOCAL_PM_REQUIRE_AUTH in .env.example).
+#   1. The app retains the Coolify host IP and port below. For local work,
+#      use docker-compose.dev.yml, which binds the app to loopback.
 #
 #   2. MongoDB publishes NO host port. It previously bound 27018 on all
 #      interfaces with authentication disabled, which is an unauthenticated
@@ -36,7 +32,7 @@ services:
     ports:
       - '100.85.148.78:8080:3010'
     environment:
-      DATABASE_URI: mongodb://mongodb:27017/local-pm
+      DATABASE_URI: mongodb://mongodb:27017/local-pm?replicaSet=rs0
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
       LOCAL_PM_REQUIRE_AUTH: ${LOCAL_PM_REQUIRE_AUTH:-false}
@@ -50,6 +46,7 @@ services:
 
   mongodb:
     image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     container_name: local-pm-mongodb
     restart: unless-stopped
     # No `ports:` on purpose — see note 2 above.
@@ -60,7 +57,7 @@ services:
     healthcheck:
       # Gate app start on a live database so the bounded server-selection
       # timeout never races mongo's cold start.
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"try { rs.status() } catch (e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]}) }; db.hello().isWritablePrimary\" | grep -q true"]
       interval: 10s
       timeout: 5s
       retries: 10
