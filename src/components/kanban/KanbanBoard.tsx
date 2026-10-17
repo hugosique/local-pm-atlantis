@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
@@ -146,7 +148,7 @@ export function KanbanBoard({
     [activeStatuses],
   )
   const labelFor = useCallback(
-    (id: string | null | undefined) => (id ? (statusById.get(id)?.name ?? 'Unknown') : 'Unknown'),
+    (id: string | null | undefined) => (id ? (statusById.get(id)?.name ?? translate("Unknown")) : translate("Unknown")),
     [statusById],
   )
   const filterSignature = JSON.stringify(filters)
@@ -332,7 +334,7 @@ export function KanbanBoard({
         )
       } catch (error) {
         if ((error as Error).name === 'AbortError') return
-        setLoadError('Your board could not be updated. Check your connection and try again.')
+        setLoadError(translate("Your board could not be updated. Check your connection and try again."))
       } finally {
         if (!controller.signal.aborted) setRefreshing(false)
       }
@@ -444,10 +446,10 @@ export function KanbanBoard({
       const ticket = ticketsRef.current.find((t) => t.id === ticketId)
       toast({
         tone: 'error',
-        title: "Couldn't move that ticket",
-        description: `${ticket?.ticketId ?? 'The ticket'} is back in ${labelFor(
+        title: translate("Couldn't move that ticket"),
+        description: translate("{0} is back in {1}. {2}", { 0: ticket?.ticketId ?? 'The ticket', 1: labelFor(
           origin?.status,
-        )}. ${error instanceof Error ? error.message : ''}`.trim(),
+        ), 2: error instanceof Error ? error.message : '' }).trim(),
       })
     }
   }
@@ -509,9 +511,9 @@ export function KanbanBoard({
     ticketsRef.current = result.tickets
     setTickets(result.tickets)
     setAnnouncement(
-      `${ticket.ticketId ?? ticket.title} moved to ${labelFor(status)} from ${labelFor(
+      translate("{0} moved to {1} from {2}.", { 0: ticket.ticketId ?? ticket.title, 1: labelFor(status), 2: labelFor(
         origin.status,
-      )}.`,
+      ) }),
     )
     await persistMove(ticket.id, result.status as string, result.sortOrder as number, origin)
   }
@@ -529,9 +531,9 @@ export function KanbanBoard({
     ticketsRef.current = result.tickets
     setTickets(result.tickets)
     setAnnouncement(
-      `${ticket.ticketId ?? ticket.title} moved to position ${index + direction + 1} in ${labelFor(
+      translate("{0} moved to position {1} in {2}.", { 0: ticket.ticketId ?? ticket.title, 1: index + direction + 1, 2: labelFor(
         origin.status,
-      )}.`,
+      ) }),
     )
     await persistMove(ticket.id, result.status as string, result.sortOrder as number, origin)
   }
@@ -579,7 +581,7 @@ export function KanbanBoard({
     } catch (error) {
       toast({
         tone: 'error',
-        title: `Couldn't load more ${labelFor(status)} tickets`,
+        title: translate("Couldn't load more {0} tickets", { 0: labelFor(status) }),
         description: error instanceof Error ? error.message : undefined,
       })
     } finally {
@@ -617,11 +619,11 @@ export function KanbanBoard({
       })
       if (openTicketId === pendingDelete.id) openTicket(null)
       setPendingDelete(null)
-      toast({ title: `${pendingDelete.ticketId ?? 'Ticket'} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: pendingDelete.ticketId ?? translate("Ticket") }), tone: 'info' })
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that ticket",
+        title: translate("Couldn't delete that ticket"),
         description: error instanceof Error ? error.message : undefined,
       })
     } finally {
@@ -632,8 +634,8 @@ export function KanbanBoard({
   useShortcut({
     id: 'board.clearFilters',
     keys: 'shift+x',
-    description: 'Clear all board filters',
-    group: 'Board',
+    description: translate("Clear all board filters"),
+    group: translate("Board"),
     scope: 'board',
     enabled: hasFilters,
     run: () => updateFilters({ projectId: null, teamId: null, assigneeId: null, cycleId: null, query: '' }),
@@ -643,26 +645,24 @@ export function KanbanBoard({
     onDragStart: ({ active }) => {
       const ticket = ticketsRef.current.find((t) => t.id === active.id)
       if (!ticket) return
-      return `Picked up ${ticket.ticketId ?? ticket.title}, "${ticket.title}", from list ${labelFor(
+      return translate("Picked up {0}, \"{1}\", from list {2}. Use the arrow keys to move it, Space to drop, Escape to cancel.", { 0: ticket.ticketId ?? ticket.title, 1: ticket.title, 2: labelFor(
         statusIdOf(ticket),
-      )}. Use the arrow keys to move it, Space to drop, Escape to cancel.`
+      ) })
     },
     onDragOver: ({ active, over }) => {
       const ticket = ticketsRef.current.find((t) => t.id === active.id)
       if (!ticket || !over) return
-      return `${ticket.ticketId ?? ticket.title} is over list ${labelFor(statusIdOf(ticket))}.`
+      return translate("{0} is over list {1}.", { 0: ticket.ticketId ?? ticket.title, 1: labelFor(statusIdOf(ticket)) })
     },
     onDragEnd: ({ active }) => {
       const ticket = ticketsRef.current.find((t) => t.id === active.id)
       const origin = dragOriginRef.current
       if (!ticket) return
-      return `Task "${ticket.title}" moved to list "${labelFor(statusIdOf(ticket))}"${
-        origin ? ` from "${labelFor(origin.status)}"` : ''
-      }.`
+      return translate("Task \"{0}\" moved to list \"{1}\"{2}.", { 0: ticket.title, 1: labelFor(statusIdOf(ticket)), 2: origin ? ` from "${labelFor(origin.status)}"` : '' })
     },
     onDragCancel: ({ active }) => {
       const ticket = ticketsRef.current.find((t) => t.id === active.id)
-      return `Move cancelled. ${ticket?.ticketId ?? 'The ticket'} returned to its original position.`
+      return translate("Move cancelled. {0} returned to its original position.", { 0: ticket?.ticketId ?? 'The ticket' })
     },
   }
 
@@ -684,13 +684,13 @@ export function KanbanBoard({
         {announcement}
       </p>
 
-      <ErrorBoundary region="The board">
+      <ErrorBoundary region={translate("The board")}>
         {loadError ? (
           <EmptyState
             kind="error"
-            title="Could not update the board"
+            title={translate("Could not update the board")}
             description={loadError}
-            action={{ label: 'Retry', onClick: () => setRetry((value) => value + 1) }}
+            action={{ label: translate("Retry"), onClick: () => setRetry((value) => value + 1) }}
             className="m-6"
           />
         ) : !hasProjects ? (
@@ -698,10 +698,10 @@ export function KanbanBoard({
         ) : totalLoaded === 0 && hasFilters && !refreshing ? (
           <EmptyState
             kind="no-match"
-            title="No tickets match these filters"
-            description="Nothing on this board fits the current project, team, assignee and search combination."
+            title={translate("No tickets match these filters")}
+            description={translate("Nothing on this board fits the current project, team, assignee and search combination.")}
             action={{
-              label: 'Clear filters',
+              label: translate("Clear filters"),
               onClick: () =>
                 updateFilters({ projectId: null, teamId: null, assigneeId: null, cycleId: null, query: '' }),
             }}
@@ -731,7 +731,7 @@ export function KanbanBoard({
                   key={status}
                   id={status}
                   statusKey={statusById.get(status)?.key ?? status}
-                  label={statusById.get(status)?.name ?? 'Unknown'}
+                  label={statusById.get(status)?.name ?? translate("Unknown")}
                   type={statusById.get(status)?.type ?? null}
                   tickets={ticketsByStatus(status)}
                   collapsed={collapsedColumns.includes(status)}
@@ -784,14 +784,14 @@ export function KanbanBoard({
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
         loading={deleting}
-        title="Delete this ticket?"
+        title={translate("Delete this ticket?")}
         message={
           pendingDelete
-            ? `${pendingDelete.ticketId ?? 'This ticket'} — “${pendingDelete.title}”`
+            ? `${pendingDelete.ticketId ?? translate("This ticket")} — “${pendingDelete.title}”`
             : ''
         }
-        consequence="Its subtasks, labels and dependency links go with it. This cannot be undone."
-        confirmLabel="Delete ticket"
+        consequence={translate("Its subtasks, labels and dependency links go with it. This cannot be undone.")}
+        confirmLabel={translate("Delete ticket")}
       />
     </div>
   )

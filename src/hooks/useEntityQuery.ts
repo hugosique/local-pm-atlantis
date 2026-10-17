@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { appendTicketSearch } from '@/lib/ticket-search'
 
@@ -89,7 +91,7 @@ export function useEntityQuery<T extends { id: string }>(
         setHasNextPage(Boolean(data.hasNextPage))
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
         setDocs([])
         setHasNextPage(false)
       } finally {
@@ -123,7 +125,7 @@ export function useEntityQuery<T extends { id: string }>(
         setTotalDocs(data.totalDocs ?? 0)
         setHasNextPage(Boolean(data.hasNextPage))
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
       } finally {
         loadingMoreRef.current = false
         setLoadingMore(false)

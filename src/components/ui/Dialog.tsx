@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -123,7 +125,7 @@ export function Dialog({
                 size="md"
                 iconOnly
                 icon={X}
-                aria-label="Close"
+                aria-label={translate("Close")}
                 onClick={() => (dismissible ? onClose() : onDismissBlocked?.())}
               />
             </div>
@@ -216,7 +218,7 @@ export function SidePanel({
                 size="md"
                 iconOnly
                 icon={X}
-                aria-label="Close"
+                aria-label={translate("Close")}
                 onClick={() => (dismissible ? onClose() : onDismissBlocked?.())}
               />
             </div>

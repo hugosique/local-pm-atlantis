@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import { Ban, Check, GitBranch, Tag } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -73,27 +75,27 @@ export function TicketBody({
     setSavingDescription(true)
     const ok = await patch(
       { description: (draftDescription || null) as Ticket['description'] },
-      'the description',
+      translate("the description"),
     )
     setSavingDescription(false)
     if (ok) setEditingDescription(false)
   }
 
   const setLabels = async (next: Label[]) => {
-    await patch({ labels: next.map((label) => label.id) } as Partial<Ticket>, 'the labels', {
+    await patch({ labels: next.map((label) => label.id) } as Partial<Ticket>, translate("the labels"), {
       labels: next,
     } as Partial<Ticket>)
   }
 
   const patchBlockers = async (ids: string[]) => {
-    const ok = await patch({ blockedBy: ids } as Partial<Ticket>, 'the blockers')
+    const ok = await patch({ blockedBy: ids } as Partial<Ticket>, translate("the blockers"))
     if (ok) refresh()
   }
 
   return (
     <div className="flex min-w-0 flex-col gap-7">
       <Section
-        title="Description"
+        title={translate("Description")}
         action={
           editingDescription ? (
             <div className="flex gap-2">
@@ -103,16 +105,14 @@ export function TicketBody({
                 onClick={() => setEditingDescription(false)}
                 disabled={savingDescription}
               >
-                Cancel
-              </Button>
+                {translate("Cancel")} </Button>
               <Button
                 size="sm"
                 variant="primary"
                 loading={savingDescription}
                 onClick={saveDescription}
               >
-                Save
-              </Button>
+                {translate("Save")} </Button>
             </div>
           ) : (
             <Button
@@ -123,8 +123,7 @@ export function TicketBody({
                 setEditingDescription(true)
               }}
             >
-              Edit
-            </Button>
+              {translate("Edit")} </Button>
           )
         }
       >
@@ -140,9 +139,9 @@ export function TicketBody({
             <RichTextEditor
               value={draftDescription}
               onChange={setDraftDescription}
-              placeholder="Describe the work…"
+              placeholder={translate("Describe the work…")}
             />
-            <p className="mt-2 text-xs text-text-muted">⌘/Ctrl + Enter saves.</p>
+            <p className="mt-2 text-xs text-text-muted">{translate("⌘/Ctrl + Enter saves.")}</p>
           </div>
         ) : (
           <Expandable lines={10}>
@@ -151,115 +150,115 @@ export function TicketBody({
         )}
       </Section>
 
-      <Section title="Details">
+      <Section title={translate("Details")}>
         <dl className={cn('grid gap-4', columns === 2 ? 'grid-cols-2 max-sm:grid-cols-1' : 'grid-cols-1')}>
-          <Field label="Status">
+          <Field label={translate("Status")}>
             {({ id }) => (
               <Select
                 id={id}
                 value={statusIdOf(ticket) ?? ''}
                 options={statusOptions(workflow)}
                 onValueChange={(next) =>
-                  patch({ status: next } as Partial<Ticket>, 'the status')
+                  patch({ status: next } as Partial<Ticket>, translate("the status"))
                 }
               />
             )}
           </Field>
 
-          <Field label="Priority">
+          <Field label={translate("Priority")}>
             {({ id }) => (
               <Select
                 id={id}
                 value={ticket.priority ?? TicketPriority.NO_PRIORITY}
                 options={ticketPriorityOptions()}
                 onValueChange={(next) =>
-                  patch({ priority: next as TicketPriority } as Partial<Ticket>, 'the priority')
+                  patch({ priority: next as TicketPriority } as Partial<Ticket>, translate("the priority"))
                 }
               />
             )}
           </Field>
 
-          <Field label="Assignee" optional>
+          <Field label={translate("Assignee")} optional>
             {({ id }) => (
               <MemberSelect
                 id={id}
                 value={assigneeId}
                 selected={assigneeId ? (assignee ?? undefined) : null}
-                aria-label="Assignee"
+                aria-label={translate("Assignee")}
                 onChange={(next) =>
-                  patch({ assignee: next || null } as Partial<Ticket>, 'the assignee')
+                  patch({ assignee: next || null } as Partial<Ticket>, translate("the assignee"))
                 }
               />
             )}
           </Field>
 
-          <Field label="Team" optional>
+          <Field label={translate("Team")} optional>
             {({ id }) => (
               <TeamSelect
                 id={id}
                 value={teamId}
                 selected={team}
-                allLabel="No team"
-                aria-label="Team"
-                onChange={(next) => patch({ team: next || null } as Partial<Ticket>, 'the team')}
+                allLabel={translate("No team")}
+                aria-label={translate("Team")}
+                onChange={(next) => patch({ team: next || null } as Partial<Ticket>, translate("the team"))}
               />
             )}
           </Field>
 
           {project && (
-            <Field label="Cycle" optional>
+            <Field label={translate("Cycle")} optional>
               {({ id }) => (
                 <CycleSelect
                   id={id}
                   value={cycleId}
                   selected={cycle}
                   where={{ project: project.id }}
-                  aria-label="Cycle"
-                  onChange={(next) => patch({ cycle: next || null } as Partial<Ticket>, 'the cycle')}
+                  aria-label={translate("Cycle")}
+                  onChange={(next) => patch({ cycle: next || null } as Partial<Ticket>, translate("the cycle"))}
                 />
               )}
             </Field>
           )}
 
           {estimates.enabled && (
-            <Field label="Estimate" optional>
+            <Field label={translate("Estimate")} optional>
               {({ id }) => (
                 <EstimateSelect
                   id={id}
                   value={ticket.estimate}
                   settings={estimates}
-                  aria-label="Estimate"
+                  aria-label={translate("Estimate")}
                   onChange={(next) =>
-                    patch({ estimate: next } as Partial<Ticket>, 'the estimate')
+                    patch({ estimate: next } as Partial<Ticket>, translate("the estimate"))
                   }
                 />
               )}
             </Field>
           )}
 
-          <Field label="Start date" optional hint="Type YYYY-MM-DD, or pick a day.">
+          <Field label={translate("Start date")} optional hint={translate("Type YYYY-MM-DD, or pick a day.")}>
             {({ id, describedBy }) => (
               <DatePicker
                 id={id}
-                label="Start date"
+                label={translate("Start date")}
                 aria-describedby={describedBy}
                 value={ticket.startDate ? ticket.startDate.slice(0, 10) : ''}
                 onChange={(next) =>
-                  patch({ startDate: next || null } as Partial<Ticket>, 'the start date')
+                  patch({ startDate: next || null } as Partial<Ticket>, translate("the start date"))
                 }
               />
             )}
           </Field>
 
-          <Field label="Due date" optional hint="Type YYYY-MM-DD, or pick a day.">
+          <Field label={translate("Due date")} optional hint={translate("Type YYYY-MM-DD, or pick a day.")}>
             {({ id, describedBy }) => (
               <DatePicker
                 id={id}
-                label="Due date"
+                label={translate("Due date")}
                 aria-describedby={describedBy}
                 value={ticket.dueDate ? ticket.dueDate.slice(0, 10) : ''}
                 onChange={(next) =>
-                  patch({ dueDate: next || null } as Partial<Ticket>, 'the due date')
+                  patch({ dueDate: next || null } as Partial<Ticket>, translate("the due date"))
                 }
               />
             )}
@@ -267,16 +266,14 @@ export function TicketBody({
         </dl>
 
         <p className="text-xs text-text-muted">
-          Project: <span className="text-text">{project?.name ?? 'Unassigned'}</span>. Moving a
-          ticket between projects changes its key, so that lives on the edit page.
-        </p>
+          {translate("Project:")} <span className="text-text">{project?.name ?? translate("Unassigned")}</span>{translate(". Moving a ticket between projects changes its key, so that lives on the edit page.")} </p>
       </Section>
 
       <EpicSection ticket={ticket} patch={patch} />
 
-      <Section title="Labels" icon={Tag}>
+      <Section title={translate("Labels")} icon={Tag}>
         <LabelChips labels={labels} onRemove={(label) => void setLabels(labels.filter((entry) => entry.id !== label.id))} />
-        {labels.length === 0 && <p className="text-base text-text-muted">No labels.</p>}
+        {labels.length === 0 && <p className="text-base text-text-muted">{translate("No labels.")}</p>}
 
         <div className="max-w-72">
           <LabelSelect
@@ -295,27 +292,27 @@ export function TicketBody({
                 i === index ? { ...s, completed: !s.completed } : s,
               ),
             } as Partial<Ticket>,
-            'the subtask',
+            translate("the subtask"),
           )
         }
         onDelete={(index) =>
           patch(
             { subtasks: subtasks.filter((_, i) => i !== index) } as Partial<Ticket>,
-            'the subtasks',
+            translate("the subtasks"),
           )
         }
         onAdd={(title) =>
           patch(
             { subtasks: [...subtasks, { title, completed: false }] } as Partial<Ticket>,
-            'the subtasks',
+            translate("the subtasks"),
           )
         }
       />
 
-      <Section title="Blocked by" icon={Ban}>
+      <Section title={translate("Blocked by")} icon={Ban}>
         <ul className="flex flex-col gap-2">
           {blockers.length === 0 && (
-            <li className="text-base text-text-muted">Nothing is blocking this ticket.</li>
+            <li className="text-base text-text-muted">{translate("Nothing is blocking this ticket.")}</li>
           )}
           {blockers.map((blocker) => (
             <li
@@ -336,33 +333,31 @@ export function TicketBody({
               </span>
               {isClosedStatus(blocker.status) ? (
                 <Badge tone="success" icon={Check}>
-                  Done
-                </Badge>
+                  {translate("Done")} </Badge>
               ) : (
                 <Badge tone={BLOCKED_META.tone} icon={BLOCKED_META.icon}>
-                  Blocking
-                </Badge>
+                  {translate("Blocking")} </Badge>
               )}
               <Button
                 variant="ghost"
                 size="sm"
                 iconOnly
                 icon={Ban}
-                aria-label={`Stop ${blocker.ticketId ?? 'this ticket'} blocking this ticket`}
+                aria-label={translate("Stop {0} blocking this ticket", { 0: blocker.ticketId ?? 'this ticket' })}
                 onClick={() => patchBlockers(blockedByIds.filter((id) => id !== blocker.id))}
               />
             </li>
           ))}
         </ul>
 
-        <Field label="Add a blocking ticket" optional>
+        <Field label={translate("Add a blocking ticket")} optional>
           {({ id }) => (
             <TicketSelect
               id={id}
               value=""
               selected={null}
-              aria-label="Add a blocking ticket"
-              placeholder="Search for a ticket…"
+              aria-label={translate("Add a blocking ticket")}
+              placeholder={translate("Search for a ticket…")}
               onChange={(next) => {
                 if (!next || next === ticket.id || blockedByIds.includes(next)) return
                 void patchBlockers([...blockedByIds, next])
@@ -373,7 +368,7 @@ export function TicketBody({
       </Section>
 
       {blocking.length > 0 && (
-        <Section title="Blocks" icon={Ban}>
+        <Section title={translate("Blocks")} icon={Ban}>
           <ul className="flex flex-col gap-2">
             {blocking.map((t) => (
               <li
@@ -391,7 +386,7 @@ export function TicketBody({
       )}
 
       {(blockers.length > 0 || blocking.length > 0) && (
-        <Section title="Dependency graph" icon={GitBranch}>
+        <Section title={translate("Dependency graph")} icon={GitBranch}>
           <DependencyGraph ticket={ticket} blockers={blockers} blocking={blocking} />
         </Section>
       )}
@@ -400,11 +395,11 @@ export function TicketBody({
 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-2 border-t border-border-subtle pt-4 text-xs text-text-muted max-sm:grid-cols-1">
         <div className="flex justify-between gap-2">
-          <dt>Created</dt>
+          <dt>{translate("Created")}</dt>
           <dd className="text-text tabular">{formatDateTimeRelative(ticket.createdAt)}</dd>
         </div>
         <div className="flex justify-between gap-2">
-          <dt>Updated</dt>
+          <dt>{translate("Updated")}</dt>
           <dd className="text-text tabular">{formatDateTimeRelative(ticket.updatedAt)}</dd>
         </div>
       </dl>

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -28,12 +30,12 @@ export const SIDEBAR_RAIL = 56
 const WIDTH_KEY = 'local-pm:sidebar-width'
 
 export const NAV_ITEMS = [
-  { href: '/board', label: 'Board', icon: LayoutDashboard, chord: 'g v' },
-  { href: '/my-tickets', label: 'My tickets', icon: UserRound, chord: 'g m' },
-  { href: '/cycles', label: 'Cycles', icon: Repeat, chord: 'g c' },
-  { href: '/projects', label: 'Projects', icon: FolderKanban, chord: 'g p' },
-  { href: '/initiatives', label: 'Initiatives', icon: Target, chord: 'g n' },
-  { href: '/teams', label: 'Teams', icon: Users, chord: 'g t' },
+  { href: '/board', get label() { return translate("Board") }, icon: LayoutDashboard, chord: 'g v' },
+  { href: '/my-tickets', get label() { return translate("My tickets") }, icon: UserRound, chord: 'g m' },
+  { href: '/cycles', get label() { return translate("Cycles") }, icon: Repeat, chord: 'g c' },
+  { href: '/projects', get label() { return translate("Projects") }, icon: FolderKanban, chord: 'g p' },
+  { href: '/initiatives', get label() { return translate("Initiatives") }, icon: Target, chord: 'g n' },
+  { href: '/teams', get label() { return translate("Teams") }, icon: Users, chord: 'g t' },
 ]
 
 function clampWidth(value: number): number {
@@ -127,20 +129,20 @@ export function Sidebar({
         <Link
           href="/board"
           onClick={onNavigate}
-          aria-label="local-pm, go to board"
+          aria-label={translate("local-pm, go to board")}
           className="flex min-w-0 items-center rounded-sm outline-offset-4"
         >
           {collapsed ? <LogoMark className="size-7" /> : <Logo />}
         </Link>
 
         {!collapsed && (
-          <Tooltip content={<span>Collapse sidebar</span>}>
+          <Tooltip content={<span>{translate("Collapse sidebar")}</span>}>
             <Button
               variant="ghost"
               size="sm"
               iconOnly
               icon={PanelLeftClose}
-              aria-label={mobile ? 'Close navigation' : 'Collapse sidebar'}
+              aria-label={mobile ? translate("Close navigation") : translate("Collapse sidebar")}
               onClick={onToggleCollapsed}
               className="ml-auto"
             />
@@ -150,13 +152,13 @@ export function Sidebar({
 
       {collapsed && (
         <div className="flex justify-center pb-1 pt-1">
-          <Tooltip content="Expand sidebar" side="right">
+          <Tooltip content={translate("Expand sidebar")} side="right">
             <Button
               variant="ghost"
               size="sm"
               iconOnly
               icon={PanelLeftOpen}
-              aria-label="Expand sidebar"
+              aria-label={translate("Expand sidebar")}
               onClick={onToggleCollapsed}
             />
           </Tooltip>
@@ -165,12 +167,12 @@ export function Sidebar({
 
       <div className={cn('flex-none pb-2', collapsed ? 'px-2' : 'px-3')}>
         {collapsed ? (
-          <Tooltip content="New ticket" side="right">
+          <Tooltip content={translate("New ticket")} side="right">
             <Link
               href="/tickets/new"
               onClick={onNavigate}
-              aria-label="New ticket"
-              title="New ticket (Ctrl/⌘ + Alt + N)"
+              aria-label={translate("New ticket")}
+              title={translate("New ticket (Ctrl/⌘ + Alt + N)")}
               className={cn(
                 'flex size-9 items-center justify-center rounded-sm border border-border bg-surface text-text',
                 'transition-colors duration-micro ease-standard hover:bg-surface-hover',
@@ -189,19 +191,17 @@ export function Sidebar({
             )}
           >
             <Plus className="size-4 shrink-0" aria-hidden />
-            New ticket
-          </Link>
+            {translate("New ticket")} </Link>
         )}
       </div>
 
       <nav
-        aria-label="Main"
+        aria-label={translate("Main")}
         className={cn('min-h-0 flex-1 overflow-y-auto', collapsed ? 'px-2' : 'px-3')}
       >
         {!collapsed && (
           <h2 className="px-2.5 pb-1.5 pt-1 text-2xs font-medium uppercase tracking-[0.06em] text-text-muted">
-            Workspace
-          </h2>
+            {translate("Workspace")} </h2>
         )}
 
         <ul ref={navRef} className="flex flex-col gap-0.5" onKeyDown={onNavKeyDown}>
@@ -261,10 +261,10 @@ export function Sidebar({
         className={cn('flex-none border-t border-border-subtle py-2', collapsed ? 'px-2' : 'px-3')}
       >
         {collapsed ? (
-          <Tooltip content="Keyboard shortcuts" side="right">
+          <Tooltip content={translate("Keyboard shortcuts")} side="right">
             <button
               type="button"
-              aria-label="Keyboard shortcuts"
+              aria-label={translate("Keyboard shortcuts")}
               onClick={() => window.dispatchEvent(new CustomEvent('local-pm:open-shortcuts'))}
               className="flex h-8 w-full items-center justify-center rounded-sm text-text-muted transition-colors duration-micro hover:bg-surface-hover hover:text-text"
             >
@@ -280,8 +280,7 @@ export function Sidebar({
               'text-text-muted transition-colors duration-micro hover:bg-surface-hover hover:text-text',
             )}
           >
-            Keyboard shortcuts
-            <Kbd raw="?" className="ml-auto" />
+            {translate("Keyboard shortcuts")} <Kbd raw="?" className="ml-auto" />
           </button>
         )}
       </div>
@@ -290,7 +289,7 @@ export function Sidebar({
         <div
           role="separator"
           aria-orientation="vertical"
-          aria-label="Resize sidebar"
+          aria-label={translate("Resize sidebar")}
           aria-valuenow={width}
           aria-valuemin={SIDEBAR_MIN}
           aria-valuemax={SIDEBAR_MAX}

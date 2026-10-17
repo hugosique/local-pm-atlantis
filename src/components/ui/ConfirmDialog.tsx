@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useState } from 'react'
 import { Dialog } from './Dialog'
 import { Button } from './Button'
@@ -31,7 +33,7 @@ export function ConfirmDialog({
   consequence,
   confirmPhrase,
   confirmLabel,
-  cancelLabel = 'Cancel',
+  cancelLabel = translate("Cancel"),
   destructive = true,
   loading = false,
 }: ConfirmDialogProps) {
@@ -80,8 +82,8 @@ export function ConfirmDialog({
 
         {confirmPhrase && (
           <Field
-            label={`Type ${confirmPhrase} to confirm`}
-            hint="This is an exact match, including capitalisation."
+            label={translate("Type {0} to confirm", { 0: confirmPhrase })}
+            hint={translate("This is an exact match, including capitalisation.")}
           >
             {({ id, describedBy }) => (
               <Input

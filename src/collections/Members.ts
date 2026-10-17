@@ -1,13 +1,15 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { APIError } from 'payload'
 import { collectionAccess } from '@/lib/access'
 
 export const Members: CollectionConfig = {
   slug: 'members',
+  labels: { singular: translate("Member"), plural: translate("Members") },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'email', 'team', 'active'],
-    description: 'People that tickets can be assigned to.',
+    description: translate("People that tickets can be assigned to."),
   },
   access: collectionAccess,
   hooks: {
@@ -29,45 +31,50 @@ export const Members: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
       required: true,
       admin: {
-        description: 'Display name — what shows on cards and in pickers',
+        description: translate("Display name — what shows on cards and in pickers"),
       },
     },
     {
       name: 'email',
+      label: translate("Email"),
       type: 'email',
       admin: {
-        description: 'Optional. Used to tell two people with the same name apart.',
+        description: translate("Optional. Used to tell two people with the same name apart."),
       },
     },
     {
       name: 'team',
+      label: translate("Team"),
       type: 'relationship',
       relationTo: 'teams',
       admin: {
-        description: 'The team this person belongs to',
+        description: translate("The team this person belongs to"),
       },
     },
     {
       name: 'active',
+      label: translate("Active"),
       type: 'checkbox',
       defaultValue: true,
       admin: {
         position: 'sidebar',
         description:
-          'Inactive people keep their existing assignments but drop out of the assignee pickers.',
+          translate("Inactive people keep their existing assignments but drop out of the assignee pickers."),
       },
     },
     {
       name: 'user',
+      label: translate("Account"),
       type: 'relationship',
       relationTo: 'users',
       admin: {
         position: 'sidebar',
         description:
-          'The login account this person signs in with. Set it and "My tickets" works for them.',
+          translate("The login account this person signs in with. Set it and \"My tickets\" works for them."),
       },
     },
   ],
@@ -130,7 +137,7 @@ async function assertUserNotAlreadyLinked(
   const clash = existing.docs.find((doc) => String(doc.id) !== String(selfId ?? ''))
   if (clash) {
     throw new APIError(
-      `That account is already linked to ${clash.name}. Unlink it there first.`,
+      translate("That account is already linked to {0}. Unlink it there first.", { 0: clash.name }),
       400,
       null,
       true,

@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { UserRound } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { avatarToneFor, initialsFor } from '@/lib/avatar'
@@ -32,8 +33,8 @@ export function Avatar({
       <span
         role={decorative ? undefined : 'img'}
         aria-hidden={decorative || undefined}
-        aria-label={decorative ? undefined : 'Unassigned'}
-        title={decorative ? undefined : 'Unassigned'}
+        aria-label={decorative ? undefined : translate("Unassigned")}
+        title={decorative ? undefined : translate("Unassigned")}
         className={cn(
           'inline-flex shrink-0 items-center justify-center rounded-full',
           'border border-dashed border-border text-text-muted',
@@ -70,7 +71,7 @@ export function AvatarLabel({
   name,
   seed,
   size = 'sm',
-  fallback = 'Unassigned',
+  fallback = translate("Unassigned"),
   className,
 }: {
   name: string | null | undefined

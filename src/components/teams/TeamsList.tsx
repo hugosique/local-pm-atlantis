@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -132,7 +134,7 @@ export function TeamsList({
         })
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -148,16 +150,16 @@ export function TeamsList({
   useShortcut({
     id: 'teams.search',
     keys: 'slash',
-    description: 'Focus the team search',
-    group: 'Teams',
+    description: translate("Focus the team search"),
+    group: translate("Teams"),
     scope: 'list',
     run: () => searchRef.current?.focus(),
   })
   useShortcut({
     id: 'teams.create',
     keys: 'c',
-    description: 'Create a team',
-    group: 'Teams',
+    description: translate("Create a team"),
+    group: translate("Teams"),
     scope: 'list',
     run: () => {
       setEditing(null)
@@ -195,7 +197,7 @@ export function TeamsList({
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't load more teams",
+        title: translate("Couldn't load more teams"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -222,11 +224,11 @@ export function TeamsList({
       setTeams((prev) => prev.filter((t) => t.id !== pendingDelete.team.id))
       setPagination((p) => ({ ...p, totalDocs: Math.max(0, p.totalDocs - 1) }))
       setPendingDelete(null)
-      toast({ title: `${pendingDelete.team.name} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: pendingDelete.team.name }), tone: 'info' })
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that team",
+        title: translate("Couldn't delete that team"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -239,15 +241,14 @@ export function TeamsList({
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 py-4 max-md:px-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="mr-4 min-w-0 max-sm:w-full">
-            <h1 className="text-2xl font-semibold text-text">Teams</h1>
+            <h1 className="text-2xl font-semibold text-text">{translate("Teams")}</h1>
             <p className="mt-1 text-sm text-text-muted">
-              Bring the right people and work together.
-            </p>
+              {translate("Bring the right people and work together.")} </p>
           </div>
 
           <label className="relative flex h-8 min-w-44 flex-1 items-center gap-2 rounded-sm border border-border bg-surface px-2.5 md:max-w-72">
             <Search className="size-4 shrink-0 text-text-muted" aria-hidden />
-            <span className="sr-only">Search teams by name</span>
+            <span className="sr-only">{translate("Search teams by name")}</span>
             <input
               ref={searchRef}
               type="search"
@@ -256,7 +257,7 @@ export function TeamsList({
               }}
               value={query}
               onChange={(e) => setFilters({ q: e.target.value }, false)}
-              placeholder="Search teams"
+              placeholder={translate("Search teams")}
               className="min-w-0 flex-1 bg-transparent text-base text-text outline-none max-sm:text-md"
             />
             <Kbd raw="/" className="max-sm:hidden" />
@@ -272,26 +273,24 @@ export function TeamsList({
               setFormOpen(true)
             }}
           >
-            New team
-          </Button>
+            {translate("New team")} </Button>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-text-muted tabular" aria-live="polite">
-            {pagination.totalDocs} {pagination.totalDocs === 1 ? 'team' : 'teams'}
+            {pagination.totalDocs} {pagination.totalDocs === 1 ? translate("team") : translate("teams")}
           </span>
           {query && (
             <>
               <Chip
                 tone="accent"
                 onRemove={() => setFilters({ q: '' })}
-                removeLabel="Clear the search"
+                removeLabel={translate("Clear the search")}
               >
-                Search: {query}
+                {translate("Search:")} {query}
               </Chip>
               <Button variant="ghost" size="sm" icon={X} onClick={() => setFilters({ q: '' })}>
-                Clear all
-              </Button>
+                {translate("Clear all")} </Button>
             </>
           )}
         </div>
@@ -301,9 +300,9 @@ export function TeamsList({
         {error ? (
           <EmptyState
             kind="error"
-            title="Couldn't load teams"
+            title={translate("Couldn't load teams")}
             description={error}
-            action={{ label: 'Retry', onClick: () => setRetry((value) => value + 1) }}
+            action={{ label: translate("Retry"), onClick: () => setRetry((value) => value + 1) }}
             className="m-6"
           />
         ) : showSkeleton && teams.length === 0 ? (
@@ -311,17 +310,17 @@ export function TeamsList({
         ) : teams.length === 0 && query ? (
           <EmptyState
             kind="no-match"
-            title="No teams match"
-            description="Nothing here fits that search. The team you want may still exist."
-            action={{ label: 'Clear filters', onClick: () => setFilters({ q: '' }) }}
+            title={translate("No teams match")}
+            description={translate("Nothing here fits that search. The team you want may still exist.")}
+            action={{ label: translate("Clear filters"), onClick: () => setFilters({ q: '' }) }}
           />
         ) : teams.length === 0 ? (
           <EmptyState
             kind="no-data"
-            title="No teams yet"
-            description="Teams say who owns a ticket. Create one and it becomes available on every board filter."
+            title={translate("No teams yet")}
+            description={translate("Teams say who owns a ticket. Create one and it becomes available on every board filter.")}
             action={{
-              label: 'Create team',
+              label: translate("Create team"),
               onClick: () => {
                 setEditing(null)
                 setFormOpen(true)
@@ -330,7 +329,7 @@ export function TeamsList({
           />
         ) : (
           <>
-            <Table caption="Teams, with the date each was created">
+            <Table caption={translate("Teams, with the date each was created")}>
               <thead>
                 <tr>
                   <Th
@@ -338,18 +337,16 @@ export function TeamsList({
                     sortDirection={sortDirection('name')}
                     onSort={() => toggleSort('name')}
                   >
-                    Team
-                  </Th>
+                    {translate("Team")} </Th>
                   <Th
                     sortable
                     sortDirection={sortDirection('createdAt')}
                     onSort={() => toggleSort('createdAt')}
                     width="13rem"
                   >
-                    Created
-                  </Th>
+                    {translate("Created")} </Th>
                   <Th width="4rem">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{translate("Actions")}</span>
                   </Th>
                 </tr>
               </thead>
@@ -382,11 +379,11 @@ export function TeamsList({
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Menu
-                          label={`Actions for ${team.name}`}
+                          label={translate("Actions for {0}", { 0: team.name })}
                           items={[
                             {
                               id: 'edit',
-                              label: 'Edit team',
+                              label: translate("Edit team"),
                               icon: Pencil,
                               onSelect: () => {
                                 setEditing(team)
@@ -395,7 +392,7 @@ export function TeamsList({
                             },
                             {
                               id: 'delete',
-                              label: 'Delete team',
+                              label: translate("Delete team"),
                               icon: Trash2,
                               destructive: true,
                               separatorBefore: true,
@@ -408,7 +405,7 @@ export function TeamsList({
                               size="sm"
                               iconOnly
                               icon={MoreHorizontal}
-                              aria-label={`Actions for ${team.name}`}
+                              aria-label={translate("Actions for {0}", { 0: team.name })}
                             />
                           }
                         />
@@ -422,7 +419,7 @@ export function TeamsList({
             {pagination.hasNextPage && (
               <div className="flex justify-center p-4">
                 <Button variant="secondary" loading={loadingMore} onClick={loadMore}>
-                  Load more ({teams.length} of {pagination.totalDocs})
+                  {translate("Load more ({0} of {1})", { 0: teams.length, 1: pagination.totalDocs })}
                 </Button>
               </div>
             )}
@@ -445,10 +442,10 @@ export function TeamsList({
           setFormOpen(false)
           setEditing(null)
           toast({
-            title: created ? `${saved.name} created` : 'Changes saved',
+            title: created ? translate("{0} created", { 0: saved.name }) : translate("Changes saved"),
             tone: 'success',
             action: created
-              ? { label: 'Open', onClick: () => router.push(`/teams/${saved.id}`) }
+              ? { label: translate("Open"), onClick: () => router.push(`/teams/${saved.id}`) }
               : undefined,
           })
         }}
@@ -459,16 +456,14 @@ export function TeamsList({
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
         loading={deleting}
-        title="Delete this team?"
+        title={translate("Delete this team?")}
         message={pendingDelete ? `“${pendingDelete.team.name}”` : ''}
         consequence={
           pendingDelete && pendingDelete.ticketCount > 0
-            ? `${pendingDelete.ticketCount} ticket${
-                pendingDelete.ticketCount === 1 ? ' becomes' : 's become'
-              } unassigned. The tickets themselves are kept.`
-            : 'No tickets are assigned to this team.'
+            ? translate("{0} ticket{1} unassigned. The tickets themselves are kept.", { 0: pendingDelete.ticketCount, 1: pendingDelete.ticketCount === 1 ? ' becomes' : 's become' })
+            : translate("No tickets are assigned to this team.")
         }
-        confirmLabel="Delete team"
+        confirmLabel={translate("Delete team")}
       />
     </div>
   )

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useState } from 'react'
 import { WifiOff } from 'lucide-react'
 
@@ -25,7 +27,6 @@ export function OfflineBanner() {
       className="flex flex-none items-center justify-center gap-2 border-b border-warning-border bg-warning-subtle px-4 py-1.5 text-base text-warning-text"
     >
       <WifiOff className="size-4 shrink-0" aria-hidden />
-      You&rsquo;re offline — changes won&rsquo;t save until you reconnect.
-    </div>
+      {translate("You’re offline — changes won’t save until you reconnect.")} </div>
   )
 }

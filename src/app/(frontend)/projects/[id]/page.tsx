@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: ProjectPageProps) {
     const project = await payload.findByID({ collection: 'projects', id, depth: 0 })
     return { title: `${project.name} · local-pm` }
   } catch {
-    return { title: 'Project · local-pm' }
+    return { title: translate("Project · local-pm") }
   }
 }
 

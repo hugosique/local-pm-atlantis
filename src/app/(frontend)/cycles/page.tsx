@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { CyclesView, type CycleSummary } from '@/components/cycles/CyclesView'
@@ -10,7 +11,7 @@ import type { Cycle, Project } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = { title: 'Cycles · local-pm' }
+export const metadata = { title: translate("Cycles · local-pm") }
 
 interface CyclesPageProps {
   searchParams: Promise<{ project?: string }>

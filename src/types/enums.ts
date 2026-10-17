@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 export enum TicketStatus {
   TODO = 'TODO',
   IN_PROGRESS = 'IN_PROGRESS',
@@ -28,17 +29,17 @@ export enum ProjectStatus {
 }
 
 export const TICKET_STATUS_OPTIONS = [
-  { label: 'Todo', value: TicketStatus.TODO },
-  { label: 'In Progress', value: TicketStatus.IN_PROGRESS },
-  { label: 'Done', value: TicketStatus.DONE },
+  { get label() { return translate("Todo") }, value: TicketStatus.TODO },
+  { get label() { return translate("In Progress") }, value: TicketStatus.IN_PROGRESS },
+  { get label() { return translate("Done") }, value: TicketStatus.DONE },
 ]
 
 export const STATUS_TYPE_OPTIONS = [
-  { label: 'Backlog', value: StatusType.BACKLOG },
-  { label: 'Unstarted', value: StatusType.UNSTARTED },
-  { label: 'Started', value: StatusType.STARTED },
-  { label: 'Completed', value: StatusType.COMPLETED },
-  { label: 'Cancelled', value: StatusType.CANCELLED },
+  { get label() { return translate("Backlog") }, value: StatusType.BACKLOG },
+  { get label() { return translate("Unstarted") }, value: StatusType.UNSTARTED },
+  { get label() { return translate("Started") }, value: StatusType.STARTED },
+  { get label() { return translate("Completed") }, value: StatusType.COMPLETED },
+  { get label() { return translate("Cancelled") }, value: StatusType.CANCELLED },
 ]
 
 export const DEFAULT_STATUSES: {
@@ -66,18 +67,18 @@ export const LEGACY_STATUS_KEYS: Record<string, string> = {
 }
 
 export const TICKET_PRIORITY_OPTIONS = [
-  { label: 'No Priority', value: TicketPriority.NO_PRIORITY },
-  { label: 'Urgent', value: TicketPriority.URGENT },
-  { label: 'High', value: TicketPriority.HIGH },
-  { label: 'Medium', value: TicketPriority.MEDIUM },
-  { label: 'Low', value: TicketPriority.LOW },
+  { get label() { return translate("No Priority") }, value: TicketPriority.NO_PRIORITY },
+  { get label() { return translate("Urgent") }, value: TicketPriority.URGENT },
+  { get label() { return translate("High") }, value: TicketPriority.HIGH },
+  { get label() { return translate("Medium") }, value: TicketPriority.MEDIUM },
+  { get label() { return translate("Low") }, value: TicketPriority.LOW },
 ]
 
 export const PROJECT_STATUS_OPTIONS = [
-  { label: 'Active', value: ProjectStatus.ACTIVE },
-  { label: 'On Hold', value: ProjectStatus.ON_HOLD },
-  { label: 'Completed', value: ProjectStatus.COMPLETED },
-  { label: 'Cancelled', value: ProjectStatus.CANCELLED },
+  { get label() { return translate("Active") }, value: ProjectStatus.ACTIVE },
+  { get label() { return translate("On Hold") }, value: ProjectStatus.ON_HOLD },
+  { get label() { return translate("Completed") }, value: ProjectStatus.COMPLETED },
+  { get label() { return translate("Cancelled") }, value: ProjectStatus.CANCELLED },
 ]
 
 export const PROJECT_ICONS = [
@@ -126,33 +127,33 @@ export enum CycleAutomation {
 }
 
 export const CYCLE_ROLLOVER_OPTIONS = [
-  { label: 'Move to the next cycle', value: CycleRollover.NEXT },
-  { label: 'Move back to the backlog', value: CycleRollover.BACKLOG },
-  { label: 'Leave in the closed cycle', value: CycleRollover.NONE },
+  { get label() { return translate("Move to the next cycle") }, value: CycleRollover.NEXT },
+  { get label() { return translate("Move back to the backlog") }, value: CycleRollover.BACKLOG },
+  { get label() { return translate("Leave in the closed cycle") }, value: CycleRollover.NONE },
 ]
 
 export const CYCLE_AUTOMATION_OPTIONS = [
-  { label: 'Automatic', value: CycleAutomation.AUTOMATIC },
-  { label: 'Manual', value: CycleAutomation.MANUAL },
+  { get label() { return translate("Automatic") }, value: CycleAutomation.AUTOMATIC },
+  { get label() { return translate("Manual") }, value: CycleAutomation.MANUAL },
 ]
 
 export const CYCLE_START_DAY_OPTIONS = [
-  { label: 'Monday', value: 1 },
-  { label: 'Tuesday', value: 2 },
-  { label: 'Wednesday', value: 3 },
-  { label: 'Thursday', value: 4 },
-  { label: 'Friday', value: 5 },
-  { label: 'Saturday', value: 6 },
-  { label: 'Sunday', value: 0 },
+  { get label() { return translate("Monday") }, value: 1 },
+  { get label() { return translate("Tuesday") }, value: 2 },
+  { get label() { return translate("Wednesday") }, value: 3 },
+  { get label() { return translate("Thursday") }, value: 4 },
+  { get label() { return translate("Friday") }, value: 5 },
+  { get label() { return translate("Saturday") }, value: 6 },
+  { get label() { return translate("Sunday") }, value: 0 },
 ]
 
 export const CYCLE_LENGTH_OPTIONS = [
-  { label: '1 week', value: 1 },
-  { label: '2 weeks', value: 2 },
-  { label: '3 weeks', value: 3 },
-  { label: '4 weeks', value: 4 },
-  { label: '6 weeks', value: 6 },
-  { label: '8 weeks', value: 8 },
+  { get label() { return translate("1 week") }, value: 1 },
+  { get label() { return translate("2 weeks") }, value: 2 },
+  { get label() { return translate("3 weeks") }, value: 3 },
+  { get label() { return translate("4 weeks") }, value: 4 },
+  { get label() { return translate("6 weeks") }, value: 6 },
+  { get label() { return translate("8 weeks") }, value: 8 },
 ]
 export enum LabelColor {
   SLATE = 'SLATE',
@@ -164,12 +165,12 @@ export enum LabelColor {
 }
 
 export const LABEL_COLOR_OPTIONS = [
-  { label: 'Slate', value: LabelColor.SLATE },
-  { label: 'Indigo', value: LabelColor.INDIGO },
-  { label: 'Blue', value: LabelColor.BLUE },
-  { label: 'Green', value: LabelColor.GREEN },
-  { label: 'Amber', value: LabelColor.AMBER },
-  { label: 'Red', value: LabelColor.RED },
+  { get label() { return translate("Slate") }, value: LabelColor.SLATE },
+  { get label() { return translate("Indigo") }, value: LabelColor.INDIGO },
+  { get label() { return translate("Blue") }, value: LabelColor.BLUE },
+  { get label() { return translate("Green") }, value: LabelColor.GREEN },
+  { get label() { return translate("Amber") }, value: LabelColor.AMBER },
+  { get label() { return translate("Red") }, value: LabelColor.RED },
 ]
 
 export enum EstimateScale {
@@ -180,10 +181,10 @@ export enum EstimateScale {
 }
 
 export const ESTIMATE_SCALE_OPTIONS = [
-  { label: 'Linear — 1, 2, 3, 4, 5', value: EstimateScale.LINEAR },
-  { label: 'Fibonacci — 1, 2, 3, 5, 8, 13', value: EstimateScale.FIBONACCI },
-  { label: 'Exponential — 1, 2, 4, 8, 16', value: EstimateScale.EXPONENTIAL },
-  { label: 'T-shirt — XS, S, M, L, XL', value: EstimateScale.TSHIRT },
+  { get label() { return translate("Linear — 1, 2, 3, 4, 5") }, value: EstimateScale.LINEAR },
+  { get label() { return translate("Fibonacci — 1, 2, 3, 5, 8, 13") }, value: EstimateScale.FIBONACCI },
+  { get label() { return translate("Exponential — 1, 2, 4, 8, 16") }, value: EstimateScale.EXPONENTIAL },
+  { get label() { return translate("T-shirt — XS, S, M, L, XL") }, value: EstimateScale.TSHIRT },
 ]
 
 export const LEGACY_LABEL_COLORS: Record<string, LabelColor> = {
@@ -212,10 +213,10 @@ export enum InitiativeStatus {
 }
 
 export const INITIATIVE_STATUS_OPTIONS = [
-  { label: 'Planned', value: InitiativeStatus.PLANNED },
-  { label: 'Active', value: InitiativeStatus.ACTIVE },
-  { label: 'Completed', value: InitiativeStatus.COMPLETED },
-  { label: 'Cancelled', value: InitiativeStatus.CANCELLED },
+  { get label() { return translate("Planned") }, value: InitiativeStatus.PLANNED },
+  { get label() { return translate("Active") }, value: InitiativeStatus.ACTIVE },
+  { get label() { return translate("Completed") }, value: InitiativeStatus.COMPLETED },
+  { get label() { return translate("Cancelled") }, value: InitiativeStatus.CANCELLED },
 ]
 
 export const INITIATIVE_ICONS = [

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AlertCircle, CheckCircle2, Info, Undo2, X } from 'lucide-react'
@@ -124,7 +126,7 @@ function ToastItem({ toast, onDismiss }: { toast: ToastRecord; onDismiss: (id: n
 
   const Icon = TONE_ICON[toast.tone ?? 'info']
   const action = toast.onUndo
-    ? { label: 'Undo', onClick: toast.onUndo }
+    ? { label: translate("Undo"), onClick: toast.onUndo }
     : toast.action
 
   return (
@@ -168,7 +170,7 @@ function ToastItem({ toast, onDismiss }: { toast: ToastRecord; onDismiss: (id: n
         size="xs"
         iconOnly
         icon={X}
-        aria-label="Dismiss notification"
+        aria-label={translate("Dismiss notification")}
         onClick={() => onDismiss(toast.id)}
       />
     </div>

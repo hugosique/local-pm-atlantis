@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useState } from 'react'
 import { Check, HelpCircle, ListChecks, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -13,9 +15,6 @@ export interface SubtaskItem {
   title: string
   completed?: boolean | null
 }
-
-const HELP =
-  'Break this ticket into the concrete steps it takes to finish. Ticking them all off does not close the ticket — the status field still decides that.'
 
 export function SubtaskList({
   subtasks,
@@ -36,17 +35,20 @@ export function SubtaskList({
   const done = subtasks.filter((s) => s.completed).length
   const total = subtasks.length
   const percent = total ? Math.round((done / total) * 100) : 0
+  const help = translate(
+    "Break this ticket into the concrete steps it takes to finish. Ticking them all off does not close the ticket — the status field still decides that.",
+  )
 
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <ListChecks className="size-4 shrink-0 text-text-muted" aria-hidden />
-        <h3 className="text-xs font-medium uppercase tracking-wide text-text-muted">Subtasks</h3>
+        <h3 className="text-xs font-medium uppercase tracking-wide text-text-muted">{translate("Subtasks")}</h3>
 
-        <Tooltip content={HELP} side="top">
+        <Tooltip content={help} side="top">
           <button
             type="button"
-            aria-label="What subtasks are for"
+            aria-label={translate("What subtasks are for")}
             className="inline-flex size-5 items-center justify-center rounded-full text-text-muted transition-colors duration-micro hover:bg-surface-hover hover:text-text"
           >
             <HelpCircle className="size-4" aria-hidden />
@@ -55,8 +57,7 @@ export function SubtaskList({
 
         {total > 0 && (
           <span className="ml-auto text-xs text-text-muted tabular">
-            {done}/{total} done
-          </span>
+            {done}/{total} {translate("done")} </span>
         )}
       </div>
 
@@ -66,7 +67,7 @@ export function SubtaskList({
           aria-valuenow={percent}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label="Subtasks complete"
+          aria-label={translate("Subtasks complete")}
           className="h-1 overflow-hidden rounded-full bg-surface-hover"
         >
           <div
@@ -134,14 +135,14 @@ export function SubtaskList({
                 </span>
               </label>
 
-              <Tooltip content="Delete subtask" side="top">
+              <Tooltip content={translate("Delete subtask")} side="top">
                 <Button
                   variant="ghost"
                   size="sm"
                   iconOnly
                   icon={Trash2}
                   disabled={disabled}
-                  aria-label={`Delete subtask ${subtask.title}`}
+                  aria-label={translate("Delete subtask {0}", { 0: subtask.title })}
                   onClick={() => setPendingDelete({ index, title: subtask.title })}
                   className={cn(
                     'text-text-muted hover:text-danger-text',
@@ -155,7 +156,7 @@ export function SubtaskList({
         })}
       </ul>
 
-      {total === 0 && <p className="text-base text-text-muted">No subtasks yet.</p>}
+      {total === 0 && <p className="text-base text-text-muted">{translate("No subtasks yet.")}</p>}
 
       <form
         className="flex gap-2"
@@ -167,21 +168,20 @@ export function SubtaskList({
           onAdd(title)
         }}
       >
-        <Field label="New subtask" hideLabel className="flex-1">
+        <Field label={translate("New subtask")} hideLabel className="flex-1">
           {({ id }) => (
             <Input
               id={id}
               value={draft}
               disabled={disabled}
               onChange={(event) => setDraft(event.target.value)}
-              placeholder="Add a subtask"
+              placeholder={translate("Add a subtask")}
               autoComplete="off"
             />
           )}
         </Field>
         <Button type="submit" icon={Plus} variant="secondary" disabled={disabled}>
-          Add
-        </Button>
+          {translate("Add")} </Button>
       </form>
 
       <ConfirmDialog
@@ -191,10 +191,10 @@ export function SubtaskList({
           if (pendingDelete) onDelete(pendingDelete.index)
           setPendingDelete(null)
         }}
-        title="Delete this subtask?"
+        title={translate("Delete this subtask?")}
         message={pendingDelete ? `“${pendingDelete.title}”` : ''}
-        consequence="Subtasks are not kept in the trash. This cannot be undone."
-        confirmLabel="Delete subtask"
+        consequence={translate("Subtasks are not kept in the trash. This cannot be undone.")}
+        confirmLabel={translate("Delete subtask")}
       />
     </section>
   )

@@ -1,11 +1,13 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { cn } from '@/lib/cn'
 import { describeRollup, type EpicRollup } from '@/lib/epic'
 
 export function EpicProgress({
   rollup,
-  label = 'Epic progress',
+  label = translate("Epic progress"),
   className,
 }: {
   rollup: EpicRollup

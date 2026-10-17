@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useState } from 'react'
 import { Bookmark, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -70,7 +72,7 @@ export function SavedBoardViews({
       setError('')
       return true
     } catch {
-      setError('Your browser could not save this view. Allow local storage and try again.')
+      setError(translate("Your browser could not save this view. Allow local storage and try again."))
       return false
     }
   }
@@ -78,12 +80,12 @@ export function SavedBoardViews({
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) {
-      setError('Give this view a name.')
+      setError(translate("Give this view a name."))
       return
     }
     const current = readViews()
     if (current.some((view) => view.name.toLowerCase() === trimmed.toLowerCase())) {
-      setError('A view with this name already exists. Choose another name.')
+      setError(translate("A view with this name already exists. Choose another name."))
       return
     }
     if (
@@ -101,10 +103,10 @@ export function SavedBoardViews({
   return (
     <>
       <Menu
-        label="Saved board views"
+        label={translate("Saved board views")}
         trigger={
           <Button variant="ghost" icon={Bookmark} title={active?.name} className="max-w-48">
-            <span className="truncate">{active?.name ?? 'Saved views'}</span>
+            <span className="truncate">{active?.name ?? translate("Saved views")}</span>
           </Button>
         }
         items={[
@@ -117,7 +119,7 @@ export function SavedBoardViews({
           })),
           {
             id: 'save',
-            label: 'Save or manage views',
+            label: translate("Save or manage views"),
             icon: Plus,
             separatorBefore: true,
             onSelect: () => {
@@ -130,12 +132,12 @@ export function SavedBoardViews({
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        title="Your board, ready when you are"
-        description="Save the current search and filters on this browser. Open a saved view anytime."
+        title={translate("Your board, ready when you are")}
+        description={translate("Save the current search and filters on this browser. Open a saved view anytime.")}
         size="sm"
       >
         <form onSubmit={save} className="flex flex-col gap-4">
-          <Field label="View name" error={error}>
+          <Field label={translate("View name")} error={error}>
             {({ id, describedBy, invalid }) => (
               <Input
                 id={id}
@@ -145,19 +147,18 @@ export function SavedBoardViews({
                   setName(event.target.value)
                   setError('')
                 }}
-                placeholder="e.g. Website launch"
+                placeholder={translate("e.g. Website launch")}
                 aria-invalid={invalid || undefined}
                 aria-describedby={describedBy}
               />
             )}
           </Field>
           <Button type="submit" variant="primary" icon={Bookmark}>
-            Save current view
-          </Button>
+            {translate("Save current view")} </Button>
         </form>
         {views.length > 0 && (
           <div className="mt-6 border-t border-border-subtle pt-4">
-            <h3 className="mb-2 text-sm font-medium text-text-muted">Saved on this browser</h3>
+            <h3 className="mb-2 text-sm font-medium text-text-muted">{translate("Saved on this browser")}</h3>
             <ul className="flex flex-col gap-2">
               {views.map((view) => (
                 <li key={view.id} className="flex items-center gap-3">
@@ -177,13 +178,13 @@ export function SavedBoardViews({
                     iconOnly
                     icon={Trash2}
                     variant="ghost"
-                    aria-label={'Remove view ' + view.name}
+                    aria-label={translate("Remove view {0}", { 0: view.name })}
                     onClick={() => {
                       if (persist(readViews().filter((item) => item.id !== view.id)))
                         toast({
-                          title: 'View removed',
+                          title: translate("View removed"),
                           action: {
-                            label: 'Undo',
+                            label: translate("Undo"),
                             onClick: () =>
                               persist([...readViews().filter((item) => item.id !== view.id), view]),
                           },

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -32,12 +34,12 @@ const SORT_KEYS = ['name', '-name', 'createdAt', '-createdAt', 'targetDate', '-t
 type SortKey = (typeof SORT_KEYS)[number]
 
 const SORT_LABELS: Record<SortKey, string> = {
-  name: 'Name A–Z',
-  '-name': 'Name Z–A',
-  createdAt: 'Oldest first',
-  '-createdAt': 'Newest first',
-  targetDate: 'Target date, soonest',
-  '-targetDate': 'Target date, latest',
+  get name() { return translate("Name A–Z") },
+  get '-name'() { return translate("Name Z–A") },
+  get createdAt() { return translate("Oldest first") },
+  get '-createdAt'() { return translate("Newest first") },
+  get targetDate() { return translate("Target date, soonest") },
+  get '-targetDate'() { return translate("Target date, latest") },
 }
 
 interface Pagination {
@@ -157,7 +159,7 @@ export function InitiativesList({
         })
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -173,16 +175,16 @@ export function InitiativesList({
   useShortcut({
     id: 'initiatives.search',
     keys: 'slash',
-    description: 'Focus the initiative search',
-    group: 'Initiatives',
+    description: translate("Focus the initiative search"),
+    group: translate("Initiatives"),
     scope: 'list',
     run: () => searchRef.current?.focus(),
   })
   useShortcut({
     id: 'initiatives.create',
     keys: 'c',
-    description: 'Create an initiative',
-    group: 'Initiatives',
+    description: translate("Create an initiative"),
+    group: translate("Initiatives"),
     scope: 'list',
     run: () => router.push('/initiatives/new'),
   })
@@ -230,7 +232,7 @@ export function InitiativesList({
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't load more initiatives",
+        title: translate("Couldn't load more initiatives"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -249,11 +251,11 @@ export function InitiativesList({
       setInitiatives((prev) => prev.filter((i) => i.id !== initiative.id))
       setPagination((p) => ({ ...p, totalDocs: Math.max(0, p.totalDocs - 1) }))
       setPendingDelete(null)
-      toast({ title: `${initiative.name} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: initiative.name }), tone: 'info' })
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that initiative",
+        title: translate("Couldn't delete that initiative"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -266,15 +268,14 @@ export function InitiativesList({
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 py-4 max-md:px-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="mr-4 min-w-0 max-sm:w-full">
-            <h1 className="text-2xl font-semibold text-text">Initiatives</h1>
+            <h1 className="text-2xl font-semibold text-text">{translate("Initiatives")}</h1>
             <p className="mt-1 text-sm text-text-muted">
-              One objective, several projects, a single line of progress.
-            </p>
+              {translate("One objective, several projects, a single line of progress.")} </p>
           </div>
 
           <label className="relative flex h-8 min-w-44 flex-1 items-center gap-2 rounded-sm border border-border bg-surface px-2.5 md:max-w-72">
             <Search className="size-4 shrink-0 text-text-muted" aria-hidden />
-            <span className="sr-only">Search initiatives by name</span>
+            <span className="sr-only">{translate("Search initiatives by name")}</span>
             <input
               ref={searchRef}
               type="search"
@@ -283,7 +284,7 @@ export function InitiativesList({
               }}
               value={query}
               onChange={(e) => setFilters({ q: e.target.value }, false)}
-              placeholder="Search initiatives"
+              placeholder={translate("Search initiatives")}
               className="min-w-0 flex-1 bg-transparent text-base text-text outline-none max-sm:text-md"
             />
             <Kbd raw="/" className="max-sm:hidden" />
@@ -291,12 +292,12 @@ export function InitiativesList({
 
           <Select
             id="initiatives-status-filter"
-            aria-label="Filter by status"
+            aria-label={translate("Filter by status")}
             value={status}
             onValueChange={(next) => setFilters({ status: next as InitiativeStatus | '' })}
             className="w-44 max-sm:w-full"
             options={[
-              { value: '', label: 'All statuses', icon: ListFilter },
+              { value: '', label: translate("All statuses"), icon: ListFilter },
               ...initiativeStatusOptions(),
             ]}
           />
@@ -307,14 +308,13 @@ export function InitiativesList({
             href="/initiatives/new"
             className="ml-auto max-sm:w-full"
           >
-            New initiative
-            <Kbd keys="c" tone="inverse" className="ml-1.5" />
+            {translate("New initiative")} <Kbd keys="c" tone="inverse" className="ml-1.5" />
           </LinkButton>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-text-muted tabular" aria-live="polite">
-            {pagination.totalDocs} {pagination.totalDocs === 1 ? 'initiative' : 'initiatives'} ·{' '}
+            {pagination.totalDocs} {pagination.totalDocs === 1 ? translate("initiative") : translate("initiatives")} ·{' '}
             {activeSortLabel}
           </span>
 
@@ -322,18 +322,18 @@ export function InitiativesList({
             <Chip
               tone="accent"
               onRemove={() => setFilters({ status: '' })}
-              removeLabel="Remove status filter"
+              removeLabel={translate("Remove status filter")}
             >
-              Status: {INITIATIVE_STATUS_OPTIONS.find((o) => o.value === status)?.label}
+              {translate("Status:")} {INITIATIVE_STATUS_OPTIONS.find((o) => o.value === status)?.label}
             </Chip>
           )}
           {query && (
             <Chip
               tone="accent"
               onRemove={() => setFilters({ q: '' })}
-              removeLabel="Clear the search"
+              removeLabel={translate("Clear the search")}
             >
-              Search: {query}
+              {translate("Search:")} {query}
             </Chip>
           )}
           {hasFilters && (
@@ -343,8 +343,7 @@ export function InitiativesList({
               icon={X}
               onClick={() => setFilters({ q: '', status: '' })}
             >
-              Clear all
-            </Button>
+              {translate("Clear all")} </Button>
           )}
         </div>
       </header>
@@ -353,9 +352,9 @@ export function InitiativesList({
         {error ? (
           <EmptyState
             kind="error"
-            title="Couldn't load initiatives"
+            title={translate("Couldn't load initiatives")}
             description={error}
-            action={{ label: 'Retry', onClick: () => setRetry((value) => value + 1) }}
+            action={{ label: translate("Retry"), onClick: () => setRetry((value) => value + 1) }}
             className="m-6"
           />
         ) : showSkeleton && initiatives.length === 0 ? (
@@ -363,20 +362,20 @@ export function InitiativesList({
         ) : initiatives.length === 0 && hasFilters ? (
           <EmptyState
             kind="no-match"
-            title="No initiatives match"
-            description="Nothing here fits the current search and status. The initiative you want may still exist."
-            action={{ label: 'Clear filters', onClick: () => setFilters({ q: '', status: '' }) }}
+            title={translate("No initiatives match")}
+            description={translate("Nothing here fits the current search and status. The initiative you want may still exist.")}
+            action={{ label: translate("Clear filters"), onClick: () => setFilters({ q: '', status: '' }) }}
           />
         ) : initiatives.length === 0 ? (
           <EmptyState
             kind="no-data"
-            title="No initiatives yet"
-            description="An initiative gathers several projects under one objective and rolls their progress into a single number."
-            action={{ label: 'Create initiative', onClick: () => router.push('/initiatives/new') }}
+            title={translate("No initiatives yet")}
+            description={translate("An initiative gathers several projects under one objective and rolls their progress into a single number.")}
+            action={{ label: translate("Create initiative"), onClick: () => router.push('/initiatives/new') }}
           />
         ) : (
           <>
-            <Table caption="Initiatives, with their status, project count and target date">
+            <Table caption={translate("Initiatives, with their status, project count and target date")}>
               <thead>
                 <tr>
                   <Th
@@ -384,30 +383,26 @@ export function InitiativesList({
                     sortDirection={sortDirection('name')}
                     onSort={() => toggleSort('name')}
                   >
-                    Initiative
-                  </Th>
-                  <Th width="10rem">Status</Th>
+                    {translate("Initiative")} </Th>
+                  <Th width="10rem">{translate("Status")}</Th>
                   <Th align="right" width="8rem">
-                    Projects
-                  </Th>
+                    {translate("Projects")} </Th>
                   <Th
                     sortable
                     sortDirection={sortDirection('targetDate')}
                     onSort={() => toggleSort('targetDate')}
                     width="11rem"
                   >
-                    Target
-                  </Th>
+                    {translate("Target")} </Th>
                   <Th
                     sortable
                     sortDirection={sortDirection('createdAt')}
                     onSort={() => toggleSort('createdAt')}
                     width="13rem"
                   >
-                    Created
-                  </Th>
+                    {translate("Created")} </Th>
                   <Th width="4rem">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{translate("Actions")}</span>
                   </Th>
                 </tr>
               </thead>
@@ -458,17 +453,17 @@ export function InitiativesList({
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Menu
-                          label={`Actions for ${initiative.name}`}
+                          label={translate("Actions for {0}", { 0: initiative.name })}
                           items={[
                             {
                               id: 'edit',
-                              label: 'Edit initiative',
+                              label: translate("Edit initiative"),
                               icon: Pencil,
                               onSelect: () => router.push(`/initiatives/${initiative.id}/edit`),
                             },
                             {
                               id: 'delete',
-                              label: 'Delete initiative',
+                              label: translate("Delete initiative"),
                               icon: Trash2,
                               destructive: true,
                               separatorBefore: true,
@@ -481,7 +476,7 @@ export function InitiativesList({
                               size="sm"
                               iconOnly
                               icon={MoreHorizontal}
-                              aria-label={`Actions for ${initiative.name}`}
+                              aria-label={translate("Actions for {0}", { 0: initiative.name })}
                             />
                           }
                         />
@@ -495,7 +490,7 @@ export function InitiativesList({
             {pagination.hasNextPage && (
               <div className="flex justify-center p-4">
                 <Button variant="secondary" loading={loadingMore} onClick={loadMore}>
-                  Load more ({initiatives.length} of {pagination.totalDocs})
+                  {translate("Load more ({0} of {1})", { 0: initiatives.length, 1: pagination.totalDocs })}
                 </Button>
               </div>
             )}
@@ -508,10 +503,10 @@ export function InitiativesList({
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
         loading={deleting}
-        title="Delete this initiative?"
+        title={translate("Delete this initiative?")}
         message={pendingDelete ? `“${pendingDelete.name}”` : ''}
-        consequence="The projects inside it are kept. Only the initiative and its grouping are removed. This cannot be undone."
-        confirmLabel="Delete initiative"
+        consequence={translate("The projects inside it are kept. Only the initiative and its grouping are removed. This cannot be undone.")}
+        confirmLabel={translate("Delete initiative")}
       />
     </div>
   )

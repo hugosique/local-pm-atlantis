@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useState } from 'react'
 import type { Ticket } from '@/payload-types'
 
@@ -44,7 +46,7 @@ export function useEpicChildren(ticketId: string, enabled: boolean): EpicChildre
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
         setChildren([])
-        setError(err instanceof Error ? err.message : 'Could not load this epic.')
+        setError(err instanceof Error ? err.message : translate("Could not load this epic."))
       } finally {
         setLoading(false)
       }

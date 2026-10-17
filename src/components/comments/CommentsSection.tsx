@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useMemo, useState } from 'react'
 import { AlertCircle, CheckCircle2, ChevronDown, History, MessageSquare, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -120,11 +122,11 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
   }, [mode, threads, activityGroups])
 
   const tabs: TabItem[] = [
-    { id: 'all', label: 'All' },
-    { id: 'comments', label: 'Comments', icon: MessageSquare, count: count || undefined },
+    { id: 'all', label: translate("All") },
+    { id: 'comments', label: translate("Comments"), icon: MessageSquare, count: count || undefined },
     {
       id: 'history',
-      label: 'History',
+      label: translate("History"),
       icon: History,
       count: activity.entries.length || undefined,
     },
@@ -137,7 +139,7 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
       await add(draft, null, member)
       setDraft('')
     } catch (err) {
-      setPostError(err instanceof Error ? err.message : 'The comment was not posted.')
+      setPostError(err instanceof Error ? err.message : translate("The comment was not posted."))
     } finally {
       setPosting(false)
     }
@@ -147,9 +149,9 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
     const url = `${window.location.origin}/tickets/${ticketId}#comment-${comment.id}`
     try {
       await navigator.clipboard.writeText(url)
-      toast({ tone: 'success', title: 'Link copied', description: 'It opens on this comment.' })
+      toast({ tone: 'success', title: translate("Link copied"), description: translate("It opens on this comment.") })
     } catch {
-      toast({ tone: 'error', title: "Couldn't copy the link", description: url })
+      toast({ tone: 'error', title: translate("Couldn't copy the link"), description: url })
     }
   }
 
@@ -159,7 +161,7 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't save that edit",
+        title: translate("Couldn't save that edit"),
         description: err instanceof Error ? err.message : undefined,
       })
       return false
@@ -173,7 +175,7 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
     } catch (err) {
       toast({
         tone: 'error',
-        title: next ? "Couldn't resolve that thread" : "Couldn't reopen that thread",
+        title: next ? translate("Couldn't resolve that thread") : translate("Couldn't reopen that thread"),
         description: err instanceof Error ? err.message : undefined,
       })
     }
@@ -188,7 +190,7 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that comment",
+        title: translate("Couldn't delete that comment"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -204,18 +206,16 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
           id="comments-heading"
           className="text-xs font-medium uppercase tracking-wide text-text-muted"
         >
-          Activity
-        </h3>
+          {translate("Activity")} </h3>
         {resolvedCount > 0 && (
           <span className="ml-auto flex shrink-0 items-center gap-1 text-xs text-text-muted">
             <CheckCircle2 className="size-3.5 shrink-0 text-success-text" aria-hidden />
-            {resolvedCount} resolved
-          </span>
+            {resolvedCount} {translate("resolved")} </span>
         )}
       </div>
 
       <TabList
-        label="Filter the activity feed"
+        label={translate("Filter the activity feed")}
         idPrefix="ticket-feed"
         tabs={tabs}
         value={mode}
@@ -225,8 +225,7 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
       {permalink.target && (
         <div className="flex flex-wrap items-center gap-2 rounded-md border border-accent-border bg-accent-subtle px-3 py-2">
           <p className="min-w-0 flex-1 text-xs text-accent-text">
-            Jumped to the comment this link points at.
-          </p>
+            {translate("Jumped to the comment this link points at.")} </p>
           <Button
             variant="ghost"
             size="sm"
@@ -234,8 +233,7 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
             className="text-accent-text"
             onClick={permalink.clear}
           >
-            Clear highlight
-          </Button>
+            {translate("Clear highlight")} </Button>
         </div>
       )}
 
@@ -243,11 +241,10 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
         <div className="flex flex-wrap items-center gap-3 rounded-md border border-danger-border bg-danger-subtle p-3">
           <AlertCircle className="size-4 shrink-0 text-danger-text" aria-hidden />
           <p className="min-w-0 flex-1 text-base text-danger-text">
-            Couldn&rsquo;t load the history, so only comments are shown. {activity.error}
+            {translate("Couldn’t load the history, so only comments are shown.")} {activity.error}
           </p>
           <Button variant="secondary" size="sm" onClick={activity.retry}>
-            Retry
-          </Button>
+            {translate("Retry")} </Button>
         </div>
       )}
 
@@ -268,29 +265,26 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
         <div className="flex flex-wrap items-center gap-3 rounded-md border border-danger-border bg-danger-subtle p-3">
           <AlertCircle className="size-4 shrink-0 text-danger-text" aria-hidden />
           <p className="min-w-0 flex-1 text-base text-danger-text">
-            Couldn&rsquo;t load the comments. {error}
+            {translate("Couldn’t load the comments.")} {error}
           </p>
           <Button variant="secondary" size="sm" onClick={retry}>
-            Retry
-          </Button>
+            {translate("Retry")} </Button>
         </div>
       ) : timeline.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border-subtle px-4 py-6 text-center">
           {mode === 'history' ? (
             <>
               <History className="mx-auto size-6 text-text-muted" aria-hidden />
-              <p className="mt-2 text-base font-medium text-text">Nothing has changed yet.</p>
+              <p className="mt-2 text-base font-medium text-text">{translate("Nothing has changed yet.")}</p>
               <p className="mt-1 text-base text-text-muted">
-                Edits to this ticket are recorded here, with who made them.
-              </p>
+                {translate("Edits to this ticket are recorded here, with who made them.")} </p>
             </>
           ) : (
             <>
               <MessageSquare className="mx-auto size-6 text-text-muted" aria-hidden />
-              <p className="mt-2 text-base font-medium text-text">No comments yet.</p>
+              <p className="mt-2 text-base font-medium text-text">{translate("No comments yet.")}</p>
               <p className="mt-1 text-base text-text-muted">
-                Ask a question, or leave a note for whoever picks this up.
-              </p>
+                {translate("Ask a question, or leave a note for whoever picks this up.")} </p>
             </>
           )}
         </div>
@@ -335,14 +329,14 @@ export function CommentsSection({ ticketId }: { ticketId: string }) {
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
         loading={deleting}
-        title="Delete this comment?"
+        title={translate("Delete this comment?")}
         message={plainSummary(pendingDelete?.comment.body ?? '', 120)}
         consequence={
           pendingDelete && pendingDelete.replies > 0
-            ? `Its ${pendingDelete.replies} ${pendingDelete.replies === 1 ? 'reply goes' : 'replies go'} with it. This cannot be undone.`
-            : 'This cannot be undone.'
+            ? translate("Its {0} {1} with it. This cannot be undone.", { 0: pendingDelete.replies, 1: pendingDelete.replies === 1 ? 'reply goes' : 'replies go' })
+            : translate("This cannot be undone.")
         }
-        confirmLabel="Delete comment"
+        confirmLabel={translate("Delete comment")}
       />
     </section>
   )
@@ -405,7 +399,7 @@ function Thread({
       setDraft('')
       setReplying(false)
     } catch (err) {
-      setReplyError(err instanceof Error ? err.message : 'The reply was not posted.')
+      setReplyError(err instanceof Error ? err.message : translate("The reply was not posted."))
     } finally {
       setSending(false)
     }
@@ -427,8 +421,7 @@ function Thread({
         >
           <CheckCircle2 className="size-4 shrink-0 text-success-text" aria-hidden />
           <span className="min-w-0 text-xs font-medium text-text">
-            Resolved
-            {thread.comment.resolvedAt
+            {translate("Resolved")} {thread.comment.resolvedAt
               ? ` · ${formatDateTimeRelative(thread.comment.resolvedAt)}`
               : ''}
           </span>
@@ -436,7 +429,7 @@ function Thread({
             <span className="flex min-w-0 items-center gap-1.5 text-xs text-text-muted">
               <span aria-hidden>·</span>
               <Avatar name={rootAuthor} seed={rootAuthorId} size="sm" decorative />
-              <span className="truncate">Opened by {rootAuthor}</span>
+              <span className="truncate">{translate("Opened by")} {rootAuthor}</span>
             </span>
           )}
           <Button
@@ -447,8 +440,8 @@ function Thread({
             onClick={() => setExpanded((open) => !open)}
           >
             {expanded
-              ? 'Hide'
-              : `Show ${replyCount + 1} ${replyCount === 0 ? 'comment' : 'comments'}`}
+              ? translate("Hide")
+              : translate("Show {0} {1}", { 0: replyCount + 1, 1: replyCount === 0 ? translate("comment") : translate("comments") })}
           </Button>
         </div>
       )}
@@ -485,7 +478,7 @@ function Thread({
                   )}
                 >
                   <ChevronDown className="size-3.5 shrink-0" aria-hidden />
-                  Show {hidden} earlier {hidden === 1 ? 'reply' : 'replies'}
+                  {translate("Show {0} earlier {1}", { 0: hidden, 1: hidden === 1 ? translate("reply") : translate("replies") })}
                 </button>
               )}
 
@@ -517,8 +510,8 @@ function Thread({
                       setReplyError(null)
                     }}
                     submitting={sending}
-                    submitLabel="Reply"
-                    placeholder="Write a reply…"
+                    submitLabel={translate("Reply")}
+                    placeholder={translate("Write a reply…")}
                     error={replyError}
                     autoFocus
                     compact
@@ -541,7 +534,7 @@ function Thread({
             >
               <Avatar name={author?.name ?? null} seed={author?.id} size="md" decorative />
               <span className="truncate">
-                {replyCount > 0 ? 'Reply to this thread…' : 'Reply…'}
+                {replyCount > 0 ? translate("Reply to this thread…") : translate("Reply…")}
               </span>
             </button>
           )}

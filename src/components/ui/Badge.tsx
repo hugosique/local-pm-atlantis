@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { TONE_CHIP, type StateIcon, type Tone } from '@/lib/status'
@@ -108,7 +110,7 @@ export function Chip({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={removeLabel ?? `Remove ${typeof children === 'string' ? children : 'item'}`}
+          aria-label={removeLabel ?? translate("Remove {0}", { 0: typeof children === 'string' ? children : 'item' })}
           className="relative -mr-1 inline-flex size-5 shrink-0 items-center justify-center rounded-full transition-colors duration-micro hover:bg-surface-active after:absolute after:size-11 after:content-[''] can-hover:after:hidden"
         >
           <X className="size-3.5" aria-hidden />

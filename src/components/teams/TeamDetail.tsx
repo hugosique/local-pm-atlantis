@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -85,7 +87,7 @@ export function TeamDetail({
     setSavingDescription(true)
     const ok = await patch(
       { description: (draftDescription || null) as Team['description'] },
-      'the description',
+      translate("the description"),
     )
     setSavingDescription(false)
     if (ok) setEditingDescription(false)
@@ -96,13 +98,13 @@ export function TeamDetail({
     try {
       const response = await fetch(`/api/teams/${team.id}`, { method: 'DELETE' })
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
-      toast({ title: `${team.name} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: team.name }), tone: 'info' })
       router.push('/teams')
       router.refresh()
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that team",
+        title: translate("Couldn't delete that team"),
         description: error instanceof Error ? error.message : undefined,
       })
       setDeleting(false)
@@ -112,14 +114,13 @@ export function TeamDetail({
   return (
     <div className="flex h-full flex-col">
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 pt-4 max-md:px-4">
-        <nav aria-label="Breadcrumb">
+        <nav aria-label={translate("Breadcrumb")}>
           <Link
             href="/teams"
             className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
           >
             <ArrowLeft className="size-3.5" aria-hidden />
-            Teams
-          </Link>
+            {translate("Teams")} </Link>
         </nav>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -128,15 +129,15 @@ export function TeamDetail({
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-semibold text-text">
               <InlineEdit
-                label="Team name"
+                label={translate("Team name")}
                 value={team.name}
-                validate={(next) => (next ? null : 'A name is required.')}
-                onCommit={(next) => patch({ name: next }, 'the name')}
+                validate={(next) => (next ? null : translate("A name is required."))}
+                onCommit={(next) => patch({ name: next }, translate("the name"))}
               />
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
               <span className="tabular">
-                {stats.total} assigned {stats.total === 1 ? 'ticket' : 'tickets'}
+                {translate("{0} assigned {1}", { 0: stats.total, 1: stats.total === 1 ? translate("ticket") : translate("tickets") })}
               </span>
               {savingLabel && (
                 <>
@@ -154,22 +155,20 @@ export function TeamDetail({
 
           <div className="flex items-center gap-2">
             <LinkButton variant="secondary" icon={LayoutDashboard} href={`/board?team=${team.id}`}>
-              Board
-            </LinkButton>
+              {translate("Board")} </LinkButton>
             <Button variant="ghost" icon={Trash2} onClick={() => setConfirmDelete(true)}>
-              Delete
-            </Button>
+              {translate("Delete")} </Button>
           </div>
         </div>
 
         <TabList
-          label="Team sections"
+          label={translate("Team sections")}
           idPrefix="team"
           value={tab}
           onChange={selectTab}
           tabs={[
-            { id: 'overview', label: 'Overview', icon: FileText },
-            { id: 'tickets', label: 'Tickets', icon: ListChecks, count: stats.total },
+            { id: 'overview', label: translate("Overview"), icon: FileText },
+            { id: 'tickets', label: translate("Tickets"), icon: ListChecks, count: stats.total },
           ]}
         />
       </header>
@@ -180,8 +179,7 @@ export function TeamDetail({
             <section className="flex min-w-0 flex-col gap-3">
               <div className="flex items-center gap-2">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Description
-                </h2>
+                  {translate("Description")} </h2>
                 <div className="ml-auto flex gap-2">
                   {editingDescription ? (
                     <>
@@ -191,16 +189,14 @@ export function TeamDetail({
                         onClick={() => setEditingDescription(false)}
                         disabled={savingDescription}
                       >
-                        Cancel
-                      </Button>
+                        {translate("Cancel")} </Button>
                       <Button
                         size="sm"
                         variant="primary"
                         loading={savingDescription}
                         onClick={saveDescription}
                       >
-                        Save
-                      </Button>
+                        {translate("Save")} </Button>
                     </>
                   ) : (
                     <Button
@@ -211,8 +207,7 @@ export function TeamDetail({
                         setEditingDescription(true)
                       }}
                     >
-                      Edit
-                    </Button>
+                      {translate("Edit")} </Button>
                   )}
                 </div>
               </div>
@@ -229,9 +224,9 @@ export function TeamDetail({
                   <RichTextEditor
                     value={draftDescription}
                     onChange={setDraftDescription}
-                    placeholder="Responsibilities, areas of ownership…"
+                    placeholder={translate("Responsibilities, areas of ownership…")}
                   />
-                  <p className="mt-2 text-xs text-text-muted">⌘/Ctrl + Enter saves.</p>
+                  <p className="mt-2 text-xs text-text-muted">{translate("⌘/Ctrl + Enter saves.")}</p>
                 </div>
               ) : (
                 <Expandable lines={10}>
@@ -243,12 +238,10 @@ export function TeamDetail({
             <aside className="flex flex-col gap-6">
               <section className="flex flex-col gap-3">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Members
-                </h2>
+                  {translate("Members")} </h2>
                 {members.length === 0 ? (
                   <p className="text-base text-text-muted">
-                    Nobody is on this team yet. Set a person&rsquo;s team to add them.
-                  </p>
+                    {translate("Nobody is on this team yet. Set a person’s team to add them.")} </p>
                 ) : (
                   <ul className="flex flex-col">
                     {members.map((member) => (
@@ -261,7 +254,7 @@ export function TeamDetail({
                           {member.name}
                         </span>
                         {!member.active && (
-                          <span className="shrink-0 text-xs text-text-muted">Inactive</span>
+                          <span className="shrink-0 text-xs text-text-muted">{translate("Inactive")}</span>
                         )}
                       </li>
                     ))}
@@ -271,14 +264,13 @@ export function TeamDetail({
 
               <section className="flex flex-col gap-3">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Workload
-                </h2>
+                  {translate("Workload")} </h2>
                 <dl className="flex flex-col">
                   {(
                     [
-                      ['Todo', stats.todo, StatusType.UNSTARTED],
-                      ['In progress', stats.inProgress, StatusType.STARTED],
-                      ['Done', stats.done, StatusType.COMPLETED],
+                      [translate("Todo"), stats.todo, StatusType.UNSTARTED],
+                      [translate("In progress"), stats.inProgress, StatusType.STARTED],
+                      [translate("Done"), stats.done, StatusType.COMPLETED],
                     ] as const
                   ).map(([label, value, type]) => (
                     <div
@@ -296,11 +288,11 @@ export function TeamDetail({
 
               <dl className="flex flex-col gap-2 border-t border-border-subtle pt-4 text-xs text-text-muted">
                 <div className="flex justify-between gap-2">
-                  <dt>Created</dt>
+                  <dt>{translate("Created")}</dt>
                   <dd className="text-text tabular">{formatDateTimeRelative(team.createdAt)}</dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>Updated</dt>
+                  <dt>{translate("Updated")}</dt>
                   <dd className="text-text tabular">{formatDateTimeRelative(team.updatedAt)}</dd>
                 </div>
               </dl>
@@ -311,10 +303,10 @@ export function TeamDetail({
         <TabPanel id="tickets" idPrefix="team" active={tab === 'tickets'}>
           <TicketsTable
             where={{ team: team.id }}
-            caption={`Tickets assigned to ${team.name}`}
+            caption={translate("Tickets assigned to {0}", { 0: team.name })}
             relationColumn="project"
-            emptyTitle="No tickets assigned"
-            emptyDescription="Assign this team on a ticket and it will show up here."
+            emptyTitle={translate("No tickets assigned")}
+            emptyDescription={translate("Assign this team on a ticket and it will show up here.")}
           />
         </TabPanel>
       </div>
@@ -324,14 +316,14 @@ export function TeamDetail({
         onClose={() => setConfirmDelete(false)}
         onConfirm={deleteTeam}
         loading={deleting}
-        title="Delete this team?"
+        title={translate("Delete this team?")}
         message={`“${team.name}”`}
         consequence={
           stats.total > 0
-            ? `${stats.total} ticket${stats.total === 1 ? '' : 's'} will lose their team. The tickets themselves are kept. This cannot be undone.`
-            : 'This team has no tickets assigned. This cannot be undone.'
+            ? translate("{0} ticket{1} will lose their team. The tickets themselves are kept. This cannot be undone.", { 0: stats.total, 1: stats.total === 1 ? '' : 's' })
+            : translate("This team has no tickets assigned. This cannot be undone.")
         }
-        confirmLabel="Delete team"
+        confirmLabel={translate("Delete team")}
       />
     </div>
   )

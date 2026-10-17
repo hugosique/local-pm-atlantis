@@ -3,6 +3,7 @@ node_modules/
 
 # Next.js
 .next/
+.next-local/
 .next-e2e/
 .next-e2e-*/
 .next-ui/

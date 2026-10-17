@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import {
   CalendarDays,
   CalendarRange,
@@ -82,7 +84,7 @@ export function ActivityGroup({ entries }: { entries: Activity[] }) {
   if (!first) return null
 
   const actor = actorOf(first)
-  const name = actor?.name ?? 'Somebody'
+  const name = actor?.name ?? translate("Somebody")
 
   return (
     <li className="flex min-w-0 gap-3">

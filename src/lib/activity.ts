@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { TICKET_PRIORITY_OPTIONS } from '@/types/enums'
 import { toDay } from '@/lib/dates'
 
@@ -60,29 +61,32 @@ export const TRACKED_FIELDS = [
 export type TrackedField = (typeof TRACKED_FIELDS)[number]
 
 export const FIELD_LABELS: Record<TrackedField, string> = {
-  title: 'Title',
-  status: 'Status',
-  priority: 'Priority',
-  assignee: 'Assignee',
-  project: 'Project',
-  team: 'Team',
-  cycle: 'Cycle',
-  estimate: 'Estimate',
-  startDate: 'Start date',
-  dueDate: 'Due date',
-  description: 'Description',
-  labels: 'Labels',
-  blockedBy: 'Blocked by',
-  subtasks: 'Subtasks',
-  epic: 'Epic',
+  get title() { return translate("Title") },
+  get status() { return translate("Status") },
+  get priority() { return translate("Priority") },
+  get assignee() { return translate("Assignee") },
+  get project() { return translate("Project") },
+  get team() { return translate("Team") },
+  get cycle() { return translate("Cycle") },
+  get estimate() { return translate("Estimate") },
+  get startDate() { return translate("Start date") },
+  get dueDate() { return translate("Due date") },
+  get description() { return translate("Description") },
+  get labels() { return translate("Labels") },
+  get blockedBy() { return translate("Blocked by") },
+  get subtasks() { return translate("Subtasks") },
+  get epic() { return translate("Epic") },
 }
 
 const OPAQUE_FIELDS = new Set<TrackedField>(['description'])
 
 const DAY_FIELDS = new Set<TrackedField>(['startDate', 'dueDate'])
 
-const CHOICE_LABELS: Partial<Record<TrackedField, Record<string, string>>> = {
-  priority: Object.fromEntries(TICKET_PRIORITY_OPTIONS.map((o) => [o.value, o.label])),
+function choiceLabel(field: TrackedField, key: string): string | undefined {
+  if (field === 'priority') {
+    return TICKET_PRIORITY_OPTIONS.find((o) => o.value === key)?.label
+  }
+  return undefined
 }
 
 export function idOf(value: unknown): string | null {
@@ -127,7 +131,7 @@ function subtaskSummary(value: unknown): string | null {
   const done = value.filter(
     (entry) => entry && typeof entry === 'object' && Boolean((entry as { completed?: unknown }).completed),
   ).length
-  return `${done}/${total} done`
+  return translate("{0}/{1} done", { 0: done, 1: total })
 }
 
 function epicLabel(value: unknown): string | null {
@@ -163,10 +167,9 @@ export function displayValue(field: TrackedField, value: unknown): string | null
 
   if (DAY_FIELDS.has(field)) return toDay(value)
 
-  const choices = CHOICE_LABELS[field]
-  if (choices) {
+  if (field === 'priority') {
     const key = typeof value === 'string' ? value : String(value)
-    return choices[key] ?? key
+    return choiceLabel(field, key) ?? key
   }
 
   if (typeof value === 'string') return value.trim() || null
@@ -282,19 +285,19 @@ export function describeEvent(event: {
   from?: string | null
   to?: string | null
 }): string {
-  if (event.action === 'created') return 'created this ticket'
-  if (event.action === 'commented') return 'commented'
-  if (event.action === 'replied') return 'replied in a thread'
-  if (event.action === 'edited') return 'edited a comment'
-  if (event.action === 'resolved') return 'resolved a thread'
-  if (event.action === 'reopened') return 'reopened a thread'
-  if (event.action === 'deleted') return 'deleted a comment'
+  if (event.action === 'created') return translate("created this ticket")
+  if (event.action === 'commented') return translate("Commented").toLowerCase()
+  if (event.action === 'replied') return translate("replied in a thread")
+  if (event.action === 'edited') return translate("edited a comment")
+  if (event.action === 'resolved') return translate("resolved a thread")
+  if (event.action === 'reopened') return translate("reopened a thread")
+  if (event.action === 'deleted') return translate("deleted a comment")
 
-  const label = FIELD_LABELS[event.field as TrackedField] ?? event.field ?? 'a field'
+  const label = FIELD_LABELS[event.field as TrackedField] ?? event.field ?? translate("a field")
 
-  if (event.field === 'description') return 'updated the description'
-  if (!event.from && !event.to) return `updated ${label.toLowerCase()}`
-  if (!event.from) return `set ${label.toLowerCase()} to ${event.to}`
-  if (!event.to) return `cleared ${label.toLowerCase()} (was ${event.from})`
-  return `changed ${label.toLowerCase()} from ${event.from} to ${event.to}`
+  if (event.field === 'description') return translate("updated the description")
+  if (!event.from && !event.to) return translate("updated {0}", { 0: label.toLowerCase() })
+  if (!event.from) return translate("set {0} to {1}", { 0: label.toLowerCase(), 1: event.to })
+  if (!event.to) return translate("cleared {0} (was {1})", { 0: label.toLowerCase(), 1: event.from })
+  return translate("changed {0} from {1} to {2}", { 0: label.toLowerCase(), 1: event.from, 2: event.to })
 }

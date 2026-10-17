@@ -1,6 +1,8 @@
 'use client'
 
-import { createContext, useCallback, useContext, useMemo } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { DEFAULT_LOCALE, LOCALE_CHANGE_EVENT, readLocale, setLocale, type Locale } from '@/i18n'
+import { statusName } from '@/i18n/display'
 import type { Status } from '@/payload-types'
 
 interface WorkflowRegistry {
@@ -12,12 +14,29 @@ interface WorkflowRegistry {
 const WorkflowContext = createContext<WorkflowRegistry | null>(null)
 
 export function WorkflowProvider({
-  statuses,
+  statuses: initialStatuses,
   children,
 }: {
   statuses: Status[]
   children: React.ReactNode
 }) {
+  const [currentLocale, setCurrentLocale] = useState<Locale>(DEFAULT_LOCALE)
+
+  useEffect(() => {
+    const sync = () => {
+      const next = readLocale()
+      setLocale(next)
+      setCurrentLocale(next)
+    }
+    sync()
+    window.addEventListener(LOCALE_CHANGE_EVENT, sync)
+    return () => window.removeEventListener(LOCALE_CHANGE_EVENT, sync)
+  }, [])
+
+  const statuses = useMemo(
+    () => initialStatuses.map((status) => ({ ...status, name: statusName(status) })),
+    [initialStatuses, currentLocale],
+  )
   const globals = useMemo(() => statuses.filter((entry) => !entry.project), [statuses])
 
   const statusesForProject = useCallback(

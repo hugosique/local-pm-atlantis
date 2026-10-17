@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -16,9 +17,9 @@ export async function generateMetadata({ params }: EditTicketPageProps) {
   try {
     const payload = await getPayload({ config })
     const ticket = await payload.findByID({ collection: 'tickets', id, depth: 0 })
-    return { title: `Edit ${ticket.ticketId ?? ticket.title} · local-pm` }
+    return { title: translate("Edit {0} · local-pm", { 0: ticket.ticketId ?? ticket.title }) }
   } catch {
-    return { title: 'Edit ticket · local-pm' }
+    return { title: translate("Edit ticket · local-pm") }
   }
 }
 

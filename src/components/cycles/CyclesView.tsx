@@ -1,5 +1,8 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+import { cycleName } from '@/i18n/display'
+
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -25,9 +28,9 @@ export interface CycleSummary {
 }
 
 const STATE_GROUPS: { state: CycleState; heading: string }[] = [
-  { state: 'active', heading: 'Active' },
-  { state: 'upcoming', heading: 'Upcoming' },
-  { state: 'completed', heading: 'Completed' },
+  { state: 'active', get heading() { return translate("Active") } },
+  { state: 'upcoming', get heading() { return translate("Upcoming") } },
+  { state: 'completed', get heading() { return translate("Completed") } },
 ]
 
 export function CyclesView({
@@ -69,18 +72,18 @@ export function CyclesView({
 
       toast({
         tone: 'success',
-        title: `${closing.name} closed`,
+        title: translate("{0} closed", { 0: cycleName(closing) }),
         description:
           moved > 0
-            ? `${moved} unfinished ${moved === 1 ? 'ticket' : 'tickets'} moved on.`
-            : 'Nothing was left unfinished.',
+            ? translate("{0} unfinished {1} moved on.", { 0: moved, 1: moved === 1 ? translate("ticket") : translate("tickets") })
+            : translate("Nothing was left unfinished."),
       })
       setClosing(null)
       router.refresh()
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't close that cycle",
+        title: translate("Couldn't close that cycle"),
         description: error instanceof Error ? error.message : undefined,
       })
     } finally {
@@ -92,7 +95,7 @@ export function CyclesView({
     <div className="flex h-full flex-col">
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 pt-4 pb-3 max-md:px-4">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="flex-1 text-2xl font-semibold text-text">Cycles</h1>
+          <h1 className="flex-1 text-2xl font-semibold text-text">{translate("Cycles")}</h1>
 
           {project && (
             <LinkButton
@@ -100,14 +103,13 @@ export function CyclesView({
               icon={Settings2}
               href={`/projects/${project.id}?tab=cycles`}
             >
-              Cycle settings
-            </LinkButton>
+              {translate("Cycle settings")} </LinkButton>
           )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <ProjectSelect
-            aria-label="Project"
+            aria-label={translate("Project")}
             value={project?.id ?? ''}
             selected={project}
             onChange={selectProject}
@@ -115,7 +117,7 @@ export function CyclesView({
           />
           {project && (
             <span className="text-xs text-text-muted tabular">
-              {summaries.length} {summaries.length === 1 ? 'cycle' : 'cycles'}
+              {summaries.length} {summaries.length === 1 ? translate("cycle") : translate("cycles")}
             </span>
           )}
         </div>
@@ -126,23 +128,21 @@ export function CyclesView({
           <EmptyState
             kind="no-data"
             icon={Repeat}
-            title="No project runs cycles yet"
-            description="Cycles are time-boxed sprints. Turn them on for a project and its cycles appear here, provisioned ahead of time."
+            title={translate("No project runs cycles yet")}
+            description={translate("Cycles are time-boxed sprints. Turn them on for a project and its cycles appear here, provisioned ahead of time.")}
           >
             <LinkButton variant="primary" href="/projects">
-              Choose a project
-            </LinkButton>
+              {translate("Choose a project")} </LinkButton>
           </EmptyState>
         ) : summaries.length === 0 ? (
           <EmptyState
             kind="no-data"
             icon={Repeat}
-            title={`Cycles are off for ${project.name}`}
-            description="Turn cycles on in the project's cycle settings and the first one starts on the weekday you pick."
+            title={translate("Cycles are off for {0}", { 0: project.name })}
+            description={translate("Turn cycles on in the project's cycle settings and the first one starts on the weekday you pick.")}
           >
             <LinkButton variant="primary" href={`/projects/${project.id}?tab=cycles`}>
-              Open cycle settings
-            </LinkButton>
+              {translate("Open cycle settings")} </LinkButton>
           </EmptyState>
         ) : (
           <div className="flex flex-col gap-8">
@@ -182,10 +182,10 @@ export function CyclesView({
         onClose={() => setClosing(null)}
         onConfirm={closeCycle}
         loading={busy}
-        title="Close this cycle?"
-        message={closing ? `“${closing.name}”` : ''}
-        consequence="Unfinished tickets move on according to this project's rollover setting. The cycle stays readable afterwards."
-        confirmLabel="Close cycle"
+        title={translate("Close this cycle?")}
+        message={closing ? `“${cycleName(closing)}”` : ''}
+        consequence={translate("Unfinished tickets move on according to this project's rollover setting. The cycle stays readable afterwards.")}
+        confirmLabel={translate("Close cycle")}
       />
     </div>
   )
@@ -222,7 +222,7 @@ function CycleRow({
             href={`/cycles/${cycle.id}`}
             className="rounded-sm after:absolute after:inset-0 after:content-[''] hover:underline"
           >
-            {cycle.name}
+            {cycleName(cycle)}
           </Link>
         </h3>
         <Badge tone={meta.tone} icon={meta.icon}>
@@ -237,7 +237,7 @@ function CycleRow({
 
         <span className="ml-auto flex items-center gap-2">
           <span className="text-xs text-text-muted tabular">
-            {progress.total} {progress.total === 1 ? 'ticket' : 'tickets'}
+            {progress.total} {progress.total === 1 ? translate("ticket") : translate("tickets")}
           </span>
           {manual && state === 'active' && (
             <Button
@@ -247,8 +247,7 @@ function CycleRow({
               className="relative z-10"
               onClick={onClose}
             >
-              Close cycle
-            </Button>
+              {translate("Close cycle")} </Button>
           )}
         </span>
       </div>
@@ -256,14 +255,12 @@ function CycleRow({
       {cycle.goal && <p className="text-sm text-text-muted">{cycle.goal}</p>}
 
       {progress.total > 0 && (
-        <CycleProgressBar progress={progress} label={`${cycle.name} progress`} />
+        <CycleProgressBar progress={progress} label={translate("{0} progress", { 0: cycleName(cycle) })} />
       )}
 
       {cycle.completedAt && (cycle.rolledOver ?? 0) > 0 && (
         <p className="text-xs text-text-muted">
-          {cycle.rolledOver} unfinished {cycle.rolledOver === 1 ? 'ticket' : 'tickets'} rolled out of
-          this cycle when it closed.
-        </p>
+          {translate("{0} unfinished {1} rolled out of this cycle when it closed.", { 0: cycle.rolledOver, 1: cycle.rolledOver === 1 ? translate("ticket") : translate("tickets") })} </p>
       )}
     </li>
   )

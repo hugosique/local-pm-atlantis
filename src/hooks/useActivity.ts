@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useState } from 'react'
 import type { Activity } from '@/payload-types'
 
@@ -37,7 +39,7 @@ export function useActivity(ticketId: string): ActivityApi {
         setEntries((data.docs ?? []) as Activity[])
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
       } finally {
         setLoading(false)
       }

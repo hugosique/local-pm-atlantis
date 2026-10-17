@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
 import { LabelColor, LABEL_COLOR_OPTIONS } from '@/types/enums'
@@ -6,10 +7,11 @@ import { slugifyKey } from '@/lib/workflow'
 
 export const Labels: CollectionConfig = {
   slug: 'labels',
+  labels: { singular: translate("Label"), plural: translate("Labels") },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'key', 'color', 'group'],
-    description: 'Shared labels that any ticket in the workspace can carry',
+    description: translate("Shared labels that any ticket in the workspace can carry"),
   },
   access: collectionAccess,
   hooks: {
@@ -42,7 +44,7 @@ export const Labels: CollectionConfig = {
 
         if (clash.docs.length > 0) {
           throw new APIError(
-            `A label with the key "${key}" already exists. Rename the existing one instead of creating a second.`,
+            translate("A label with the key \"{0}\" already exists. Rename the existing one instead of creating a second.", { 0: key }),
             400,
             undefined,
             true,
@@ -83,46 +85,51 @@ export const Labels: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
       required: true,
       admin: {
-        description: 'What the label reads as on a card. One or two words.',
+        description: translate("What the label reads as on a card. One or two words."),
       },
     },
     {
       name: 'key',
+      label: translate("Key"),
       type: 'text',
       required: true,
       index: true,
       admin: {
-        description: 'Stable identifier used by the API and the MCP server. Derived from the name.',
+        description: translate("Stable identifier used by the API and the MCP server. Derived from the name."),
       },
     },
     {
       name: 'color',
+      label: translate("Colour"),
       type: 'select',
       options: LABEL_COLOR_OPTIONS,
       defaultValue: LabelColor.SLATE,
       required: true,
       admin: {
         description:
-          'The swatch shown beside the name. The palette is fixed so colour stays mappable to meaning.',
+          translate("The swatch shown beside the name. The palette is fixed so colour stays mappable to meaning."),
       },
     },
     {
       name: 'group',
+      label: translate("Group"),
       type: 'relationship',
       relationTo: 'label-groups',
       index: true,
       admin: {
-        description: 'Optional. Groups cluster related labels in the picker.',
+        description: translate("Optional. Groups cluster related labels in the picker."),
       },
     },
     {
       name: 'description',
+      label: translate("Description"),
       type: 'text',
       admin: {
-        description: 'Optional hint shown when picking this label',
+        description: translate("Optional hint shown when picking this label"),
       },
     },
   ],

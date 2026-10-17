@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/cn'
 
@@ -8,7 +10,7 @@ export function InlineEdit({
   onCommit,
   label,
   multiline = false,
-  placeholder = 'Empty',
+  placeholder = translate("Empty"),
   validate,
   className,
   inputClassName,
@@ -63,7 +65,7 @@ export function InlineEdit({
       <button
         type="button"
         onClick={() => setEditing(true)}
-        aria-label={`${label}: ${value || placeholder}. Edit`}
+        aria-label={translate("{0}: {1}. Edit", { 0: label, 1: value || placeholder })}
         className={cn(
           'group w-full rounded-sm px-1.5 py-1 text-left',
           '-mx-1.5 cursor-text transition-colors duration-micro',

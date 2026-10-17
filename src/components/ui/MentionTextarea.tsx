@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import {
   forwardRef,
   useCallback,
@@ -186,17 +188,17 @@ export const MentionTextarea = forwardRef<MentionTextareaHandle, MentionTextarea
       }
       if (mod && !event.shiftKey && event.key.toLowerCase() === 'b') {
         event.preventDefault()
-        run((t, s, e) => wrapSelection(t, s, e, '**', '**', 'bold text'))
+        run((t, s, e) => wrapSelection(t, s, e, '**', '**', translate("bold text")))
         return
       }
       if (mod && !event.shiftKey && event.key.toLowerCase() === 'i') {
         event.preventDefault()
-        run((t, s, e) => wrapSelection(t, s, e, '_', '_', 'italic text'))
+        run((t, s, e) => wrapSelection(t, s, e, '_', '_', translate("italic text")))
         return
       }
       if (mod && !event.shiftKey && event.key.toLowerCase() === 'k') {
         event.preventDefault()
-        run((t, s, e) => wrapSelection(t, s, e, '[', '](https://)', 'link text'))
+        run((t, s, e) => wrapSelection(t, s, e, '[', '](https://)', translate("link text")))
       }
     }
 
@@ -236,13 +238,12 @@ export const MentionTextarea = forwardRef<MentionTextareaHandle, MentionTextarea
           >
             {empty ? (
               <p className="px-3 py-2.5 text-base text-text-muted">
-                Nobody matches &ldquo;{mention.query}&rdquo;
-              </p>
+                {translate("Nobody matches “{0}”", { 0: mention.query })} </p>
             ) : (
               <ul
                 id={listboxId}
                 role="listbox"
-                aria-label="People you can mention"
+                aria-label={translate("People you can mention")}
                 className="max-h-60 overflow-y-auto p-1"
               >
                 {suggestions.map((member, index) => {
@@ -282,9 +283,7 @@ export const MentionTextarea = forwardRef<MentionTextareaHandle, MentionTextarea
             )}
 
             <p className="flex items-center gap-1.5 border-t border-border-subtle px-2 py-1.5 text-2xs text-text-muted">
-              <AtSign className="size-3.5 shrink-0" aria-hidden />↑↓ to choose, Enter to insert,
-              Esc to dismiss
-            </p>
+              <AtSign className="size-3.5 shrink-0" aria-hidden />{translate("↑↓ to choose, Enter to insert, Esc to dismiss")} </p>
           </div>
         )}
 
@@ -292,10 +291,10 @@ export const MentionTextarea = forwardRef<MentionTextareaHandle, MentionTextarea
           {mention === null
             ? ''
             : open
-              ? `${suggestions.length} ${suggestions.length === 1 ? 'person' : 'people'} to mention. Use the arrow keys, then Enter to insert.`
+              ? translate("{0} {1} to mention. Use the arrow keys, then Enter to insert.", { 0: suggestions.length, 1: suggestions.length === 1 ? translate("person") : translate("people") })
               : loading
                 ? ''
-                : `No people match ${mention.query}`}
+                : translate("No people match {0}", { 0: mention.query })}
         </span>
       </div>
     )

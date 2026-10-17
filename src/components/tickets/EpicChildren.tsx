@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import Link from 'next/link'
 import { AlertCircle, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -41,11 +43,10 @@ export function EpicChildren({
       <div className="flex flex-wrap items-center gap-3 rounded-md border border-danger-border bg-danger-subtle px-3 py-2">
         <AlertCircle className="size-4 shrink-0 text-danger-text" aria-hidden />
         <p className="min-w-0 flex-1 text-base text-danger-text">
-          Couldn&apos;t load the tickets in this epic. {error}
+          {translate("Couldn't load the tickets in this epic.")} {error}
         </p>
         <Button size="sm" variant="secondary" onClick={onRetry}>
-          Retry
-        </Button>
+          {translate("Retry")} </Button>
       </div>
     )
   }
@@ -87,13 +88,13 @@ export function EpicChildren({
                 {child.title}
               </Link>
               <TicketStatusBadge status={child.status} />
-              <Tooltip content="Remove from this epic" side="top">
+              <Tooltip content={translate("Remove from this epic")} side="top">
                 <Button
                   variant="ghost"
                   size="sm"
                   iconOnly
                   icon={X}
-                  aria-label={`Remove ${child.ticketId ?? child.title} from this epic`}
+                  aria-label={translate("Remove {0} from this epic", { 0: child.ticketId ?? child.title })}
                   onClick={() => onRemove(child)}
                   className={cn(
                     'text-text-muted',
@@ -109,18 +110,17 @@ export function EpicChildren({
 
       {tickets.length === 0 && (
         <p className="text-base text-text-muted">
-          Nothing rolls up into this epic yet. Add a ticket from the same project below.
-        </p>
+          {translate("Nothing rolls up into this epic yet. Add a ticket from the same project below.")} </p>
       )}
 
-      <Field label="Add a ticket to this epic" optional>
+      <Field label={translate("Add a ticket to this epic")} optional>
         {({ id }) => (
           <TicketSelect
             id={id}
             value=""
             selected={null}
-            aria-label="Add a ticket to this epic"
-            placeholder="Search for a ticket…"
+            aria-label={translate("Add a ticket to this epic")}
+            placeholder={translate("Search for a ticket…")}
             where={{ project: projectId, isEpic: 'false' }}
             onChange={(next) => {
               if (!next || next === epicId) return

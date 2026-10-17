@@ -95,7 +95,10 @@ export function lastDefined<T>(values: (T | null | undefined)[]): { index: numbe
   return null
 }
 
+import { getLocale } from '@/i18n'
+
 export function formatAxisValue(value: number): string {
-  if (Number.isInteger(value)) return value.toLocaleString()
-  return (Math.round(value * 10) / 10).toLocaleString()
+  const current = getLocale()
+  const rounded = Number.isInteger(value) ? value : Math.round(value * 10) / 10
+  return current === 'pt-BR' ? rounded.toLocaleString('pt-BR') : rounded.toLocaleString()
 }

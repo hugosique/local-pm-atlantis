@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { ChevronDown, ChevronsLeftRight, Plus } from 'lucide-react'
@@ -69,13 +71,13 @@ export function KanbanColumn({
   if (collapsed) {
     return (
       <div className="flex w-12 shrink-0 snap-start flex-col items-center gap-3 rounded-md border border-border-subtle bg-bg-subtle py-3">
-        <Tooltip content={`Expand ${meta.label}`}>
+        <Tooltip content={translate("Expand {0}", { 0: meta.label })}>
           <Button
             variant="ghost"
             size="sm"
             iconOnly
             icon={ChevronsLeftRight}
-            aria-label={`Expand ${meta.label} column`}
+            aria-label={translate("Expand {0} column", { 0: meta.label })}
             onClick={onToggleCollapsed}
           />
         </Tooltip>
@@ -92,7 +94,7 @@ export function KanbanColumn({
 
   return (
     <section
-      aria-label={`${meta.label} column`}
+      aria-label={translate("{0} column", { 0: meta.label })}
       className="flex w-72 min-w-72 flex-1 snap-start flex-col rounded-md border border-border-subtle bg-bg max-md:w-full max-md:min-w-full"
     >
       <header className="sticky top-0 z-10 flex h-10 flex-none items-center gap-2 rounded-t-md border-b border-border-subtle bg-bg-subtle px-3">
@@ -111,23 +113,23 @@ export function KanbanColumn({
         <CountBadge value={pagination.totalDocs} />
 
         <div className="ml-auto flex items-center gap-0.5">
-          <Tooltip content={`Add a ticket to ${meta.label}`}>
+          <Tooltip content={translate("Add a ticket to {0}", { 0: meta.label })}>
             <Button
               variant="ghost"
               size="xs"
               iconOnly
               icon={Plus}
-              aria-label={`Add a ticket to ${meta.label}`}
+              aria-label={translate("Add a ticket to {0}", { 0: meta.label })}
               onClick={onAddCard}
             />
           </Tooltip>
-          <Tooltip content="Collapse column">
+          <Tooltip content={translate("Collapse column")}>
             <Button
               variant="ghost"
               size="xs"
               iconOnly
               icon={ChevronsLeftRight}
-              aria-label={`Collapse ${meta.label} column`}
+              aria-label={translate("Collapse {0} column", { 0: meta.label })}
               onClick={onToggleCollapsed}
             />
           </Tooltip>
@@ -166,12 +168,12 @@ export function KanbanColumn({
         {!isRefreshing && tickets.length === 0 && (
           <p className="flex flex-1 items-center justify-center rounded-md border border-dashed border-border-subtle px-3 py-8 text-center text-base text-text-muted">
             {type === 'UNSTARTED' || type === 'BACKLOG'
-              ? 'A clear next step starts here. Add a ticket to get going.'
+              ? translate("A clear next step starts here. Add a ticket to get going.")
               : type === 'STARTED'
-                ? 'Ready when you are. Move a ticket here when you start.'
+                ? translate("Ready when you are. Move a ticket here when you start.")
                 : type === 'COMPLETED'
-                  ? 'Finished work belongs here. Make your progress visible.'
-                  : 'Nothing here yet. Move a ticket here when it belongs in ' + meta.label + '.'}
+                  ? translate("Finished work belongs here. Make your progress visible.")
+                  : translate("Nothing here yet. Move a ticket here when it belongs in {0}.", { 0: meta.label })}
           </p>
         )}
 
@@ -186,8 +188,8 @@ export function KanbanColumn({
             className="mt-1"
           >
             {isLoadingMore
-              ? 'Loading…'
-              : `Load more (${pagination.loadedCount} of ${pagination.totalDocs})`}
+              ? translate("Loading…")
+              : translate("Load more ({0} of {1})", { 0: pagination.loadedCount, 1: pagination.totalDocs })}
           </Button>
         )}
       </div>

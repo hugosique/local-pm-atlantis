@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
 import { sanitizeHtml } from '@/lib/sanitize'
@@ -45,7 +47,7 @@ const formats = [
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = 'Write something...',
+  placeholder = translate("Write something..."),
   readOnly = false,
 }: RichTextEditorProps) {
   const editorModules = useMemo(() => (readOnly ? { toolbar: false } : modules), [readOnly])
@@ -80,7 +82,7 @@ export function RichTextDisplay({
   )
 
   if (!content || content === '<p><br></p>' || !sanitized.trim()) {
-    return <p className="text-base text-text-muted">No description yet.</p>
+    return <p className="text-base text-text-muted">{translate("No description yet.")}</p>
   }
 
   return (

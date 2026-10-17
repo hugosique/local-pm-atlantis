@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import Link from 'next/link'
 import { ExternalLink, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -13,14 +15,14 @@ import { ProjectStatusBadge } from '@/components/ui/StateIndicator'
 import type { Project } from '@/payload-types'
 
 function describeProject(rollup: ProjectRollup | undefined): string {
-  if (!rollup) return 'Progress unavailable'
-  if (rollup.total === 0) return 'No tickets yet'
+  if (!rollup) return translate("Progress unavailable")
+  if (rollup.total === 0) return translate("No tickets yet")
 
   const counted = rollup.total - rollup.cancelled
-  if (counted === 0) return `${rollup.cancelled} cancelled`
+  if (counted === 0) return translate("{0} cancelled", { 0: rollup.cancelled })
 
-  const parts = [`${rollup.done} of ${counted} done`]
-  if (rollup.started > 0) parts.push(`${rollup.started} in progress`)
+  const parts = [translate("{0} of {1} done", { 0: rollup.done, 1: counted })]
+  if (rollup.started > 0) parts.push(translate("{0} in progress", { 0: rollup.started }))
   return parts.join(', ')
 }
 
@@ -41,14 +43,14 @@ export function InitiativeProjects({
 
   return (
     <div className="flex flex-col gap-4">
-      <Field label="Add a project" hint="A project can belong to more than one initiative.">
+      <Field label={translate("Add a project")} hint={translate("A project can belong to more than one initiative.")}>
         {({ id, describedBy }) => (
           <ProjectSelect
             id={id}
             value=""
             disabled={busy}
             aria-describedby={describedBy}
-            placeholder="Search projects to add"
+            placeholder={translate("Search projects to add")}
             className="w-full max-w-96"
             onChange={(value, project) => {
               if (value) onAdd(value, project)
@@ -60,8 +62,8 @@ export function InitiativeProjects({
       {projects.length === 0 ? (
         <EmptyState
           kind="no-data"
-          title="No projects in this initiative"
-          description="Add the projects this objective depends on. Their tickets roll up into the progress above."
+          title={translate("No projects in this initiative")}
+          description={translate("Add the projects this objective depends on. Their tickets roll up into the progress above.")}
         />
       ) : (
         <ul className="flex flex-col gap-2">
@@ -103,7 +105,7 @@ export function InitiativeProjects({
                     iconOnly
                     icon={X}
                     disabled={busy}
-                    aria-label={`Remove ${project.name} from this initiative`}
+                    aria-label={translate("Remove {0} from this initiative", { 0: project.name })}
                     onClick={() => onRemove(project)}
                     className={cn(
                       'shrink-0',
@@ -119,7 +121,7 @@ export function InitiativeProjects({
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuetext={summary}
-                  aria-label={`${project.name} progress`}
+                  aria-label={translate("{0} progress", { 0: project.name })}
                   className="h-1.5 overflow-hidden rounded-full bg-surface-hover"
                 >
                   <div
@@ -144,8 +146,7 @@ export function InitiativeProjects({
             href="/projects"
             className="inline-flex items-center gap-1 rounded-sm text-accent-text hover:underline"
           >
-            Browse all projects
-            <ExternalLink className="size-3.5" aria-hidden />
+            {translate("Browse all projects")} <ExternalLink className="size-3.5" aria-hidden />
           </Link>
         </p>
       )}

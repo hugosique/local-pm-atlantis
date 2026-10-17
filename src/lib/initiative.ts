@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { Initiative, Project } from '@/payload-types'
 
 export interface ProjectRollup {
@@ -65,12 +66,12 @@ export function projectPercent(project: ProjectRollup): number {
 }
 
 export function describeInitiativeRollup(rollup: InitiativeRollup): string {
-  if (rollup.projects === 0) return 'No projects in this initiative yet'
-  if (rollup.total === 0) return 'No tickets in these projects yet'
+  if (rollup.projects === 0) return translate("No projects in this initiative yet")
+  if (rollup.total === 0) return translate("No tickets in these projects yet")
 
-  const parts = [`${rollup.done} of ${rollup.counted} done`]
-  if (rollup.started > 0) parts.push(`${rollup.started} in progress`)
-  if (rollup.cancelled > 0) parts.push(`${rollup.cancelled} cancelled`)
+  const parts = [translate("{0} of {1} done", { 0: rollup.done, 1: rollup.counted })]
+  if (rollup.started > 0) parts.push(translate("{0} in progress", { 0: rollup.started }))
+  if (rollup.cancelled > 0) parts.push(translate("{0} cancelled", { 0: rollup.cancelled }))
   return parts.join(', ')
 }
 

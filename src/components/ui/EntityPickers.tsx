@@ -1,5 +1,8 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+import { cycleName } from '@/i18n/display'
+
 import { useCallback } from 'react'
 import { FolderKanban, Repeat, Users } from 'lucide-react'
 import { EntitySelect, type EntityOption } from './EntitySelect'
@@ -12,30 +15,30 @@ import type { Cycle, Member, Project, Team, Ticket } from '@/payload-types'
 const PROJECT_SORTS = [
   { value: 'name', label: 'A–Z' },
   { value: '-name', label: 'Z–A' },
-  { value: '-createdAt', label: 'Newest' },
+  { value: '-createdAt', get label() { return translate("Newest") } },
 ]
 
 const TEAM_SORTS = [
   { value: 'name', label: 'A–Z' },
   { value: '-name', label: 'Z–A' },
-  { value: '-createdAt', label: 'Newest' },
+  { value: '-createdAt', get label() { return translate("Newest") } },
 ]
 
 const MEMBER_SORTS = [
   { value: 'name', label: 'A–Z' },
   { value: '-name', label: 'Z–A' },
-  { value: '-createdAt', label: 'Newest' },
+  { value: '-createdAt', get label() { return translate("Newest") } },
 ]
 
 const TICKET_SORTS = [
-  { value: '-createdAt', label: 'Newest' },
+  { value: '-createdAt', get label() { return translate("Newest") } },
   { value: 'title', label: 'A–Z' },
-  { value: 'ticketId', label: 'Key' },
+  { value: 'ticketId', get label() { return translate("Key") } },
 ]
 
 const CYCLE_SORTS = [
-  { value: '-number', label: 'Latest' },
-  { value: 'number', label: 'Earliest' },
+  { value: '-number', get label() { return translate("Latest") } },
+  { value: 'number', get label() { return translate("Earliest") } },
 ]
 
 export function projectOption(project: Project): EntityOption {
@@ -62,7 +65,7 @@ export function memberOption(member: Member): EntityOption {
 
 export const NO_ASSIGNEE_OPTION: EntityOption = {
   value: '',
-  label: 'No assignee',
+  get label() { return translate("No assignee") },
   avatar: { name: null },
 }
 
@@ -81,7 +84,7 @@ export function cycleOption(cycle: Cycle): EntityOption {
   const meta = CYCLE_STATE_META[cycleState(cycle)]
   return {
     value: cycle.id,
-    label: cycle.name,
+    label: cycleName(cycle),
     hint: formatDateRange(cycle.startsAt, cycle.endsAt),
     icon: meta.icon,
     tone: meta.tone,
@@ -90,7 +93,7 @@ export function cycleOption(cycle: Cycle): EntityOption {
 
 export const NO_CYCLE_OPTION: EntityOption = {
   value: '',
-  label: 'No cycle',
+  get label() { return translate("No cycle") },
   icon: Repeat,
 }
 
@@ -126,8 +129,8 @@ export function ProjectSelect({
       onChange={onChange}
       selectedOption={selected !== undefined ? (selected ? projectOption(selected) : null) : undefined}
       emptyOption={allLabel ? { value: '', label: allLabel, icon: FolderKanban } : undefined}
-      searchPlaceholder="Search projects"
-      placeholder={props.placeholder ?? 'Select a project'}
+      searchPlaceholder={translate("Search projects")}
+      placeholder={props.placeholder ?? translate("Select a project")}
       {...props}
     />
   )
@@ -153,8 +156,8 @@ export function TeamSelect({
       onChange={onChange}
       selectedOption={selected !== undefined ? (selected ? teamOption(selected) : null) : undefined}
       emptyOption={allLabel ? { value: '', label: allLabel, icon: Users } : undefined}
-      searchPlaceholder="Search teams"
-      placeholder={props.placeholder ?? 'No team'}
+      searchPlaceholder={translate("Search teams")}
+      placeholder={props.placeholder ?? translate("No team")}
       {...props}
     />
   )
@@ -181,8 +184,8 @@ export function MemberSelect({
       selectedOption={selected !== undefined ? (selected ? memberOption(selected) : null) : undefined}
       emptyOption={allLabel ? { ...NO_ASSIGNEE_OPTION, label: allLabel } : NO_ASSIGNEE_OPTION}
       where={{ active: 'true' }}
-      searchPlaceholder="Search people"
-      placeholder={props.placeholder ?? 'No assignee'}
+      searchPlaceholder={translate("Search people")}
+      placeholder={props.placeholder ?? translate("No assignee")}
       {...props}
     />
   )
@@ -211,8 +214,8 @@ export function CycleSelect({
       selectedOption={selected !== undefined ? (selected ? cycleOption(selected) : null) : undefined}
       emptyOption={allLabel ? { ...NO_CYCLE_OPTION, label: allLabel } : NO_CYCLE_OPTION}
       where={where}
-      searchPlaceholder="Search cycles"
-      placeholder={props.placeholder ?? 'No cycle'}
+      searchPlaceholder={translate("Search cycles")}
+      placeholder={props.placeholder ?? translate("No cycle")}
       {...props}
     />
   )
@@ -238,8 +241,8 @@ export function TicketSelect({
       onChange={onChange}
       selectedOption={selected !== undefined ? (selected ? ticketOption(selected) : null) : undefined}
       where={where}
-      searchPlaceholder="Search tickets"
-      placeholder={props.placeholder ?? 'Select a ticket'}
+      searchPlaceholder={translate("Search tickets")}
+      placeholder={props.placeholder ?? translate("Select a ticket")}
       {...props}
     />
   )

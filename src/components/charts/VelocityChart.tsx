@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useMemo, useState } from 'react'
 import { cn } from '@/lib/cn'
 import type { VelocitySummary } from '@/lib/burndown'
@@ -24,9 +26,9 @@ const MIN_WIDTH = 280
 const BAR_GAP = 2
 
 const SERIES: SeriesKey[] = [
-  { id: 'committed', label: 'Committed', mark: 'bar', className: 'bg-neutral' },
-  { id: 'completed', label: 'Completed', mark: 'bar', className: 'bg-accent' },
-  { id: 'average', label: 'Average completed', mark: 'dashed', className: 'stroke-border-strong' },
+  { id: 'committed', get label() { return translate("Committed") }, mark: 'bar', className: 'bg-neutral' },
+  { id: 'completed', get label() { return translate("Completed") }, mark: 'bar', className: 'bg-accent' },
+  { id: 'average', get label() { return translate("Average completed") }, mark: 'dashed', className: 'stroke-border-strong' },
 ]
 
 export function VelocityChart({ velocity }: { velocity: VelocitySummary }) {
@@ -52,27 +54,25 @@ export function VelocityChart({ velocity }: { velocity: VelocitySummary }) {
 
   const summary =
     entries.length === 0
-      ? 'Velocity. No cycles have been closed yet.'
-      : `Velocity over the last ${entries.length} closed ${
-          entries.length === 1 ? 'cycle' : 'cycles'
-        }. ${velocity.average} ${unitNoun(unit, velocity.average)} completed on average.`
+      ? translate("Velocity. No cycles have been closed yet.")
+      : translate("Velocity over the last {0} closed {1}. {2} {3} completed on average.", { 0: entries.length, 1: entries.length === 1 ? translate("cycle") : translate("cycles"), 2: velocity.average, 3: unitNoun(unit, velocity.average) })
 
   return (
     <ChartFrame
-      title="Velocity"
+      title={translate("Velocity")}
       description={
         velocity.deliveryRate === null
-          ? 'What each closed cycle committed to, against what it finished.'
-          : `${velocity.deliveryRate}% of committed work finished across these cycles.`
+          ? translate("What each closed cycle committed to, against what it finished.")
+          : translate("{0}% of committed work finished across these cycles.", { 0: velocity.deliveryRate })
       }
       series={SERIES}
       table={
-        <Table caption="Committed and completed work per closed cycle">
+        <Table caption={translate("Committed and completed work per closed cycle")}>
           <thead>
             <Tr>
-              <Th>Cycle</Th>
-              <Th align="right">Committed</Th>
-              <Th align="right">Completed</Th>
+              <Th>{translate("Cycle")}</Th>
+              <Th align="right">{translate("Committed")}</Th>
+              <Th align="right">{translate("Completed")}</Th>
             </Tr>
           </thead>
           <tbody>
@@ -88,7 +88,7 @@ export function VelocityChart({ velocity }: { velocity: VelocitySummary }) {
       }
     >
       {entries.length === 0 ? (
-        <ChartEmpty message="Velocity appears once a cycle has been closed." />
+        <ChartEmpty message={translate("Velocity appears once a cycle has been closed.")} />
       ) : (
         <div ref={ref} className="relative">
           <svg
@@ -249,8 +249,8 @@ function CycleReadout({
     >
       <p className="text-xs font-medium text-text">{entry.name}</p>
       <dl className="mt-1 flex flex-col gap-0.5">
-        <Row label="Committed" value={entry.committed} unit={unit} series={SERIES[0]} />
-        <Row label="Completed" value={entry.completed} unit={unit} series={SERIES[1]} />
+        <Row label={translate("Committed")} value={entry.committed} unit={unit} series={SERIES[0]} />
+        <Row label={translate("Completed")} value={entry.completed} unit={unit} series={SERIES[1]} />
       </dl>
     </div>
   )

@@ -1,3 +1,5 @@
+import { t as translate } from '@/i18n'
+import { statusName } from '@/i18n/display'
 import {
   Ban,
   Check,
@@ -76,7 +78,7 @@ export function isOpenStatusType(type: string | null | undefined): boolean {
 
 export const FALLBACK_STATUS_META: StateMeta = {
   value: 'todo',
-  label: 'Todo',
+  get label() { return translate("Todo") },
   icon: Circle,
   tone: 'neutral',
 }
@@ -84,7 +86,7 @@ export const FALLBACK_STATUS_META: StateMeta = {
 export function statusMeta(status: Status | string | null | undefined): StateMeta {
   if (!status || typeof status === 'string') return FALLBACK_STATUS_META
   const { icon, tone } = statusTypeMeta(status.type)
-  return { value: status.key, label: status.name, icon, tone }
+  return { value: status.key, label: statusName(status), icon, tone }
 }
 
 export function isClosedStatus(status: Status | string | null | undefined): boolean {
@@ -97,7 +99,7 @@ export function statusOptions(statuses: Status[]): StateSelectOption[] {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map((status) => {
       const { icon, tone } = statusTypeMeta(status.type)
-      return { value: status.id, label: status.name, icon, tone }
+      return { value: status.id, label: statusName(status), icon, tone }
     })
 }
 
@@ -108,35 +110,35 @@ export interface PriorityMeta extends StateMeta {
 export const TICKET_PRIORITY_META: Record<TicketPriority, PriorityMeta> = {
   [TicketPriority.URGENT]: {
     value: TicketPriority.URGENT,
-    label: 'Urgent',
+    get label() { return translate("Urgent") },
     rank: 4,
     icon: PriorityUrgent,
     tone: 'danger',
   },
   [TicketPriority.HIGH]: {
     value: TicketPriority.HIGH,
-    label: 'High',
+    get label() { return translate("High") },
     rank: 3,
     icon: PriorityHigh,
     tone: 'warning',
   },
   [TicketPriority.MEDIUM]: {
     value: TicketPriority.MEDIUM,
-    label: 'Medium',
+    get label() { return translate("Medium") },
     rank: 2,
     icon: PriorityMedium,
     tone: 'info',
   },
   [TicketPriority.LOW]: {
     value: TicketPriority.LOW,
-    label: 'Low',
+    get label() { return translate("Low") },
     rank: 1,
     icon: PriorityLow,
     tone: 'neutral',
   },
   [TicketPriority.NO_PRIORITY]: {
     value: TicketPriority.NO_PRIORITY,
-    label: 'No priority',
+    get label() { return translate("No priority") },
     rank: 0,
     icon: PriorityNone,
     tone: 'neutral',
@@ -153,25 +155,25 @@ export function ticketPriorityMeta(priority: string | null | undefined): Priorit
 export const PROJECT_STATUS_META: Record<ProjectStatus, StateMeta> = {
   [ProjectStatus.ACTIVE]: {
     value: ProjectStatus.ACTIVE,
-    label: 'Active',
+    get label() { return translate("Active") },
     icon: CircleDot,
     tone: 'success',
   },
   [ProjectStatus.ON_HOLD]: {
     value: ProjectStatus.ON_HOLD,
-    label: 'On Hold',
+    get label() { return translate("On Hold") },
     icon: PauseCircle,
     tone: 'warning',
   },
   [ProjectStatus.COMPLETED]: {
     value: ProjectStatus.COMPLETED,
-    label: 'Completed',
+    get label() { return translate("Completed") },
     icon: Check,
     tone: 'info',
   },
   [ProjectStatus.CANCELLED]: {
     value: ProjectStatus.CANCELLED,
-    label: 'Cancelled',
+    get label() { return translate("Cancelled") },
     icon: XCircle,
     tone: 'neutral',
   },
@@ -184,25 +186,25 @@ export function projectStatusMeta(status: string | null | undefined): StateMeta 
 export const INITIATIVE_STATUS_META: Record<InitiativeStatus, StateMeta> = {
   [InitiativeStatus.PLANNED]: {
     value: InitiativeStatus.PLANNED,
-    label: 'Planned',
+    get label() { return translate("Planned") },
     icon: CircleDashed,
     tone: 'neutral',
   },
   [InitiativeStatus.ACTIVE]: {
     value: InitiativeStatus.ACTIVE,
-    label: 'Active',
+    get label() { return translate("Active") },
     icon: CircleDot,
     tone: 'success',
   },
   [InitiativeStatus.COMPLETED]: {
     value: InitiativeStatus.COMPLETED,
-    label: 'Completed',
+    get label() { return translate("Completed") },
     icon: Check,
     tone: 'info',
   },
   [InitiativeStatus.CANCELLED]: {
     value: InitiativeStatus.CANCELLED,
-    label: 'Cancelled',
+    get label() { return translate("Cancelled") },
     icon: XCircle,
     tone: 'neutral',
   },
@@ -217,7 +219,7 @@ export function initiativeStatusMeta(status: string | null | undefined): StateMe
 
 export const BLOCKED_META: StateMeta = {
   value: 'BLOCKED',
-  label: 'Blocked',
+  get label() { return translate("Blocked") },
   icon: Ban,
   tone: 'warning',
 }

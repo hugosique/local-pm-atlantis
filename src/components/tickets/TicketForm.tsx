@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -67,8 +69,8 @@ const FIELD_TARGETS: Record<FieldName, string> = {
 }
 
 const MESSAGES = {
-  title: 'Enter a title for this ticket.',
-  projectId: 'Choose the project this ticket belongs to.',
+  get title() { return translate("Enter a title for this ticket.") },
+  get projectId() { return translate("Choose the project this ticket belongs to.") },
 }
 
 function emptyForm(projectId: string, status: string): FormState {
@@ -290,20 +292,20 @@ export function TicketForm({
 
       if (!response.ok) {
         const payload = await response.json().catch(() => null)
-        throw new Error(payload?.errors?.[0]?.message || `Saving failed (${response.status}).`)
+        throw new Error(payload?.errors?.[0]?.message || translate("Saving failed ({0}).", { 0: response.status }))
       }
 
       const saved = ((await response.json()).doc ?? {}) as Ticket
       draft.clear()
       toast({
         tone: 'success',
-        title: ticket ? 'Changes saved' : `${saved.ticketId ?? 'Ticket'} created`,
+        title: ticket ? translate("Changes saved") : translate("{0} created", { 0: saved.ticketId ?? translate("Ticket") }),
       })
       leave(returnTo ?? `/tickets/${saved.id ?? ticket?.id}`)
     } catch (error) {
       setSubmitting(false)
       setFormError(
-        error instanceof Error ? error.message : 'Something went wrong saving this ticket.',
+        error instanceof Error ? error.message : translate("Something went wrong saving this ticket."),
       )
       requestAnimationFrame(() => summaryRef.current?.focus())
     }
@@ -332,7 +334,7 @@ export function TicketForm({
         <header className="sticky top-0 z-20 border-b border-border-subtle bg-bg">
           <div className="mx-auto flex max-w-[960px] flex-wrap items-center gap-3 px-6 py-4 max-md:px-4">
             <div className="min-w-0 flex-1">
-              <nav aria-label="Breadcrumb">
+              <nav aria-label={translate("Breadcrumb")}>
                 <Link
                   href={cancelHref}
                   onClick={(event) => {
@@ -344,19 +346,19 @@ export function TicketForm({
                   className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
                 >
                   <ArrowLeft className="size-3.5" aria-hidden />
-                  {ticket ? (ticket.ticketId ?? 'Back') : 'Back'}
+                  {ticket ? (ticket.ticketId ?? translate("Back")) : translate("Back")}
                 </Link>
               </nav>
               <h1 className="mt-1 text-xl font-semibold text-text">
-                {ticket ? 'Edit ticket' : 'New ticket'}
+                {ticket ? translate("Edit ticket") : translate("New ticket")}
               </h1>
               {!ticket && (
                 <p className="mt-1 text-xs text-text-muted">
                   {draft.unavailable
-                    ? 'Draft storage unavailable. Keep this tab open until you save.'
+                    ? translate("Draft storage unavailable. Keep this tab open until you save.")
                     : draft.saved
-                      ? 'Draft saved in this tab'
-                      : 'Start with a title and project. Add the details as you go.'}
+                      ? translate("Draft saved in this tab")
+                      : translate("Start with a title and project. Add the details as you go.")}
                 </p>
               )}
             </div>
@@ -367,8 +369,7 @@ export function TicketForm({
                 disabled={submitting}
                 onClick={() => (dirty ? setConfirmDiscard(true) : leave(cancelHref))}
               >
-                Cancel
-              </Button>
+                {translate("Cancel")} </Button>
               <Button
                 type="submit"
                 form="ticket-form"
@@ -376,7 +377,7 @@ export function TicketForm({
                 loading={submitting}
                 shortcut="mod+enter"
               >
-                {ticket ? 'Save changes' : 'Create ticket'}
+                {ticket ? translate("Save changes") : translate("Create ticket")}
               </Button>
             </div>
           </div>
@@ -386,10 +387,9 @@ export function TicketForm({
           {draft.recovered && (
             <div className="flex flex-wrap items-center gap-3 rounded-lg border border-accent-border bg-accent-subtle p-4">
               <div className="min-w-0 flex-1">
-                <p className="font-medium">Pick up where you left off</p>
+                <p className="font-medium">{translate("Pick up where you left off")}</p>
                 <p className="text-sm text-text-muted">
-                  An unfinished ticket is saved in this tab.
-                </p>
+                  {translate("An unfinished ticket is saved in this tab.")} </p>
               </div>
               <Button
                 onClick={() => {
@@ -402,11 +402,9 @@ export function TicketForm({
                   }
                 }}
               >
-                Restore draft
-              </Button>
+                {translate("Restore draft")} </Button>
               <Button variant="ghost" onClick={draft.dismiss}>
-                Discard draft
-              </Button>
+                {translate("Discard draft")} </Button>
             </div>
           )}
           {(submitAttempted && errors.length > 0) || formError ? (
@@ -426,10 +424,10 @@ export function TicketForm({
 
           <Field
             id="ticket-form-title"
-            label="Title"
+            label={translate("Title")}
             required
             error={errorFor('title')}
-            hint="A short, specific title makes the next step clear."
+            hint={translate("A short, specific title makes the next step clear.")}
           >
             {({ describedBy, invalid }) => (
               <Input
@@ -442,25 +440,25 @@ export function TicketForm({
                 aria-describedby={describedBy}
                 aria-required
                 autoComplete="off"
-                placeholder="e.g. Add a welcome screen for new users"
+                placeholder={translate("e.g. Add a welcome screen for new users")}
               />
             )}
           </Field>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-muted">Description</span>
+            <span className="text-xs font-medium text-text-muted">{translate("Description")}</span>
             <div>
               <RichTextEditor
                 value={form.description}
                 onChange={(value) => set('description', value)}
-                placeholder="What needs to happen?"
+                placeholder={translate("What needs to happen?")}
               />
             </div>
-            <p className="text-xs text-text-muted">⌘/Ctrl + Enter saves.</p>
+            <p className="text-xs text-text-muted">{translate("⌘/Ctrl + Enter saves.")}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-            <Field id="ticket-form-project" label="Project" required error={errorFor('projectId')}>
+            <Field id="ticket-form-project" label={translate("Project")} required error={errorFor('projectId')}>
               {({ describedBy, invalid }) => (
                 <ProjectSelect
                   id="ticket-form-project"
@@ -468,7 +466,7 @@ export function TicketForm({
                   selected={selectedProject}
                   invalid={invalid}
                   required
-                  aria-label="Project"
+                  aria-label={translate("Project")}
                   aria-describedby={describedBy}
                   onChange={(next, doc) => {
                     const nextWorkflow = statusesForProject(next)
@@ -486,14 +484,14 @@ export function TicketForm({
               )}
             </Field>
 
-            <Field label="Team" optional>
+            <Field label={translate("Team")} optional>
               {({ id }) => (
                 <TeamSelect
                   id={id}
                   value={form.teamId}
                   selected={selectedTeam}
-                  allLabel="No team"
-                  aria-label="Team"
+                  allLabel={translate("No team")}
+                  aria-label={translate("Team")}
                   onChange={(next, doc) => {
                     set('teamId', next)
                     setSelectedTeam(doc)
@@ -502,13 +500,13 @@ export function TicketForm({
               )}
             </Field>
 
-            <Field label="Assignee" optional>
+            <Field label={translate("Assignee")} optional>
               {({ id }) => (
                 <MemberSelect
                   id={id}
                   value={form.assigneeId}
                   selected={selectedAssignee}
-                  aria-label="Assignee"
+                  aria-label={translate("Assignee")}
                   onChange={(next, doc) => {
                     set('assigneeId', next)
                     setSelectedAssignee(doc)
@@ -518,13 +516,13 @@ export function TicketForm({
             </Field>
 
             {estimates.enabled && (
-              <Field label="Estimate" optional>
+              <Field label={translate("Estimate")} optional>
                 {({ id }) => (
                   <EstimateSelect
                     id={id}
                     value={form.estimate}
                     settings={estimates}
-                    aria-label="Estimate"
+                    aria-label={translate("Estimate")}
                     onChange={(next) => set('estimate', next)}
                   />
                 )}
@@ -532,14 +530,14 @@ export function TicketForm({
             )}
 
             {form.projectId && (
-              <Field label="Cycle" optional>
+              <Field label={translate("Cycle")} optional>
                 {({ id }) => (
                   <CycleSelect
                     id={id}
                     value={form.cycleId}
                     selected={selectedCycle}
                     where={{ project: form.projectId }}
-                    aria-label="Cycle"
+                    aria-label={translate("Cycle")}
                     onChange={(next, doc) => {
                       set('cycleId', next)
                       setSelectedCycle(doc)
@@ -549,7 +547,7 @@ export function TicketForm({
               </Field>
             )}
 
-            <Field label="Status">
+            <Field label={translate("Status")}>
               {({ id }) => (
                 <Select
                   id={id}
@@ -560,7 +558,7 @@ export function TicketForm({
               )}
             </Field>
 
-            <Field label="Priority">
+            <Field label={translate("Priority")}>
               {({ id }) => (
                 <Select
                   id={id}
@@ -571,11 +569,11 @@ export function TicketForm({
               )}
             </Field>
 
-            <Field label="Start date" optional hint="Type YYYY-MM-DD, or pick a day.">
+            <Field label={translate("Start date")} optional hint={translate("Type YYYY-MM-DD, or pick a day.")}>
               {({ id, describedBy }) => (
                 <DatePicker
                   id={id}
-                  label="Start date"
+                  label={translate("Start date")}
                   aria-describedby={describedBy}
                   value={form.startDate}
                   onChange={(next) => {
@@ -588,15 +586,15 @@ export function TicketForm({
 
             <Field
               id="ticket-form-due-date"
-              label="Due date"
+              label={translate("Due date")}
               optional
-              hint="Type YYYY-MM-DD, or pick a day."
+              hint={translate("Type YYYY-MM-DD, or pick a day.")}
               error={errorFor('dueDate')}
             >
               {({ id, describedBy, invalid }) => (
                 <DatePicker
                   id={id}
-                  label="Due date"
+                  label={translate("Due date")}
                   aria-describedby={describedBy}
                   invalid={invalid}
                   value={form.dueDate}
@@ -614,14 +612,13 @@ export function TicketForm({
             open={Boolean(ticket)}
           >
             <summary className="cursor-pointer rounded-sm text-base font-medium">
-              More details{' '}
+              {translate("More details")}{' '}
               <span className="ml-2 text-sm font-normal text-text-muted">
-                Epic, labels, subtasks, dependencies
-              </span>
+                {translate("Epic, labels, subtasks, dependencies")} </span>
             </summary>
             <div className="mt-5 flex flex-col gap-6">
               <fieldset className="flex flex-col gap-3">
-                <legend className="text-xs font-medium text-text-muted">Epic</legend>
+                <legend className="text-xs font-medium text-text-muted">{translate("Epic")}</legend>
 
                 <label className="flex items-start gap-2.5">
                   <input
@@ -640,10 +637,9 @@ export function TicketForm({
                     )}
                   />
                   <span className="flex flex-col gap-0.5">
-                    <span className="text-base text-text">This ticket is an epic</span>
+                    <span className="text-base text-text">{translate("This ticket is an epic")}</span>
                     <span className="text-xs text-text-muted">
-                      Other tickets in the same project can roll up into it. Epics do not nest.
-                    </span>
+                      {translate("Other tickets in the same project can roll up into it. Epics do not nest.")} </span>
                   </span>
                 </label>
 
@@ -663,7 +659,7 @@ export function TicketForm({
                           size="sm"
                           iconOnly
                           icon={X}
-                          aria-label={`Remove epic ${form.epic.key}`}
+                          aria-label={translate("Remove epic {0}", { 0: form.epic.key })}
                           onClick={() => set('epic', null)}
                         />
                       </div>
@@ -672,8 +668,8 @@ export function TicketForm({
                     <TicketSelect
                       value=""
                       selected={null}
-                      aria-label="Roll this ticket up into an epic"
-                      placeholder="Search for an epic…"
+                      aria-label={translate("Roll this ticket up into an epic")}
+                      placeholder={translate("Search for an epic…")}
                       where={{ project: form.projectId || null, isEpic: 'true' }}
                       onChange={(next, doc) => {
                         if (!next || !doc || next === ticket?.id) return
@@ -685,7 +681,7 @@ export function TicketForm({
               </fieldset>
 
               <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-                <legend className="text-xs font-medium text-text-muted">Labels</legend>
+                <legend className="text-xs font-medium text-text-muted">{translate("Labels")}</legend>
                 <LabelChips
                   labels={form.labels}
                   onRemove={(label) =>
@@ -704,7 +700,7 @@ export function TicketForm({
               </fieldset>
 
               <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-                <legend className="text-xs font-medium text-text-muted">Subtasks</legend>
+                <legend className="text-xs font-medium text-text-muted">{translate("Subtasks")}</legend>
                 <ul className={cn('flex flex-col gap-1', form.subtasks.length === 0 && 'hidden')}>
                   {form.subtasks.map((subtask, index) => (
                     <li
@@ -719,7 +715,7 @@ export function TicketForm({
                         size="sm"
                         iconOnly
                         icon={Trash2}
-                        aria-label={`Remove subtask ${subtask.title}`}
+                        aria-label={translate("Remove subtask {0}", { 0: subtask.title })}
                         onClick={() =>
                           set(
                             'subtasks',
@@ -732,7 +728,7 @@ export function TicketForm({
                   ))}
                 </ul>
                 <div className="flex gap-2">
-                  <Field label="Add a subtask" hideLabel className="flex-1">
+                  <Field label={translate("Add a subtask")} hideLabel className="flex-1">
                     {({ id }) => (
                       <Input
                         id={id}
@@ -743,19 +739,18 @@ export function TicketForm({
                           e.preventDefault()
                           addSubtask()
                         }}
-                        placeholder="Type and press Enter"
+                        placeholder={translate("Type and press Enter")}
                         autoComplete="off"
                       />
                     )}
                   </Field>
                   <Button icon={Plus} onClick={addSubtask}>
-                    Add
-                  </Button>
+                    {translate("Add")} </Button>
                 </div>
               </fieldset>
 
               <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-                <legend className="text-xs font-medium text-text-muted">Blocked by</legend>
+                <legend className="text-xs font-medium text-text-muted">{translate("Blocked by")}</legend>
                 <ul className={cn('flex flex-col gap-1.5', form.blockers.length === 0 && 'hidden')}>
                   {form.blockers.map((blocker) => (
                     <li
@@ -774,7 +769,7 @@ export function TicketForm({
                         size="sm"
                         iconOnly
                         icon={X}
-                        aria-label={`Remove blocker ${blocker.key}`}
+                        aria-label={translate("Remove blocker {0}", { 0: blocker.key })}
                         onClick={() =>
                           set(
                             'blockers',
@@ -789,8 +784,8 @@ export function TicketForm({
                 <TicketSelect
                   value=""
                   selected={null}
-                  aria-label="Add a blocking ticket"
-                  placeholder="Search for a ticket…"
+                  aria-label={translate("Add a blocking ticket")}
+                  placeholder={translate("Search for a ticket…")}
                   onChange={(next, doc) => {
                     if (!next || !doc) return
                     if (next === ticket?.id || form.blockers.some((b) => b.id === next)) return
@@ -814,10 +809,10 @@ export function TicketForm({
           draft.clear()
           leave(cancelHref)
         }}
-        title="Discard your changes?"
-        message="This ticket has unsaved edits. Leaving now loses them."
-        confirmLabel="Discard"
-        cancelLabel="Keep editing"
+        title={translate("Discard your changes?")}
+        message={translate("This ticket has unsaved edits. Leaving now loses them.")}
+        confirmLabel={translate("Discard")}
+        cancelLabel={translate("Keep editing")}
       />
     </div>
   )

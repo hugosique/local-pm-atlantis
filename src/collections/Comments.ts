@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { APIError } from 'payload'
 import { collectionAccess } from '@/lib/access'
@@ -9,10 +10,11 @@ export const MAX_COMMENT_LENGTH = 10_000
 
 export const Comments: CollectionConfig = {
   slug: 'comments',
+  labels: { singular: translate("Comment"), plural: translate("Comments") },
   admin: {
     useAsTitle: 'body',
     defaultColumns: ['body', 'ticket', 'author', 'resolved'],
-    description: 'Discussion on tickets. A reply points at the comment that opened the thread.',
+    description: translate("Discussion on tickets. A reply points at the comment that opened the thread."),
   },
   access: collectionAccess,
   hooks: {
@@ -20,10 +22,10 @@ export const Comments: CollectionConfig = {
       async ({ data, req, operation, originalDoc }) => {
         if (data?.body !== undefined) {
           const body = typeof data.body === 'string' ? data.body : ''
-          if (!body.trim()) throw new APIError('A comment cannot be empty.', 400, null, true)
+          if (!body.trim()) throw new APIError(translate("A comment cannot be empty."), 400, null, true)
           if (body.length > MAX_COMMENT_LENGTH) {
             throw new APIError(
-              `A comment can be at most ${MAX_COMMENT_LENGTH} characters.`,
+              translate("A comment can be at most {0} characters.", { 0: MAX_COMMENT_LENGTH }),
               400,
               null,
               true,
@@ -42,7 +44,7 @@ export const Comments: CollectionConfig = {
 
         if (data?.resolved && parent) {
           throw new APIError(
-            'Only the comment that opened a thread can be resolved.',
+            translate("Only the comment that opened a thread can be resolved."),
             400,
             null,
             true,
@@ -82,76 +84,85 @@ export const Comments: CollectionConfig = {
   fields: [
     {
       name: 'ticket',
+      label: translate("Ticket"),
       type: 'relationship',
       relationTo: 'tickets',
       required: true,
       index: true,
       admin: {
-        description: 'The ticket this comment belongs to',
+        description: translate("The ticket this comment belongs to"),
       },
     },
     {
       name: 'parent',
+      label: translate("Parent comment"),
       type: 'relationship',
       relationTo: 'comments',
       index: true,
       admin: {
         description:
-          'The comment that opened this thread. Empty for a top-level comment. Threads are one level deep.',
+          translate("The comment that opened this thread. Empty for a top-level comment. Threads are one level deep."),
       },
     },
     {
       name: 'body',
+      label: translate("Content"),
       type: 'textarea',
       required: true,
       admin: {
         description:
-          'Markdown. Mentions are stored as @[Name](member:ID) and render as a chip.',
+          translate("Markdown. Mentions are stored as @[Name](member:ID) and render as a chip."),
       },
     },
     {
       name: 'author',
+      label: translate("Author"),
       type: 'relationship',
       relationTo: 'members',
       admin: {
         description:
-          'Who wrote this. Filled from the signed-in account when the caller does not set it.',
+          translate("Who wrote this. Filled from the signed-in account when the caller does not set it."),
       },
     },
     {
       name: 'mentions',
+      label: translate("Mentions"),
       type: 'relationship',
       relationTo: 'members',
       hasMany: true,
       admin: {
         readOnly: true,
         position: 'sidebar',
-        description: 'Derived from the body on every save. Do not edit by hand.',
+        description: translate("Derived from the body on every save. Do not edit by hand."),
       },
     },
     {
       name: 'resolved',
+      label: translate("Resolved"),
       type: 'checkbox',
       defaultValue: false,
       index: true,
       admin: {
         position: 'sidebar',
-        description: 'A resolved thread collapses. Only the first comment in a thread carries it.',
+        description: translate("A resolved thread collapses. Only the first comment in a thread carries it."),
       },
     },
     {
       name: 'resolvedAt',
+      label: translate("Resolved at"),
       type: 'date',
       admin: { position: 'sidebar', readOnly: true },
     },
     {
       name: 'resolvedBy',
+      label: translate("Resolved by"),
       type: 'relationship',
       relationTo: 'members',
       admin: { position: 'sidebar', readOnly: true },
     },
     {
       name: 'editedAt',
+      label: translate("Edited at"),
       type: 'date',
       admin: { position: 'sidebar', readOnly: true },
     },
@@ -179,11 +190,11 @@ async function assertRepliableParent(
     doc = null
   }
 
-  if (!doc) throw new APIError('That comment no longer exists.', 400, null, true)
+  if (!doc) throw new APIError(translate("That comment no longer exists."), 400, null, true)
 
   if (toId(doc.parent)) {
     throw new APIError(
-      'Replies go on the comment that opened the thread, not on another reply.',
+      translate("Replies go on the comment that opened the thread, not on another reply."),
       400,
       null,
       true,
@@ -192,7 +203,7 @@ async function assertRepliableParent(
 
   const ticketId = toId(ticket)
   if (ticketId && toId(doc.ticket) !== ticketId) {
-    throw new APIError('A reply must sit on the same ticket as the comment it answers.', 400, null, true)
+    throw new APIError(translate("A reply must sit on the same ticket as the comment it answers."), 400, null, true)
   }
 }
 

@@ -1,10 +1,13 @@
 'use client'
 
+import { getLocale, t as translate } from '@/i18n'
+
 import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import * as Popover from '@radix-ui/react-popover'
 import { CalendarDays, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import 'react-day-picker/style.css'
+import { ptBR } from 'react-day-picker/locale'
 import { cn } from '@/lib/cn'
 import { Skeleton } from './Skeleton'
 import { Button } from './Button'
@@ -31,6 +34,12 @@ export function fromIso(value: string): Date | undefined {
     : undefined
 }
 
+function displayDate(value: string): string {
+  if (getLocale() !== 'pt-BR') return value
+  const date = fromIso(value)
+  return date ? `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}` : value
+}
+
 export interface DatePickerProps {
   id?: string
   label?: string
@@ -51,16 +60,22 @@ export function DatePicker({
   onChange,
   disabled,
   invalid,
-  placeholder = 'YYYY-MM-DD',
+  placeholder,
   className,
   ...aria
 }: DatePickerProps) {
-  const subject = label ? `the ${label.toLowerCase()}` : 'the date'
-  const [text, setText] = useState(value)
+  const isPt = getLocale() === 'pt-BR'
+  const effectivePlaceholder = placeholder ?? (isPt ? 'DD/MM/AAAA' : 'YYYY-MM-DD')
+  const subject = label
+    ? isPt
+      ? label.toLowerCase()
+      : `the ${label.toLowerCase()}`
+    : translate("the date")
+  const [text, setText] = useState(displayDate(value))
   const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => setText(value), [value])
+  useEffect(() => setText(displayDate(value)), [value, isPt])
 
   const selected = fromIso(value)
 
@@ -72,14 +87,15 @@ export function DatePicker({
       return
     }
 
-    const parsed = fromIso(trimmed)
+    const parts = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(trimmed)
+    const parsed = fromIso(parts ? `${parts[3]}-${parts[2]}-${parts[1]}` : trimmed)
     if (!parsed) {
-      setText(value)
+      setText(displayDate(value))
       return
     }
 
     const iso = toIso(parsed)
-    if (iso === value) setText(iso)
+    if (iso === value) setText(displayDate(iso))
     else onChange(iso)
   }
 
@@ -102,7 +118,7 @@ export function DatePicker({
         autoComplete="off"
         disabled={disabled}
         value={text}
-        placeholder={placeholder}
+        placeholder={effectivePlaceholder}
         aria-invalid={invalid || undefined}
         aria-label={aria['aria-label']}
         aria-describedby={aria['aria-describedby']}
@@ -127,7 +143,7 @@ export function DatePicker({
           size="xs"
           iconOnly
           icon={X}
-          aria-label={`Clear ${subject}`}
+          aria-label={translate("Clear {0}", { 0: subject })}
           onClick={() => {
             onChange('')
             inputRef.current?.focus()
@@ -143,7 +159,7 @@ export function DatePicker({
             iconOnly
             icon={CalendarDays}
             disabled={disabled}
-            aria-label={`Choose ${subject} from the calendar`}
+            aria-label={translate("Choose {0} from the calendar", { 0: subject })}
           />
         </Popover.Trigger>
         <Popover.Portal>
@@ -157,6 +173,7 @@ export function DatePicker({
             )}
           >
             <DayPicker
+              locale={isPt ? ptBR : undefined}
               mode="single"
               autoFocus
               selected={selected}
@@ -188,8 +205,7 @@ export function DatePicker({
                   setOpen(false)
                 }}
               >
-                Today
-              </Button>
+                {translate("Today")} </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -198,8 +214,7 @@ export function DatePicker({
                   setOpen(false)
                 }}
               >
-                Clear
-              </Button>
+                {translate("Clear")} </Button>
             </div>
           </Popover.Content>
         </Popover.Portal>

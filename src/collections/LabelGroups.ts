@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
 import { collectionAccess } from '@/lib/access'
@@ -5,10 +6,11 @@ import { slugifyKey } from '@/lib/workflow'
 
 export const LabelGroups: CollectionConfig = {
   slug: 'label-groups',
+  labels: { singular: translate("Label group"), plural: translate("Label groups") },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'key', 'order'],
-    description: 'Optional clusters that labels can belong to, such as Area or Kind',
+    description: translate("Optional clusters that labels can belong to, such as Area or Kind"),
   },
   access: collectionAccess,
   hooks: {
@@ -40,7 +42,7 @@ export const LabelGroups: CollectionConfig = {
 
         if (clash.docs.length > 0) {
           throw new APIError(
-            `A label group with the key "${key}" already exists.`,
+            translate("A label group with the key \"{0}\" already exists.", { 0: key }),
             400,
             undefined,
             true,
@@ -66,35 +68,39 @@ export const LabelGroups: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
       required: true,
       admin: {
-        description: 'The heading this group gets in the label picker',
+        description: translate("The heading this group gets in the label picker"),
       },
     },
     {
       name: 'key',
+      label: translate("Key"),
       type: 'text',
       required: true,
       index: true,
       admin: {
-        description: 'Stable identifier used by the API and the MCP server. Derived from the name.',
+        description: translate("Stable identifier used by the API and the MCP server. Derived from the name."),
       },
     },
     {
       name: 'order',
+      label: translate("Order"),
       type: 'number',
       required: true,
       defaultValue: 1000,
       admin: {
-        description: 'Position in the picker, ascending. Gaps are intentional.',
+        description: translate("Position in the picker, ascending. Gaps are intentional."),
       },
     },
     {
       name: 'description',
+      label: translate("Description"),
       type: 'text',
       admin: {
-        description: 'Optional hint shown beside the group heading',
+        description: translate("Optional hint shown beside the group heading"),
       },
     },
   ],

@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { APIError } from 'payload'
 import { TicketPriority, TICKET_PRIORITY_OPTIONS } from '@/types/enums'
@@ -8,10 +9,11 @@ import { MAX_ESTIMATE, normalizeEstimate } from '@/lib/estimates'
 
 export const Tickets: CollectionConfig = {
   slug: 'tickets',
+  labels: { singular: translate("Ticket"), plural: translate("Tickets") },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['ticketId', 'title', 'status', 'priority', 'project', 'assignee'],
-    description: 'Individual work items within projects',
+    description: translate("Individual work items within projects"),
   },
   access: collectionAccess,
   hooks: {
@@ -56,117 +58,130 @@ export const Tickets: CollectionConfig = {
   fields: [
     {
       name: 'ticketId',
+      label: translate("Ticket ID"),
       type: 'text',
       unique: true,
       admin: {
         readOnly: true,
         position: 'sidebar',
-        description: 'Auto-generated ticket ID (e.g., PROJ-123)',
+        description: translate("Auto-generated ticket ID (e.g., PROJ-123)"),
       },
     },
     {
       name: 'title',
+      label: translate("Title"),
       type: 'text',
       required: true,
       admin: {
-        description: 'Brief title of the ticket',
+        description: translate("Brief title of the ticket"),
       },
     },
     {
       name: 'description',
+      label: translate("Description"),
       type: 'richText',
       admin: {
-        description: 'Detailed description of the work',
+        description: translate("Detailed description of the work"),
       },
     },
     {
       name: 'status',
+      label: translate("Status"),
       type: 'relationship',
       relationTo: 'statuses',
       required: true,
       index: true,
       admin: {
-        description: 'Current status of the ticket, drawn from its project workflow',
+        description: translate("Current status of the ticket, drawn from its project workflow"),
       },
     },
     {
       name: 'priority',
+      label: translate("Priority"),
       type: 'select',
       options: TICKET_PRIORITY_OPTIONS,
       defaultValue: TicketPriority.NO_PRIORITY,
       admin: {
-        description: 'Priority level of the ticket',
+        description: translate("Priority level of the ticket"),
       },
     },
     {
       name: 'project',
+      label: translate("Project"),
       type: 'relationship',
       relationTo: 'projects',
       required: true,
       admin: {
-        description: 'The project this ticket belongs to',
+        description: translate("The project this ticket belongs to"),
       },
     },
     {
       name: 'team',
+      label: translate("Team"),
       type: 'relationship',
       relationTo: 'teams',
       admin: {
-        description: 'The team responsible for this ticket',
+        description: translate("The team responsible for this ticket"),
       },
     },
     {
       name: 'cycle',
+      label: translate("Cycle"),
       type: 'relationship',
       relationTo: 'cycles',
       index: true,
       admin: {
-        description: 'The cycle this ticket is committed to, when the project runs cycles',
+        description: translate("The cycle this ticket is committed to, when the project runs cycles"),
       },
     },
     {
       name: 'assignee',
+      label: translate("Assignee"),
       type: 'relationship',
       relationTo: 'members',
       admin: {
-        description: 'The person responsible for this ticket',
+        description: translate("The person responsible for this ticket"),
       },
     },
     {
       name: 'blockedBy',
+      label: translate("Blocked by"),
       type: 'relationship',
       relationTo: 'tickets',
       hasMany: true,
       admin: {
-        description: 'Tickets that must be completed before this ticket can be worked on',
+        description: translate("Tickets that must be completed before this ticket can be worked on"),
       },
     },
     {
       name: 'labels',
+      label: translate("Labels"),
       type: 'relationship',
       relationTo: 'labels',
       hasMany: true,
       index: true,
       admin: {
-        description: 'Shared labels drawn from the workspace label set',
+        description: translate("Shared labels drawn from the workspace label set"),
       },
     },
     {
       name: 'estimate',
+      label: translate("Estimate"),
       type: 'number',
       min: 0,
       max: MAX_ESTIMATE,
       admin: {
         description:
-          'How much work this is, in points. The project picks the scale it is shown in; t-shirt sizes are stored as their point value so they still add up.',
+          translate("How much work this is, in points. The project picks the scale it is shown in; t-shirt sizes are stored as their point value so they still add up."),
       },
     },
     {
       name: 'startDate',
+      label: translate("Start date"),
       type: 'date',
       index: true,
       admin: {
-        description: 'When work on this ticket is meant to begin',
+        description: translate("When work on this ticket is meant to begin"),
         date: {
           pickerAppearance: 'dayOnly',
         },
@@ -174,10 +189,11 @@ export const Tickets: CollectionConfig = {
     },
     {
       name: 'dueDate',
+      label: translate("Due date"),
       type: 'date',
       index: true,
       admin: {
-        description: 'When this ticket should be completed',
+        description: translate("When this ticket should be completed"),
         date: {
           pickerAppearance: 'dayOnly',
         },
@@ -185,38 +201,43 @@ export const Tickets: CollectionConfig = {
     },
     {
       name: 'isEpic',
+      label: translate("Is an epic"),
       type: 'checkbox',
       defaultValue: false,
       index: true,
       admin: {
         description:
-          'Mark this ticket as an epic so other tickets in the same project can roll up into it',
+          translate("Mark this ticket as an epic so other tickets in the same project can roll up into it"),
       },
     },
     {
       name: 'epic',
+      label: translate("Epic"),
       type: 'relationship',
       relationTo: 'tickets',
       index: true,
       admin: {
         description:
-          'The epic this ticket rolls up into. An epic and its children share a project, and epics do not nest.',
+          translate("The epic this ticket rolls up into. An epic and its children share a project, and epics do not nest."),
       },
     },
     {
       name: 'subtasks',
+      label: translate("Subtasks"),
       type: 'array',
       admin: {
-        description: 'Subtasks for this ticket',
+        description: translate("Subtasks for this ticket"),
       },
       fields: [
         {
           name: 'title',
+          label: translate("Title"),
           type: 'text',
           required: true,
         },
         {
           name: 'completed',
+          label: translate("Completed"),
           type: 'checkbox',
           defaultValue: false,
         },
@@ -224,11 +245,12 @@ export const Tickets: CollectionConfig = {
     },
     {
       name: 'sortOrder',
+      label: translate("Sort order"),
       type: 'number',
       defaultValue: 0,
       admin: {
         position: 'sidebar',
-        description: 'Order within the column',
+        description: translate("Order within the column"),
       },
     },
   ],
@@ -292,11 +314,11 @@ async function assertValidEpicLink(
     data.isEpic !== undefined ? Boolean(data.isEpic) : Boolean(originalDoc?.isEpic)
 
   if (selfId && parentId === selfId) {
-    throw new EpicError('A ticket cannot be its own epic.')
+    throw new EpicError(translate("A ticket cannot be its own epic."))
   }
 
   if (wantsEpic && parentId) {
-    throw new EpicError('An epic cannot sit inside another epic. Epics are one level deep.')
+    throw new EpicError(translate("An epic cannot sit inside another epic. Epics are one level deep."))
   }
 
   if (wantsEpic === false && selfId && originalDoc?.isEpic) {
@@ -310,7 +332,7 @@ async function assertValidEpicLink(
     })
     if (children.totalDocs > 0) {
       throw new EpicError(
-        `This epic still has ${children.totalDocs} ticket${children.totalDocs === 1 ? '' : 's'} rolling up into it. Move them out before turning it back into a normal ticket.`,
+        translate("This epic still has {0} ticket{1} rolling up into it. Move them out before turning it back into a normal ticket.", { 0: children.totalDocs, 1: children.totalDocs === 1 ? '' : 's' }),
       )
     }
   }
@@ -322,18 +344,18 @@ async function assertValidEpicLink(
     .catch(() => null)
 
   if (!parent) {
-    throw new EpicError('That epic no longer exists.')
+    throw new EpicError(translate("That epic no longer exists."))
   }
   if (!(parent as { isEpic?: unknown }).isEpic) {
     throw new EpicError(
-      'That ticket is not an epic. Mark it as an epic first, then roll tickets up into it.',
+      translate("That ticket is not an epic. Mark it as an epic first, then roll tickets up into it."),
     )
   }
 
   const childProject = data.project !== undefined ? idOf(data.project) : idOf(originalDoc?.project)
   const parentProject = idOf((parent as { project?: unknown }).project)
   if (childProject && parentProject && childProject !== parentProject) {
-    throw new EpicError('An epic and its tickets have to live in the same project.')
+    throw new EpicError(translate("An epic and its tickets have to live in the same project."))
   }
 }
 
@@ -512,7 +534,7 @@ async function assertNoDependencyCycle(
   if (!proposed.length) return
 
   if (selfId !== null && proposed.includes(String(selfId))) {
-    throw new CycleError('A ticket cannot block itself.')
+    throw new CycleError(translate("A ticket cannot block itself."))
   }
   if (selfId === null) return
 
@@ -535,7 +557,7 @@ async function assertNoDependencyCycle(
       for (const id of toIdArray((doc as { blockedBy?: unknown }).blockedBy)) {
         if (id === target) {
           throw new CycleError(
-            'That dependency would create a cycle: the ticket you are blocking on already depends on this one, directly or through other tickets.',
+            translate("That dependency would create a cycle: the ticket you are blocking on already depends on this one, directly or through other tickets."),
           )
         }
         if (!seen.has(id)) {
@@ -571,7 +593,7 @@ async function generateTicketId(req: PayloadRequest, projectId: string): Promise
       { $inc: { ticketCounter: 1 } },
       { new: true, returnDocument: 'after' },
     )
-    if (!updated) throw new Error('Project not found')
+    if (!updated) throw new Error(translate("Project not found"))
     return `${updated.prefix}-${updated.ticketCounter}`
   }
 
@@ -596,7 +618,7 @@ function getMongooseModel(req: PayloadRequest, slug: string): MinimalModel | nul
 async function generateTicketIdWithRetry(req: PayloadRequest, projectId: string): Promise<string> {
   for (let attempt = 0; attempt < 8; attempt += 1) {
     const project = await req.payload.findByID({ collection: 'projects', id: projectId })
-    if (!project) throw new Error('Project not found')
+    if (!project) throw new Error(translate("Project not found"))
 
     const candidateCounter = (project.ticketCounter || 0) + 1
     const candidate = `${project.prefix}-${candidateCounter}`
@@ -618,6 +640,6 @@ async function generateTicketIdWithRetry(req: PayloadRequest, projectId: string)
     }
   }
   throw new Error(
-    'Could not allocate a unique ticket ID after 8 attempts — check the project ticketCounter.',
+    translate("Could not allocate a unique ticket ID after 8 attempts — check the project ticketCounter."),
   )
 }

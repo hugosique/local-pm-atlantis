@@ -47,7 +47,8 @@
     "react-dom": "^19.2.1",
     "react-quill-new": "^3.7.0",
     "sharp": "^0.34.5",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "@payloadcms/translations": "3.68.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

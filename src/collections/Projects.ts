@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { APIError } from 'payload'
 import {
@@ -52,10 +53,11 @@ async function detachFromInitiatives(req: PayloadRequest, id: string | number): 
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
+  labels: { singular: translate("Project"), plural: translate("Projects") },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'prefix', 'status', 'createdAt'],
-    description: 'Projects organize related tickets together',
+    description: translate("Projects organize related tickets together"),
   },
   access: collectionAccess,
   hooks: {
@@ -75,69 +77,76 @@ export const Projects: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
       required: true,
       admin: {
-        description: 'The name of the project',
+        description: translate("The name of the project"),
       },
     },
     {
       name: 'prefix',
+      label: translate("Prefix"),
       type: 'text',
       required: true,
       unique: true,
       admin: {
-        description: 'Short prefix for ticket IDs (e.g., PROJ for PROJ-123)',
+        description: translate("Short prefix for ticket IDs (e.g., PROJ for PROJ-123)"),
       },
       validate: (value: string | null | undefined) => {
-        if (!value) return 'Prefix is required'
+        if (!value) return translate("Prefix is required")
         if (!/^[A-Z]{2,6}$/.test(value)) {
-          return 'Prefix must be 2-6 uppercase letters'
+          return translate("Prefix must be 2-6 uppercase letters")
         }
         return true
       },
     },
     {
       name: 'description',
+      label: translate("Description"),
       type: 'richText',
       admin: {
-        description: 'Detailed description of the project',
+        description: translate("Detailed description of the project"),
       },
     },
     {
       name: 'icon',
+      label: translate("Icon"),
       type: 'select',
       options: PROJECT_ICONS.map((icon) => ({ label: icon, value: icon })),
       defaultValue: 'folder',
       admin: {
-        description: 'Icon to represent the project',
+        description: translate("Icon to represent the project"),
       },
     },
     {
       name: 'color',
+      label: translate("Colour"),
       type: 'select',
       options: PROJECT_COLORS.map((color) => ({ label: color, value: color })),
       defaultValue: '#6366f1',
       admin: {
-        description: 'Color theme for the project',
+        description: translate("Color theme for the project"),
       },
     },
     {
       name: 'status',
+      label: translate("Status"),
       type: 'select',
       options: PROJECT_STATUS_OPTIONS,
       defaultValue: ProjectStatus.ACTIVE,
       required: true,
       admin: {
-        description: 'Current status of the project',
+        description: translate("Current status of the project"),
       },
     },
     {
       name: 'startDate',
+      label: translate("Start date"),
       type: 'date',
       index: true,
       admin: {
-        description: 'When work on this project is meant to begin',
+        description: translate("When work on this project is meant to begin"),
         date: {
           pickerAppearance: 'dayOnly',
         },
@@ -145,10 +154,11 @@ export const Projects: CollectionConfig = {
     },
     {
       name: 'targetDate',
+      label: translate("Target date"),
       type: 'date',
       index: true,
       admin: {
-        description: 'The date this project is aiming to finish by',
+        description: translate("The date this project is aiming to finish by"),
         date: {
           pickerAppearance: 'dayOnly',
         },
@@ -156,106 +166,117 @@ export const Projects: CollectionConfig = {
     },
     {
       name: 'cycles',
+      label: translate("Cycles"),
       type: 'group',
       admin: {
-        description: 'Time-boxed cycles for this project',
+        description: translate("Time-boxed cycles for this project"),
       },
       fields: [
         {
           name: 'enabled',
+          label: translate("Enabled"),
           type: 'checkbox',
           defaultValue: false,
           admin: {
-            description: 'Turn cycles on for this project. Off by default.',
+            description: translate("Turn cycles on for this project. Off by default."),
           },
         },
         {
           name: 'lengthWeeks',
+          label: translate("Cycle length"),
           type: 'number',
           defaultValue: DEFAULT_CYCLE_LENGTH_WEEKS,
           min: MIN_CYCLE_LENGTH_WEEKS,
           max: MAX_CYCLE_LENGTH_WEEKS,
           admin: {
-            description: 'How long each cycle runs. Applies to cycles created from now on.',
+            description: translate("How long each cycle runs. Applies to cycles created from now on."),
           },
         },
         {
           name: 'startDay',
+          label: translate("Start day"),
           type: 'number',
           defaultValue: DEFAULT_CYCLE_START_DAY,
           min: 0,
           max: 6,
           admin: {
-            description: 'Weekday the first cycle starts on, 0 being Sunday',
+            description: translate("Weekday the first cycle starts on, 0 being Sunday"),
           },
         },
         {
           name: 'rollover',
+          label: translate("Rollover"),
           type: 'select',
           options: CYCLE_ROLLOVER_OPTIONS,
           defaultValue: CycleRollover.NEXT,
           admin: {
-            description: 'Where incomplete tickets go when a cycle closes',
+            description: translate("Where incomplete tickets go when a cycle closes"),
           },
         },
         {
           name: 'automation',
+          label: translate("Automation"),
           type: 'select',
           options: CYCLE_AUTOMATION_OPTIONS,
           defaultValue: CycleAutomation.AUTOMATIC,
           admin: {
             description:
-              'Automatic closes elapsed cycles on the server on a schedule. Manual waits for someone to close each cycle.',
+              translate("Automatic closes elapsed cycles on the server on a schedule. Manual waits for someone to close each cycle."),
           },
         },
         {
           name: 'upcomingCount',
+          label: translate("Upcoming cycles"),
           type: 'number',
           defaultValue: DEFAULT_UPCOMING_CYCLES,
           min: 0,
           max: MAX_UPCOMING_CYCLES,
           admin: {
-            description: 'How many future cycles to keep provisioned ahead of the active one',
+            description: translate("How many future cycles to keep provisioned ahead of the active one"),
           },
         },
       ],
     },
     {
       name: 'estimates',
+      label: translate("Estimates"),
       type: 'group',
       admin: {
-        description: 'Effort estimates for tickets in this project',
+        description: translate("Effort estimates for tickets in this project"),
       },
       fields: [
         {
           name: 'enabled',
+          label: translate("Enabled"),
           type: 'checkbox',
           defaultValue: false,
           admin: {
             description:
-              'Turn estimates on for this project. Off by default, and cycle charts count tickets instead.',
+              translate("Turn estimates on for this project. Off by default, and cycle charts count tickets instead."),
           },
         },
         {
           name: 'scale',
+          label: translate("Scale"),
           type: 'select',
           options: ESTIMATE_SCALE_OPTIONS,
           defaultValue: DEFAULT_ESTIMATE_SCALE,
           admin: {
             description:
-              'How estimates are written. Changing it relabels existing estimates without rewriting them.',
+              translate("How estimates are written. Changing it relabels existing estimates without rewriting them."),
           },
         },
       ],
     },
     {
       name: 'ticketCounter',
+      label: translate("Ticket counter"),
       type: 'number',
       defaultValue: 0,
       admin: {
         position: 'sidebar',
         readOnly: true,
-        description: 'Auto-incremented counter for ticket IDs',
+        description: translate("Auto-incremented counter for ticket IDs"),
       },
     },
   ],

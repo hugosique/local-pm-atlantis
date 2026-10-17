@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -37,13 +39,13 @@ export function TicketDetail({ ticket: initial }: { ticket: Ticket }) {
     try {
       const response = await fetch(`/api/tickets/${ticket.id}`, { method: 'DELETE' })
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
-      toast({ title: `${ticket.ticketId ?? 'Ticket'} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: ticket.ticketId ?? translate("Ticket") }), tone: 'info' })
       router.push(project ? `/projects/${project.id}` : '/board')
       router.refresh()
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that ticket",
+        title: translate("Couldn't delete that ticket"),
         description: error instanceof Error ? error.message : undefined,
       })
       setDeleting(false)
@@ -54,13 +56,13 @@ export function TicketDetail({ ticket: initial }: { ticket: Ticket }) {
     <div className="h-full overflow-y-auto">
       <header data-sticky-header className="sticky top-0 z-20 border-b border-border-subtle bg-bg">
         <div className="mx-auto flex max-w-[1140px] flex-col gap-3 px-6 py-4 max-md:px-4">
-          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-xs">
+          <nav aria-label={translate("Breadcrumb")} className="flex min-w-0 items-center gap-2 text-xs">
             <Link
               href={project ? `/projects/${project.id}` : '/board'}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-sm text-text-muted transition-colors duration-micro hover:text-text"
             >
               <ArrowLeft className="size-3.5" aria-hidden />
-              {project?.name ?? 'Board'}
+              {project?.name ?? translate("Board")}
             </Link>
             <span aria-hidden className="text-text-muted">
               /
@@ -76,10 +78,10 @@ export function TicketDetail({ ticket: initial }: { ticket: Ticket }) {
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl font-semibold text-text">
                 <InlineEdit
-                  label="Ticket title"
+                  label={translate("Ticket title")}
                   value={ticket.title}
-                  validate={(next) => (next ? null : 'A title is required.')}
-                  onCommit={(next) => patch({ title: next } as Partial<Ticket>, 'the title')}
+                  validate={(next) => (next ? null : translate("A title is required."))}
+                  onCommit={(next) => patch({ title: next } as Partial<Ticket>, translate("the title"))}
                 />
               </h1>
 
@@ -102,20 +104,17 @@ export function TicketDetail({ ticket: initial }: { ticket: Ticket }) {
 
             <div className="flex items-center gap-2">
               <LinkButton variant="secondary" icon={Pencil} href={`/tickets/${ticket.id}/edit`}>
-                Edit
-              </LinkButton>
+                {translate("Edit")} </LinkButton>
               {project && (
                 <LinkButton
                   variant="ghost"
                   icon={LayoutDashboard}
                   href={`/board?project=${project.id}&ticket=${ticket.id}`}
                 >
-                  Board
-                </LinkButton>
+                  {translate("Board")} </LinkButton>
               )}
               <Button variant="ghost" icon={Trash2} onClick={() => setConfirmDelete(true)}>
-                Delete
-              </Button>
+                {translate("Delete")} </Button>
             </div>
           </div>
         </div>
@@ -130,10 +129,10 @@ export function TicketDetail({ ticket: initial }: { ticket: Ticket }) {
         onClose={() => setConfirmDelete(false)}
         onConfirm={deleteTicket}
         loading={deleting}
-        title="Delete this ticket?"
-        message={`${ticket.ticketId ?? 'This ticket'} — “${ticket.title}”`}
-        consequence="Its subtasks, labels and dependency links go with it. This cannot be undone."
-        confirmLabel="Delete ticket"
+        title={translate("Delete this ticket?")}
+        message={`${ticket.ticketId ?? translate("This ticket")} — “${ticket.title}”`}
+        consequence={translate("Its subtasks, labels and dependency links go with it. This cannot be undone.")}
+        confirmLabel={translate("Delete ticket")}
       />
     </div>
   )

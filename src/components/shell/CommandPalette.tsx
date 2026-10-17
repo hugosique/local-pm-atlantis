@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -75,8 +77,8 @@ export function CommandPalette({
   useShortcut({
     id: 'palette.open',
     keys: 'mod+k',
-    description: 'Open the command palette',
-    group: 'Global',
+    description: translate("Open the command palette"),
+    group: translate("Global"),
     scope: 'global',
     allowInInput: true,
     run: () => onOpenChange(!open),
@@ -94,58 +96,58 @@ export function CommandPalette({
     const nav: Row[] = [
       {
         id: 'nav.board',
-        label: 'Go to Board',
+        label: translate("Go to Board"),
         icon: LayoutDashboard,
         shortcut: 'g v',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/board'),
       },
       {
         id: 'nav.myTickets',
-        label: 'Go to My tickets',
+        label: translate("Go to My tickets"),
         icon: UserRound,
         shortcut: 'g m',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/my-tickets'),
       },
       {
         id: 'nav.cycles',
-        label: 'Go to Cycles',
+        label: translate("Go to Cycles"),
         icon: Repeat,
         shortcut: 'g c',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/cycles'),
       },
       {
         id: 'nav.projects',
-        label: 'Go to Projects',
+        label: translate("Go to Projects"),
         icon: FolderKanban,
         shortcut: 'g p',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/projects'),
       },
       {
         id: 'nav.initiatives',
-        label: 'Go to Initiatives',
+        label: translate("Go to Initiatives"),
         icon: Target,
         shortcut: 'g n',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/initiatives'),
       },
       {
         id: 'nav.teams',
-        label: 'Go to Teams',
+        label: translate("Go to Teams"),
         icon: Users,
         shortcut: 'g t',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/teams'),
       },
       {
         id: 'nav.backlog',
-        label: 'Go to Backlog',
+        label: translate("Go to Backlog"),
         icon: LayoutDashboard,
         shortcut: 'g b',
-        group: 'Navigate',
+        group: translate("Navigate"),
         run: () => router.push('/board?status=TODO'),
       },
     ]
@@ -188,7 +190,7 @@ export function CommandPalette({
         const ticketParams = new URLSearchParams({ limit: '5', depth: '0' })
         appendTicketSearch(ticketParams, q)
         const read = async (response: Response) => {
-          if (!response.ok) throw new Error('Search failed')
+          if (!response.ok) throw new Error(translate("Search failed"))
           return response.json()
         }
         const [tickets, projects, initiatives, teams] = await Promise.all([
@@ -209,32 +211,32 @@ export function CommandPalette({
         const rows: Row[] = [
           ...(tickets.docs ?? []).map((t: SearchDoc) => ({
             id: `ticket.${t.id}`,
-            label: t.title ?? 'Untitled',
+            label: t.title ?? translate("Untitled"),
             sublabel: t.ticketId ?? undefined,
             icon: Ticket,
-            group: 'Tickets',
+            group: translate("Tickets"),
             run: () => router.push(`/tickets/${t.id}`),
           })),
           ...(projects.docs ?? []).map((p: SearchDoc) => ({
             id: `project.${p.id}`,
-            label: p.name ?? 'Untitled',
+            label: p.name ?? translate("Untitled"),
             sublabel: p.prefix,
             icon: FolderKanban,
-            group: 'Projects',
+            group: translate("Projects"),
             run: () => router.push(`/projects/${p.id}`),
           })),
           ...(initiatives.docs ?? []).map((i: SearchDoc) => ({
             id: `initiative.${i.id}`,
-            label: i.name ?? 'Untitled',
+            label: i.name ?? translate("Untitled"),
             icon: Target,
-            group: 'Initiatives',
+            group: translate("Initiatives"),
             run: () => router.push(`/initiatives/${i.id}`),
           })),
           ...(teams.docs ?? []).map((t: SearchDoc) => ({
             id: `team.${t.id}`,
-            label: t.name ?? 'Untitled',
+            label: t.name ?? translate("Untitled"),
             icon: Users,
-            group: 'Teams',
+            group: translate("Teams"),
             run: () => router.push(`/teams/${t.id}`),
           })),
         ]
@@ -296,7 +298,7 @@ export function CommandPalette({
     <Dialog
       open={open}
       onClose={() => onOpenChange(false)}
-      title="Command palette"
+      title={translate("Command palette")}
       size="lg"
       initialFocus="first-field"
       className="max-h-[70vh]"
@@ -310,10 +312,10 @@ export function CommandPalette({
             aria-expanded
             aria-controls="palette-list"
             aria-activedescendant={rows[active] ? `palette-row-${rows[active].id}` : undefined}
-            aria-label="Search commands, tickets, projects and teams"
+            aria-label={translate("Search commands, tickets, projects and teams")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by title, ticket key, or command…"
+            placeholder={translate("Search by title, ticket key, or command…")}
             className="h-10 min-w-0 flex-1 bg-transparent text-md text-text outline-none"
             autoComplete="off"
           />
@@ -322,7 +324,7 @@ export function CommandPalette({
         <div
           id="palette-list"
           role="listbox"
-          aria-label="Results"
+          aria-label={translate("Results")}
           ref={listRef}
           className="mt-3 max-h-[46vh] overflow-y-auto"
         >
@@ -337,8 +339,8 @@ export function CommandPalette({
           {!searching && !searchError && rows.length === 0 && (
             <p className="px-2 py-8 text-center text-base text-text-muted">
               {query.trim().length > 0 && query.trim().length < MIN_QUERY
-                ? `Type at least ${MIN_QUERY} characters to search records.`
-                : 'No results. Try a different title or ticket key.'}
+                ? translate("Type at least {0} characters to search records.", { 0: MIN_QUERY })
+                : translate("No results. Try a different title or ticket key.")}
             </p>
           )}
 
@@ -382,13 +384,12 @@ export function CommandPalette({
             role="alert"
             className="mt-3 flex items-center justify-between gap-3 rounded-md bg-danger-subtle p-3 text-danger-text"
           >
-            <p>Search is unavailable. Try again.</p>
-            <Button onClick={() => setRetry((value) => value + 1)}>Retry search</Button>
+            <p>{translate("Search is unavailable. Try again.")}</p>
+            <Button onClick={() => setRetry((value) => value + 1)}>{translate("Retry search")}</Button>
           </div>
         )}
         <p className="mt-4 flex flex-wrap items-center gap-2 border-t border-border-subtle pt-3 text-xs text-text-muted">
-          <Kbd raw="↑ ↓" /> Navigate <Kbd raw="Enter" /> Open <Kbd raw="Esc" /> Close
-        </p>
+          <Kbd raw="↑ ↓" /> {translate("Navigate")} <Kbd raw="Enter" /> {translate("Open")} <Kbd raw="Esc" /> {translate("Close")} </p>
       </div>
     </Dialog>
   )

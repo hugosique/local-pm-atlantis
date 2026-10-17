@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Comment, Member } from '@/payload-types'
 
@@ -59,7 +61,7 @@ export function useComments(ticketId: string): CommentsApi {
         setComments((data.docs ?? []) as Comment[])
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
       } finally {
         setLoading(false)
       }
@@ -112,7 +114,7 @@ export function useComments(ticketId: string): CommentsApi {
         return true
       } catch (err) {
         setComments((prev) => prev.filter((c) => c.id !== optimisticId))
-        setError(err instanceof Error ? err.message : 'The comment was not posted.')
+        setError(err instanceof Error ? err.message : translate("The comment was not posted."))
         throw err
       }
     },

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -26,12 +28,12 @@ import { useWorkflow } from '@/components/shell/WorkflowProvider'
 type SortKey = 'sortOrder' | 'title' | '-title' | '-createdAt' | 'createdAt' | 'dueDate'
 
 const SORTS: { value: SortKey; label: string }[] = [
-  { value: 'sortOrder', label: 'Board order' },
-  { value: '-createdAt', label: 'Newest first' },
-  { value: 'createdAt', label: 'Oldest first' },
-  { value: 'title', label: 'Title A–Z' },
-  { value: '-title', label: 'Title Z–A' },
-  { value: 'dueDate', label: 'Due date' },
+  { value: 'sortOrder', get label() { return translate("Board order") } },
+  { value: '-createdAt', get label() { return translate("Newest first") } },
+  { value: 'createdAt', get label() { return translate("Oldest first") } },
+  { value: 'title', get label() { return translate("Title A–Z") } },
+  { value: '-title', get label() { return translate("Title Z–A") } },
+  { value: 'dueDate', get label() { return translate("Due date") } },
 ]
 
 export interface TicketsTableProps {
@@ -125,7 +127,7 @@ export function TicketsTable({
       <div className="flex flex-wrap items-center gap-2">
         <label className="relative flex h-8 min-w-44 flex-1 items-center gap-2 rounded-sm border border-border bg-surface px-2.5 md:max-w-72">
           <Search className="size-4 shrink-0 text-text-muted" aria-hidden />
-          <span className="sr-only">Search these tickets</span>
+          <span className="sr-only">{translate("Search these tickets")}</span>
           <input
             type="search"
             value={query}
@@ -133,7 +135,7 @@ export function TicketsTable({
             onKeyDown={(event) => {
               if (event.key === 'Escape') update({ query: '' })
             }}
-            placeholder="Search by title or ticket key"
+            placeholder={translate("Search by title or ticket key")}
             className="min-w-0 flex-1 bg-transparent text-base text-text outline-none max-sm:text-md"
           />
           {loading && (
@@ -142,18 +144,18 @@ export function TicketsTable({
         </label>
 
         <Select
-          aria-label="Filter by status"
+          aria-label={translate("Filter by status")}
           value={status}
           onValueChange={(next) => update({ status: next })}
           className="w-40 max-sm:w-full"
           options={[
-            { value: '', label: 'All statuses', icon: ListFilter },
+            { value: '', label: translate("All statuses"), icon: ListFilter },
             ...statusOptions(statuses),
           ]}
         />
 
         <Select
-          aria-label="Sort tickets"
+          aria-label={translate("Sort tickets")}
           value={sort}
           onValueChange={(next) => update({ sort: next as SortKey })}
           className="w-44 max-sm:w-full"
@@ -167,44 +169,42 @@ export function TicketsTable({
             href={newTicketHref}
             className="ml-auto max-sm:w-full"
           >
-            New ticket
-            <Kbd keys="c" tone="inverse" className="ml-1.5" />
+            {translate("New ticket")} <Kbd keys="c" tone="inverse" className="ml-1.5" />
           </LinkButton>
         )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs text-text-muted tabular" aria-live="polite">
-          {totalDocs} {totalDocs === 1 ? 'ticket' : 'tickets'}
+          {totalDocs} {totalDocs === 1 ? translate("ticket") : translate("tickets")}
         </span>
 
         {status && (
           <Chip
             tone="accent"
             onRemove={() => update({ status: '' })}
-            removeLabel="Remove status filter"
+            removeLabel={translate("Remove status filter")}
           >
-            Status: {statusOptions(statuses).find((o) => o.value === status)?.label}
+            {translate("Status:")} {statusOptions(statuses).find((o) => o.value === status)?.label}
           </Chip>
         )}
         {query && (
-          <Chip tone="accent" onRemove={() => update({ query: '' })} removeLabel="Clear the search">
-            Search: {query}
+          <Chip tone="accent" onRemove={() => update({ query: '' })} removeLabel={translate("Clear the search")}>
+            {translate("Search:")} {query}
           </Chip>
         )}
         {hasFilters && (
           <Button variant="ghost" size="sm" icon={X} onClick={clearFilters}>
-            Clear all
-          </Button>
+            {translate("Clear all")} </Button>
         )}
       </div>
 
       {error ? (
         <EmptyState
           kind="error"
-          title="Couldn't load these tickets"
+          title={translate("Couldn't load these tickets")}
           description={error}
-          action={{ label: 'Retry', onClick: retry }}
+          action={{ label: translate("Retry"), onClick: retry }}
         />
       ) : showSkeleton && docs.length === 0 ? (
         <RowSkeletonList count={5} />
@@ -212,9 +212,9 @@ export function TicketsTable({
         <EmptyState
           kind="no-match"
           compact
-          title="No tickets match"
-          description="Nothing here fits the current search and status."
-          action={{ label: 'Clear filters', onClick: clearFilters }}
+          title={translate("No tickets match")}
+          description={translate("Nothing here fits the current search and status.")}
+          action={{ label: translate("Clear filters"), onClick: clearFilters }}
         />
       ) : docs.length === 0 ? (
         <EmptyState
@@ -224,7 +224,7 @@ export function TicketsTable({
           description={emptyDescription}
           action={
             newTicketHref
-              ? { label: 'Create the first ticket', onClick: () => router.push(newTicketHref) }
+              ? { label: translate("Create the first ticket"), onClick: () => router.push(newTicketHref) }
               : undefined
           }
         />
@@ -234,20 +234,19 @@ export function TicketsTable({
             <Table caption={caption}>
               <thead>
                 <tr>
-                  <Th className="w-px whitespace-nowrap">Key</Th>
+                  <Th className="w-px whitespace-nowrap">{translate("Key")}</Th>
                   <Th className="w-px whitespace-nowrap">
-                    <span className="sr-only">Priority</span>
+                    <span className="sr-only">{translate("Priority")}</span>
                   </Th>
-                  <Th>Title</Th>
-                  <Th width="9rem">Status</Th>
-                  <Th width="12rem">{relationColumn === 'team' ? 'Team' : 'Project'}</Th>
-                  <Th width="11rem">Assignee</Th>
+                  <Th>{translate("Title")}</Th>
+                  <Th width="9rem">{translate("Status")}</Th>
+                  <Th width="12rem">{relationColumn === 'team' ? translate("Team") : translate("Project")}</Th>
+                  <Th width="11rem">{translate("Assignee")}</Th>
                   {showEstimates && (
                     <Th width="6rem" align="right">
-                      Estimate
-                    </Th>
+                      {translate("Estimate")} </Th>
                   )}
-                  <Th width="8rem">Due</Th>
+                  <Th width="8rem">{translate("Due")}</Th>
                 </tr>
               </thead>
               <tbody>
@@ -301,7 +300,7 @@ export function TicketsTable({
                         <AvatarLabel
                           name={assignee?.name}
                           seed={assignee?.id}
-                          fallback="Unassigned"
+                          fallback={translate("Unassigned")}
                         />
                       </Td>
                       {showEstimates && (
@@ -334,7 +333,7 @@ export function TicketsTable({
           {hasNextPage && (
             <div className="flex justify-center py-3">
               <Button variant="secondary" loading={loadingMore} onClick={loadMore}>
-                {loadingMore ? 'Loading…' : `Load more (${docs.length} of ${totalDocs})`}
+                {loadingMore ? translate("Loading…") : translate("Load more ({0} of {1})", { 0: docs.length, 1: totalDocs })}
               </Button>
             </div>
           )}

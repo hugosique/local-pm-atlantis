@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -109,13 +111,13 @@ export function ProjectDetail({
 
       const response = await fetch(`/api/projects/${project.id}`, { method: 'DELETE' })
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
-      toast({ title: `${project.name} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: project.name }), tone: 'info' })
       router.push('/projects')
       router.refresh()
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that project",
+        title: translate("Couldn't delete that project"),
         description: error instanceof Error ? error.message : undefined,
       })
       setDeleting(false)
@@ -125,14 +127,13 @@ export function ProjectDetail({
   return (
     <div className="flex h-full flex-col">
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 pt-4 max-md:px-4">
-        <nav aria-label="Breadcrumb">
+        <nav aria-label={translate("Breadcrumb")}>
           <Link
             href="/projects"
             className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
           >
             <ArrowLeft className="size-3.5" aria-hidden />
-            Projects
-          </Link>
+            {translate("Projects")} </Link>
         </nav>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -141,20 +142,20 @@ export function ProjectDetail({
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-semibold text-text">
               <InlineEdit
-                label="Project name"
+                label={translate("Project name")}
                 value={project.name}
-                validate={(next) => (next ? null : 'A name is required.')}
-                onCommit={(next) => patch({ name: next }, 'the name')}
+                validate={(next) => (next ? null : translate("A name is required."))}
+                onCommit={(next) => patch({ name: next }, translate("the name"))}
               />
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
               <span className="tabular">{project.prefix}</span>
               <span aria-hidden>·</span>
               <span className="tabular">
-                {stats.total} {stats.total === 1 ? 'ticket' : 'tickets'}
+                {stats.total} {stats.total === 1 ? translate("ticket") : translate("tickets")}
               </span>
               <span aria-hidden>·</span>
-              <span className="tabular">{percent}% complete</span>
+              <span className="tabular">{percent}{translate("% complete")}</span>
               {savingLabel && (
                 <>
                   <span aria-hidden>·</span>
@@ -171,31 +172,28 @@ export function ProjectDetail({
 
           <div className="flex items-center gap-2">
             <LinkButton variant="secondary" icon={Pencil} href={`/projects/${project.id}/edit`}>
-              Edit
-            </LinkButton>
+              {translate("Edit")} </LinkButton>
             <LinkButton
               variant="secondary"
               icon={LayoutDashboard}
               href={`/board?project=${project.id}`}
             >
-              Board
-            </LinkButton>
+              {translate("Board")} </LinkButton>
             <Button variant="ghost" icon={Trash2} onClick={() => setConfirmDelete(true)}>
-              Delete
-            </Button>
+              {translate("Delete")} </Button>
           </div>
         </div>
 
         <TabList
-          label="Project sections"
+          label={translate("Project sections")}
           idPrefix="project"
           value={tab}
           onChange={selectTab}
           tabs={[
-            { id: 'overview', label: 'Overview', icon: FileText },
-            { id: 'tickets', label: 'Tickets', icon: ListChecks, count: stats.total },
-            { id: 'cycles', label: 'Cycles', icon: Repeat },
-            { id: 'estimates', label: 'Estimates', icon: Diamond },
+            { id: 'overview', label: translate("Overview"), icon: FileText },
+            { id: 'tickets', label: translate("Tickets"), icon: ListChecks, count: stats.total },
+            { id: 'cycles', label: translate("Cycles"), icon: Repeat },
+            { id: 'estimates', label: translate("Estimates"), icon: Diamond },
           ]}
         />
       </header>
@@ -205,63 +203,59 @@ export function ProjectDetail({
           <div className="grid grid-cols-[minmax(0,1fr)_300px] gap-8 max-lg:grid-cols-1">
             <section className="flex min-w-0 flex-col gap-3">
               <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                Description
-              </h2>
+                {translate("Description")} </h2>
               <Expandable lines={10}>
                 <RichTextDisplay content={description} wide />
               </Expandable>
             </section>
 
             <aside className="flex flex-col gap-6">
-              <Field label="Status">
+              <Field label={translate("Status")}>
                 {({ id }) => (
                   <Select
                     id={id}
                     value={project.status}
                     options={projectStatusOptions()}
-                    onValueChange={(next) => patch({ status: next as ProjectStatus }, 'the status')}
+                    onValueChange={(next) => patch({ status: next as ProjectStatus }, translate("the status"))}
                   />
                 )}
               </Field>
 
               <section className="flex flex-col gap-3">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Dates
-                </h2>
+                  {translate("Dates")} </h2>
 
-                <Field label="Start date" optional>
+                <Field label={translate("Start date")} optional>
                   {({ id }) => (
                     <DatePicker
                       id={id}
-                      label="Start date"
+                      label={translate("Start date")}
                       value={project.startDate ? project.startDate.slice(0, 10) : ''}
-                      onChange={(next) => patch({ startDate: next || null }, 'the start date')}
+                      onChange={(next) => patch({ startDate: next || null }, translate("the start date"))}
                     />
                   )}
                 </Field>
 
-                <Field label="Target date" optional>
+                <Field label={translate("Target date")} optional>
                   {({ id }) => (
                     <DatePicker
                       id={id}
-                      label="Target date"
+                      label={translate("Target date")}
                       value={project.targetDate ? project.targetDate.slice(0, 10) : ''}
-                      onChange={(next) => patch({ targetDate: next || null }, 'the target date')}
+                      onChange={(next) => patch({ targetDate: next || null }, translate("the target date"))}
                     />
                   )}
                 </Field>
 
                 {span !== null && (
                   <p className="text-xs text-text-muted tabular">
-                    {span} {span === 1 ? 'day' : 'days'} planned
-                  </p>
+                    {span} {span === 1 ? translate("day") : translate("days")} {translate("planned")} </p>
                 )}
               </section>
 
               <section className="flex flex-col gap-3">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Progress
-                </h2>
+                  {translate("Progress")} </h2>
 
                 <div>
                   <div
@@ -269,7 +263,7 @@ export function ProjectDetail({
                     aria-valuenow={percent}
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    aria-label="Tickets complete"
+                    aria-label={translate("Tickets complete")}
                     className="h-2 overflow-hidden rounded-full bg-surface-hover"
                   >
                     <div
@@ -278,16 +272,15 @@ export function ProjectDetail({
                     />
                   </div>
                   <p className="mt-1.5 text-xs text-text-muted tabular">
-                    {percent}% complete · {stats.done} of {stats.total} done
-                  </p>
+                    {percent}{translate("% complete ·")} {stats.done} {translate("of")} {stats.total} {translate("done")} </p>
                 </div>
 
                 <dl className="flex flex-col">
                   {(
                     [
-                      ['Todo', stats.todo, StatusType.UNSTARTED],
-                      ['In progress', stats.inProgress, StatusType.STARTED],
-                      ['Done', stats.done, StatusType.COMPLETED],
+                      [translate("Todo"), stats.todo, StatusType.UNSTARTED],
+                      [translate("In progress"), stats.inProgress, StatusType.STARTED],
+                      [translate("Done"), stats.done, StatusType.COMPLETED],
                     ] as const
                   ).map(([label, value, type]) => (
                     <div
@@ -306,8 +299,7 @@ export function ProjectDetail({
               {initiatives.length > 0 && (
                 <section className="flex flex-col gap-2">
                   <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                    Initiatives
-                  </h2>
+                    {translate("Initiatives")} </h2>
                   <ul className="flex flex-col gap-1">
                     {initiatives.map((initiative) => {
                       const meta = initiativeStatusMeta(initiative.status)
@@ -341,11 +333,11 @@ export function ProjectDetail({
 
               <dl className="flex flex-col gap-2 border-t border-border-subtle pt-4 text-xs text-text-muted">
                 <div className="flex justify-between gap-2">
-                  <dt>Created</dt>
+                  <dt>{translate("Created")}</dt>
                   <dd className="text-text tabular">{formatDateTimeRelative(project.createdAt)}</dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>Updated</dt>
+                  <dt>{translate("Updated")}</dt>
                   <dd className="text-text tabular">{formatDateTimeRelative(project.updatedAt)}</dd>
                 </div>
               </dl>
@@ -356,14 +348,14 @@ export function ProjectDetail({
         <TabPanel id="tickets" idPrefix="project" active={tab === 'tickets'}>
           <TicketsTable
             where={{ project: project.id }}
-            caption={`Tickets in ${project.name}`}
+            caption={translate("Tickets in {0}", { 0: project.name })}
             keyColor={project.color}
             relationColumn="team"
             newTicketHref={`/tickets/new?project=${project.id}&returnTo=${encodeURIComponent(
               `/projects/${project.id}?tab=tickets`,
             )}`}
-            emptyTitle="No tickets in this project"
-            emptyDescription="Tickets created here get the key prefix and show up on the board."
+            emptyTitle={translate("No tickets in this project")}
+            emptyDescription={translate("Tickets created here get the key prefix and show up on the board.")}
           />
         </TabPanel>
 
@@ -381,15 +373,15 @@ export function ProjectDetail({
         onClose={() => setConfirmDelete(false)}
         onConfirm={deleteProject}
         loading={deleting}
-        title="Delete this project?"
+        title={translate("Delete this project?")}
         message={`“${project.name}” (${project.prefix})`}
         consequence={
           stats.total > 0
-            ? `Permanently deletes ${stats.total} ticket${stats.total === 1 ? '' : 's'} and their history. This cannot be undone.`
-            : 'This project has no tickets. This cannot be undone.'
+            ? translate("Permanently deletes {0} ticket{1} and their history. This cannot be undone.", { 0: stats.total, 1: stats.total === 1 ? '' : 's' })
+            : translate("This project has no tickets. This cannot be undone.")
         }
         confirmPhrase={stats.total > 0 ? project.name : undefined}
-        confirmLabel="Delete project"
+        confirmLabel={translate("Delete project")}
       />
     </div>
   )

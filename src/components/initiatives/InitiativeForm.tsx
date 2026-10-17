@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -43,7 +45,7 @@ const EMPTY: FormState = {
 }
 
 function validateField(name: FieldName, form: FormState): string | null {
-  if (name === 'name') return form.name.trim() ? null : 'Enter a name for this initiative.'
+  if (name === 'name') return form.name.trim() ? null : translate("Enter a name for this initiative.")
   return null
 }
 
@@ -141,18 +143,18 @@ export function InitiativeForm({
       )
       if (!response.ok) {
         const payload = await response.json().catch(() => null)
-        throw new Error(payload?.errors?.[0]?.message || `Saving failed (${response.status}).`)
+        throw new Error(payload?.errors?.[0]?.message || translate("Saving failed ({0}).", { 0: response.status }))
       }
       const saved = ((await response.json()).doc ?? {}) as Initiative
       toast({
         tone: 'success',
-        title: initiative ? 'Changes saved' : `${saved.name ?? 'Initiative'} created`,
+        title: initiative ? translate("Changes saved") : translate("{0} created", { 0: saved.name ?? translate("Initiative") }),
       })
       leave(returnTo ?? `/initiatives/${saved.id ?? initiative?.id}`)
     } catch (error) {
       setSubmitting(false)
       setFormError(
-        error instanceof Error ? error.message : 'Something went wrong saving this initiative.',
+        error instanceof Error ? error.message : translate("Something went wrong saving this initiative."),
       )
       requestAnimationFrame(() => summaryRef.current?.focus())
     }
@@ -177,7 +179,7 @@ export function InitiativeForm({
         <header className="sticky top-0 z-20 border-b border-border-subtle bg-bg">
           <div className="mx-auto flex max-w-[960px] flex-wrap items-center gap-3 px-6 py-4 max-md:px-4">
             <div className="min-w-0 flex-1">
-              <nav aria-label="Breadcrumb">
+              <nav aria-label={translate("Breadcrumb")}>
                 <Link
                   href={cancelHref}
                   onClick={(event) => {
@@ -189,11 +191,11 @@ export function InitiativeForm({
                   className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
                 >
                   <ArrowLeft className="size-3.5" aria-hidden />
-                  {initiative ? initiative.name : 'Initiatives'}
+                  {initiative ? initiative.name : translate("Initiatives")}
                 </Link>
               </nav>
               <h1 className="mt-1 text-xl font-semibold text-text">
-                {initiative ? 'Edit initiative' : 'New initiative'}
+                {initiative ? translate("Edit initiative") : translate("New initiative")}
               </h1>
             </div>
 
@@ -203,10 +205,9 @@ export function InitiativeForm({
                 disabled={submitting}
                 onClick={() => (dirty ? setConfirmDiscard(true) : leave(cancelHref))}
               >
-                Cancel
-              </Button>
+                {translate("Cancel")} </Button>
               <Button type="submit" form="initiative-form" variant="primary" loading={submitting}>
-                {initiative ? 'Save changes' : 'Create initiative'}
+                {initiative ? translate("Save changes") : translate("Create initiative")}
               </Button>
             </div>
           </div>
@@ -232,12 +233,12 @@ export function InitiativeForm({
             <EntityMark icon={Icon} color={form.color} size="lg" />
             <p className="text-base text-text-muted">
               {initiative
-                ? `Rolling up ${projectCount} ${projectCount === 1 ? 'project' : 'projects'}. Add or remove them on the initiative page.`
-                : 'Create it first, then add the projects it rolls up.'}
+                ? translate("Rolling up {0} {1}. Add or remove them on the initiative page.", { 0: projectCount, 1: projectCount === 1 ? translate("project") : translate("projects") })
+                : translate("Create it first, then add the projects it rolls up.")}
             </p>
           </div>
 
-          <Field id="initiative-form-name" label="Name" required error={errorFor('name')}>
+          <Field id="initiative-form-name" label={translate("Name")} required error={errorFor('name')}>
             {({ describedBy, invalid }) => (
               <Input
                 ref={nameRef}
@@ -253,7 +254,7 @@ export function InitiativeForm({
           </Field>
 
           <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-            <Field label="Status">
+            <Field label={translate("Status")}>
               {({ id }) => (
                 <Select
                   id={id}
@@ -264,7 +265,7 @@ export function InitiativeForm({
               )}
             </Field>
 
-            <Field label="Target date" optional>
+            <Field label={translate("Target date")} optional>
               {({ id }) => (
                 <DatePicker
                   id={id}
@@ -275,13 +276,13 @@ export function InitiativeForm({
             </Field>
           </div>
 
-          <Field label="Lead" optional hint="The person accountable for this initiative.">
+          <Field label={translate("Lead")} optional hint={translate("The person accountable for this initiative.")}>
             {({ id, describedBy }) => (
               <MemberSelect
                 id={id}
                 value={form.lead}
                 selected={selectedLead}
-                allLabel="No lead"
+                allLabel={translate("No lead")}
                 aria-describedby={describedBy}
                 className="w-full max-w-96"
                 onChange={(value, member) => {
@@ -293,16 +294,16 @@ export function InitiativeForm({
           </Field>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-muted">Description</span>
+            <span className="text-xs font-medium text-text-muted">{translate("Description")}</span>
             <RichTextEditor
               value={form.description}
               onChange={(value) => set('description', value)}
-              placeholder="The objective, its scope, how success is judged…"
+              placeholder={translate("The objective, its scope, how success is judged…")}
             />
           </div>
 
           <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-            <legend className="text-xs font-medium text-text-muted">Icon</legend>
+            <legend className="text-xs font-medium text-text-muted">{translate("Icon")}</legend>
             <div className="flex flex-wrap gap-1">
               {INITIATIVE_ICONS.map((name) => {
                 const Option = initiativeIcon(name)
@@ -336,7 +337,7 @@ export function InitiativeForm({
           </fieldset>
 
           <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-            <legend className="text-xs font-medium text-text-muted">Colour</legend>
+            <legend className="text-xs font-medium text-text-muted">{translate("Colour")}</legend>
             <div className="flex flex-wrap gap-2">
               {PROJECT_COLORS.map((color) => {
                 const selected = form.color === color
@@ -379,10 +380,10 @@ export function InitiativeForm({
           setConfirmDiscard(false)
           leave(cancelHref)
         }}
-        title="Discard your changes?"
-        message="This initiative has unsaved edits. Leaving now loses them."
-        confirmLabel="Discard"
-        cancelLabel="Keep editing"
+        title={translate("Discard your changes?")}
+        message={translate("This initiative has unsaved edits. Leaving now loses them.")}
+        confirmLabel={translate("Discard")}
+        cancelLabel={translate("Keep editing")}
       />
     </div>
   )

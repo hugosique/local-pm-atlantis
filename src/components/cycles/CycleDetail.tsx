@@ -1,5 +1,8 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+import { cycleName } from '@/i18n/display'
+
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -66,18 +69,18 @@ export function CycleDetail({
 
       toast({
         tone: 'success',
-        title: `${cycle.name} closed`,
+        title: translate("{0} closed", { 0: cycleName(cycle) }),
         description:
           moved > 0
-            ? `${moved} unfinished ${moved === 1 ? 'ticket' : 'tickets'} moved on.`
-            : 'Nothing was left unfinished.',
+            ? translate("{0} unfinished {1} moved on.", { 0: moved, 1: moved === 1 ? translate("ticket") : translate("tickets") })
+            : translate("Nothing was left unfinished."),
       })
       setConfirmClose(false)
       router.refresh()
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't close that cycle",
+        title: translate("Couldn't close that cycle"),
         description: error instanceof Error ? error.message : undefined,
       })
     } finally {
@@ -88,13 +91,13 @@ export function CycleDetail({
   return (
     <div className="flex h-full flex-col">
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 pt-4 max-md:px-4">
-        <nav aria-label="Breadcrumb">
+        <nav aria-label={translate("Breadcrumb")}>
           <Link
             href={`/cycles?project=${project.id}`}
             className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
           >
             <ArrowLeft className="size-3.5" aria-hidden />
-            Cycles in {project.name}
+            {translate("Cycles in")} {project.name}
           </Link>
         </nav>
 
@@ -102,10 +105,10 @@ export function CycleDetail({
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-semibold text-text">
               <InlineEdit
-                label="Cycle name"
-                value={cycle.name}
-                validate={(next) => (next ? null : 'A name is required.')}
-                onCommit={(next) => patch({ name: next }, 'the name')}
+                label={translate("Cycle name")}
+                value={cycleName(cycle)}
+                validate={(next) => (next ? null : translate("A name is required."))}
+                onCommit={(next) => patch({ name: next }, translate("the name"))}
               />
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
@@ -139,45 +142,43 @@ export function CycleDetail({
               icon={LayoutDashboard}
               href={`/board?project=${project.id}&cycle=${cycle.id}`}
             >
-              Board
-            </LinkButton>
+              {translate("Board")} </LinkButton>
             {closable && current !== 'completed' && (
               <Button variant="secondary" icon={CheckCircle2} onClick={() => setConfirmClose(true)}>
-                Close cycle
-              </Button>
+                {translate("Close cycle")} </Button>
             )}
           </div>
         </div>
 
         <div className="pb-3">
           <InlineEdit
-            label="Cycle goal"
+            label={translate("Cycle goal")}
             value={cycle.goal ?? ''}
-            placeholder="Add a goal for this cycle"
-            onCommit={(next) => patch({ goal: next || null }, 'the goal')}
+            placeholder={translate("Add a goal for this cycle")}
+            onCommit={(next) => patch({ goal: next || null }, translate("the goal"))}
           />
         </div>
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 max-md:px-4">
         <div className="mb-6 max-w-md">
-          <CycleProgressBar progress={progress} label={`${cycle.name} progress`} />
+          <CycleProgressBar progress={progress} label={translate("{0} progress", { 0: cycleName(cycle) })} />
         </div>
 
         <div className="mb-6">
-          <BurndownChart series={burndown} cycleName={cycle.name} frozen={frozen} />
+          <BurndownChart series={burndown} cycleName={cycleName(cycle)} frozen={frozen} />
         </div>
 
         <TicketsTable
           where={{ cycle: cycle.id }}
-          caption={`Tickets in ${cycle.name}`}
+          caption={translate("Tickets in {0}", { 0: cycleName(cycle) })}
           keyColor={project.color}
           relationColumn="team"
           newTicketHref={`/tickets/new?project=${project.id}&cycle=${cycle.id}&returnTo=${encodeURIComponent(
             `/cycles/${cycle.id}`,
           )}`}
-          emptyTitle="Nothing committed to this cycle"
-          emptyDescription="Add tickets from the board or the ticket form and they show up here."
+          emptyTitle={translate("Nothing committed to this cycle")}
+          emptyDescription={translate("Add tickets from the board or the ticket form and they show up here.")}
         />
       </div>
 
@@ -186,10 +187,10 @@ export function CycleDetail({
         onClose={() => setConfirmClose(false)}
         onConfirm={closeCycle}
         loading={busy}
-        title="Close this cycle?"
-        message={`“${cycle.name}”`}
-        consequence="Unfinished tickets move on according to this project's rollover setting. The cycle stays readable afterwards."
-        confirmLabel="Close cycle"
+        title={translate("Close this cycle?")}
+        message={`“${cycleName(cycle)}”`}
+        consequence={translate("Unfinished tickets move on according to this project's rollover setting. The cycle stays readable afterwards.")}
+        confirmLabel={translate("Close cycle")}
       />
     </div>
   )

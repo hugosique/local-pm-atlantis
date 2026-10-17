@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useMemo, useState } from 'react'
 import { cn } from '@/lib/cn'
 import type { BurndownSeries } from '@/lib/burndown'
@@ -26,9 +28,9 @@ const PADDING = { top: 16, right: 56, bottom: 28, left: 44 }
 const MIN_WIDTH = 320
 
 const SERIES: SeriesKey[] = [
-  { id: 'remaining', label: 'Remaining', mark: 'line', className: 'stroke-accent' },
-  { id: 'scope', label: 'Scope', mark: 'line', className: 'stroke-neutral' },
-  { id: 'ideal', label: 'Ideal', mark: 'dashed', className: 'stroke-border-strong' },
+  { id: 'remaining', get label() { return translate("Remaining") }, mark: 'line', className: 'stroke-accent' },
+  { id: 'scope', get label() { return translate("Scope") }, mark: 'line', className: 'stroke-neutral' },
+  { id: 'ideal', get label() { return translate("Ideal") }, mark: 'dashed', className: 'stroke-border-strong' },
 ]
 
 function dayLabel(iso: string): string {
@@ -94,11 +96,11 @@ export function BurndownChart({
 
   const summary =
     plotted === 0
-      ? `Burndown for ${cycleName}. The cycle has not started yet.`
-      : `Burndown for ${cycleName}. ${series.remaining} of ${series.scope} ${unitNoun(
+      ? translate("Burndown for {0}. The cycle has not started yet.", { 0: cycleName })
+      : translate("Burndown for {0}. {1} of {2} {3} remaining after {4} {5}.", { 0: cycleName, 1: series.remaining, 2: series.scope, 3: unitNoun(
           unit,
           series.scope,
-        )} remaining after ${plotted} ${plotted === 1 ? 'day' : 'days'}.`
+        ), 4: plotted, 5: plotted === 1 ? translate("day") : translate("days") })
 
   const move = (delta: number) => {
     const limit = plotted - 1
@@ -111,30 +113,31 @@ export function BurndownChart({
 
   return (
     <ChartFrame
-      title="Burndown"
+      title={translate("Burndown")}
       description={
         frozen
-          ? 'Frozen when the cycle closed, so it keeps reading the same.'
-          : 'Rebuilt from the ticket history, so scope changes show on the day they happened.'
+          ? translate("Frozen when the cycle closed, so it keeps reading the same.")
+          : translate("Rebuilt from the ticket history, so scope changes show on the day they happened.")
       }
       series={SERIES}
       footnote={
         series.unestimated > 0 ? (
           <>
-            {series.unestimated} {series.unestimated === 1 ? 'ticket has' : 'tickets have'} no
-            estimate and {series.unestimated === 1 ? 'is' : 'are'} not counted in the points above.
+            {series.unestimated === 1
+              ? translate("1 ticket has no estimate and is not counted in the points above.")
+              : translate("{0} tickets have no estimate and are not counted in the points above.", { 0: series.unestimated })}
           </>
         ) : null
       }
       table={
-        <Table caption={`Burndown for ${cycleName}, day by day`}>
+        <Table caption={translate("Burndown for {0}, day by day", { 0: cycleName })}>
           <thead>
             <Tr>
-              <Th>Day</Th>
-              <Th align="right">Scope</Th>
-              <Th align="right">Completed</Th>
-              <Th align="right">Remaining</Th>
-              <Th align="right">Ideal</Th>
+              <Th>{translate("Day")}</Th>
+              <Th align="right">{translate("Scope")}</Th>
+              <Th align="right">{translate("Completed")}</Th>
+              <Th align="right">{translate("Remaining")}</Th>
+              <Th align="right">{translate("Ideal")}</Th>
             </Tr>
           </thead>
           <tbody>
@@ -152,15 +155,15 @@ export function BurndownChart({
       }
     >
       {days.length === 0 ? (
-        <ChartEmpty message="This cycle has no days to plot yet." />
+        <ChartEmpty message={translate("This cycle has no days to plot yet.")} />
       ) : plotted === 0 ? (
-        <ChartEmpty message={`${cycleName} has not started yet. The burndown starts on day one.`} />
+        <ChartEmpty message={translate("{0} has not started yet. The burndown starts on day one.", { 0: cycleName })} />
       ) : (
         <div ref={ref} className="relative">
           <div
             tabIndex={0}
             role="group"
-            aria-label={`${summary} Use the left and right arrow keys to read each day.`}
+            aria-label={translate("{0} Use the left and right arrow keys to read each day.", { 0: summary })}
             onKeyDown={(event) => {
               if (event.key === 'ArrowRight') {
                 event.preventDefault()
@@ -298,10 +301,10 @@ export function BurndownChart({
 
           <p aria-live="polite" className="sr-only">
             {activeDay && activeDay.remaining !== null
-              ? `${fullDayLabel(activeDay.date)}: ${activeDay.remaining} ${unitNoun(
+              ? translate("{0}: {1} {2} remaining of {3} in scope, {4} done.", { 0: fullDayLabel(activeDay.date), 1: activeDay.remaining, 2: unitNoun(
                   unit,
                   activeDay.remaining,
-                )} remaining of ${activeDay.scope} in scope, ${activeDay.completed} done.`
+                ), 3: activeDay.scope, 4: activeDay.completed })
               : ''}
           </p>
         </div>
@@ -335,9 +338,9 @@ function DayReadout({
     >
       <p className="text-xs font-medium text-text">{fullDayLabel(day.date)}</p>
       <dl className="mt-1 flex flex-col gap-0.5">
-        <ReadoutRow label="Remaining" value={day.remaining} unit={unit} series={SERIES[0]} />
-        <ReadoutRow label="Scope" value={day.scope} unit={unit} series={SERIES[1]} />
-        <ReadoutRow label="Done" value={day.completed} unit={unit} series={SERIES[0]} muted />
+        <ReadoutRow label={translate("Remaining")} value={day.remaining} unit={unit} series={SERIES[0]} />
+        <ReadoutRow label={translate("Scope")} value={day.scope} unit={unit} series={SERIES[1]} />
+        <ReadoutRow label={translate("Done")} value={day.completed} unit={unit} series={SERIES[0]} muted />
       </dl>
     </div>
   )

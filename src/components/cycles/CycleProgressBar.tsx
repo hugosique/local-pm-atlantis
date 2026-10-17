@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { cn } from '@/lib/cn'
 import type { CycleProgress } from '@/lib/cycles'
 
@@ -34,9 +36,8 @@ export function CycleProgressBar({
         />
       </div>
       <p className="text-xs text-text-muted tabular">
-        {progress.percent}% complete · {progress.completed} of {scope} done
-        {progress.started > 0 && ` · ${progress.started} in progress`}
-        {progress.cancelled > 0 && ` · ${progress.cancelled} cancelled`}
+        {progress.percent}{translate("% complete ·")} {progress.completed} {translate("of")} {scope} {translate("done")} {progress.started > 0 && translate(" · {0} in progress", { 0: progress.started })}
+        {progress.cancelled > 0 && translate(" · {0} cancelled", { 0: progress.cancelled })}
       </p>
     </div>
   )

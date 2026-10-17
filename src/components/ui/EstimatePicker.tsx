@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { Diamond } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import {
@@ -39,14 +41,14 @@ export function EstimateSelect({
   const known = points.some((point) => point.value === current)
 
   const options: SelectOption[] = [
-    { value: '', label: 'No estimate' },
+    { value: '', label: translate("No estimate") },
     ...points.map((point) => ({
       value: String(point.value),
       label: point.label,
       hint: point.label === String(point.value) ? undefined : `${point.value}`,
     })),
     ...(current !== null && !known
-      ? [{ value: String(current), label: String(current), hint: 'not in this scale' }]
+      ? [{ value: String(current), label: String(current), hint: translate("not in this scale") }]
       : []),
   ]
 
@@ -55,7 +57,7 @@ export function EstimateSelect({
       id={id}
       value={current === null ? '' : String(current)}
       options={options}
-      placeholder="No estimate"
+      placeholder={translate("No estimate")}
       aria-label={ariaLabel}
       aria-describedby={describedBy}
       className={className}
@@ -79,7 +81,7 @@ export function EstimateBadge({
   const points = normalizeEstimate(value) ?? 0
 
   return (
-    <Tooltip content={`Estimate: ${label} (${points} ${points === 1 ? 'point' : 'points'})`}>
+    <Tooltip content={translate("Estimate: {0} ({1} {2})", { 0: label, 1: points, 2: points === 1 ? translate("point") : translate("points") })}>
       <span
         className={cn(
           'inline-flex h-5 shrink-0 items-center gap-1 rounded-xs px-1.5',

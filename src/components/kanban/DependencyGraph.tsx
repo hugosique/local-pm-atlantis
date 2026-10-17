@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useMemo } from 'react'
 import { isClosedStatus } from '@/lib/status'
 import type { Ticket } from '@/payload-types'
@@ -75,8 +77,7 @@ export function DependencyGraph({
   if (edges.length === 0) {
     return (
       <p className="rounded-md border border-dashed border-border-subtle px-3 py-6 text-center text-base text-text-muted">
-        This ticket has no dependencies.
-      </p>
+        {translate("This ticket has no dependencies.")} </p>
     )
   }
 
@@ -94,9 +95,7 @@ export function DependencyGraph({
         width={width}
         height={height}
         role="img"
-        aria-label={`Dependency graph for ${ticket.ticketId ?? ticket.title}: ${
-          edges.length
-        } relationship${edges.length === 1 ? '' : 's'}.`}
+        aria-label={translate("Dependency graph for {0}: {1} relationship{2}.", { 0: ticket.ticketId ?? ticket.title, 1: edges.length, 2: edges.length === 1 ? '' : 's' })}
         className="max-w-none"
       >
         <defs>
@@ -146,7 +145,7 @@ export function DependencyGraph({
             </text>
             <text x={12} y={50} fontSize={9} fill="var(--color-text-muted)">
               {node.kind === 'current'
-                ? 'this ticket'
+                ? translate("this ticket")
                 : isClosedStatus(node.ticket.status)
                   ? 'done'
                   : node.kind === 'blocker'

@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import '../globals.css'
@@ -35,7 +36,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'local-pm',
-  description: 'Keyboard-first project management: kanban boards, tickets, projects and teams.',
+  description: translate("Keyboard-first project management: kanban boards, tickets, projects and teams."),
 }
 
 export const viewport: Viewport = {

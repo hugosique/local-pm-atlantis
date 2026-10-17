@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import { ESTIMATE_SCALE_OPTIONS, EstimateScale } from '@/types/enums'
 import { estimatePoints, estimateSettingsOf, type EstimateSettings as Settings } from '@/lib/estimates'
@@ -31,15 +33,13 @@ export function EstimateSettings({ project: initialProject }: { project: Project
           <input
             type="checkbox"
             checked={settings.enabled}
-            onChange={(e) => update({ enabled: e.target.checked }, 'the estimate setting')}
+            onChange={(e) => update({ enabled: e.target.checked }, translate("the estimate setting"))}
             className="mt-0.5 size-4 shrink-0 accent-accent"
           />
           <span className="flex flex-col gap-1">
-            <span className="text-base font-medium text-text">Estimate tickets in this project</span>
+            <span className="text-base font-medium text-text">{translate("Estimate tickets in this project")}</span>
             <span className="text-sm text-text-muted">
-              Tickets get an estimate field, and the cycle burndown and velocity charts count points
-              instead of tickets.
-            </span>
+              {translate("Tickets get an estimate field, and the cycle burndown and velocity charts count points instead of tickets.")} </span>
           </span>
         </label>
 
@@ -55,8 +55,8 @@ export function EstimateSettings({ project: initialProject }: { project: Project
 
       {settings.enabled && (
         <Field
-          label="Scale"
-          hint="Estimates are stored as points, so changing the scale relabels what is already there rather than rewriting it."
+          label={translate("Scale")}
+          hint={translate("Estimates are stored as points, so changing the scale relabels what is already there rather than rewriting it.")}
         >
           {({ id, describedBy }) => (
             <Select
@@ -67,7 +67,7 @@ export function EstimateSettings({ project: initialProject }: { project: Project
                 value: option.value,
                 label: option.label,
               }))}
-              onValueChange={(next) => update({ scale: next as EstimateScale }, 'the scale')}
+              onValueChange={(next) => update({ scale: next as EstimateScale }, translate("the scale"))}
             />
           )}
         </Field>
@@ -76,8 +76,7 @@ export function EstimateSettings({ project: initialProject }: { project: Project
       {settings.enabled && (
         <div className="flex flex-col gap-2">
           <h3 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-            What this scale offers
-          </h3>
+            {translate("What this scale offers")} </h3>
           <ul className="flex flex-wrap gap-2">
             {estimatePoints(settings.scale).map((point) => (
               <li

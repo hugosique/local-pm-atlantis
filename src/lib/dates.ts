@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 export interface DateRangeSpec {
   startField: string
   endField: string
@@ -8,15 +9,15 @@ export interface DateRangeSpec {
 export const TICKET_DATES: DateRangeSpec = {
   startField: 'startDate',
   endField: 'dueDate',
-  startLabel: 'start date',
-  endLabel: 'due date',
+  get startLabel() { return translate("start date") },
+  get endLabel() { return translate("due date") },
 }
 
 export const PROJECT_DATES: DateRangeSpec = {
   startField: 'startDate',
   endField: 'targetDate',
-  startLabel: 'start date',
-  endLabel: 'target date',
+  get startLabel() { return translate("start date") },
+  get endLabel() { return translate("target date") },
 }
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/
@@ -46,7 +47,7 @@ export function dateOrderError(
   if (!from || !to || from <= to) return null
 
   const label = spec.endLabel.charAt(0).toUpperCase() + spec.endLabel.slice(1)
-  return `${label} is before the ${spec.startLabel}. Choose a ${spec.endLabel} on or after ${from}.`
+  return translate("{0} is before the {1}. Choose a {2} on or after {3}.", { 0: label, 1: spec.startLabel, 2: spec.endLabel, 3: from })
 }
 
 export function pendingDateOrderError(

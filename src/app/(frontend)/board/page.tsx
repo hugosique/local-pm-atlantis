@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { KanbanBoard } from '@/components/kanban/KanbanBoard'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -6,7 +7,7 @@ import type { Where } from 'payload'
 import { ticketSearchWhere } from '@/lib/ticket-search'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'Board · local-pm' }
+export const metadata = { title: translate("Board · local-pm") }
 
 const TICKETS_PER_COLUMN = 20
 

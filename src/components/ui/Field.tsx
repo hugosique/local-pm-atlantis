@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { forwardRef, useEffect, useId, useRef } from 'react'
 import { AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -59,8 +61,8 @@ export function Field({
         className={cn('text-xs font-medium text-text-muted', hideLabel && 'sr-only')}
       >
         {label}
-        {optional && <span className="ml-1 font-normal text-text-muted">(optional)</span>}
-        {required && <span className="sr-only"> (required)</span>}
+        {optional && <span className="ml-1 font-normal text-text-muted">{translate("(optional)")}</span>}
+        {required && <span className="sr-only"> {translate("(required)")}</span>}
       </label>
 
       {children({ id, describedBy, invalid })}
@@ -165,8 +167,7 @@ export const ErrorSummary = forwardRef<HTMLDivElement, ErrorSummaryProps>(functi
         className="flex items-center gap-2 text-base font-semibold text-danger-text"
       >
         <AlertCircle className="size-4 shrink-0" aria-hidden />
-        There is a problem
-      </h2>
+        {translate("There is a problem")} </h2>
       <ul className="mt-2 flex flex-col gap-1">
         {errors.map((e) => (
           <li key={e.field}>

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useRef, useState } from 'react'
 import { Check, Users } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -57,7 +59,7 @@ export function TeamFormDialog({
   }, [open, team])
 
   const dirty = JSON.stringify(form) !== JSON.stringify(initial)
-  const nameError = form.name.trim() ? null : 'Enter a name for this team.'
+  const nameError = form.name.trim() ? null : translate("Enter a name for this team.")
   const showNameError = (touched || submitAttempted) && nameError
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,13 +84,13 @@ export function TeamFormDialog({
       })
       if (!response.ok) {
         const payload = await response.json().catch(() => null)
-        throw new Error(payload?.errors?.[0]?.message || `Saving failed (${response.status}).`)
+        throw new Error(payload?.errors?.[0]?.message || translate("Saving failed ({0}).", { 0: response.status }))
       }
       const saved = await response.json()
       onSaved((saved.doc ?? saved) as Team, !team)
     } catch (error) {
       setFormError(
-        error instanceof Error ? error.message : 'Something went wrong saving this team.',
+        error instanceof Error ? error.message : translate("Something went wrong saving this team."),
       )
       requestAnimationFrame(() => summaryRef.current?.focus())
     } finally {
@@ -101,7 +103,7 @@ export function TeamFormDialog({
       <Dialog
         open={open}
         onClose={onClose}
-        title={team ? 'Edit team' : 'New team'}
+        title={team ? translate("Edit team") : translate("New team")}
         size="md"
         dismissible={!dirty && !submitting}
         onDismissBlocked={() => (dirty ? setConfirmDiscard(true) : onClose())}
@@ -112,10 +114,9 @@ export function TeamFormDialog({
               onClick={() => (dirty ? setConfirmDiscard(true) : onClose())}
               disabled={submitting}
             >
-              Cancel
-            </Button>
+              {translate("Cancel")} </Button>
             <Button type="submit" form="team-form" variant="primary" loading={submitting}>
-              {team ? 'Save changes' : 'Create team'}
+              {team ? translate("Save changes") : translate("Create team")}
             </Button>
           </>
         }
@@ -137,11 +138,10 @@ export function TeamFormDialog({
           <div className="flex items-center gap-3">
             <EntityMark icon={Users} color={form.color} size="lg" />
             <p className="text-base text-text-muted">
-              Teams group the tickets a set of people are responsible for.
-            </p>
+              {translate("Teams group the tickets a set of people are responsible for.")} </p>
           </div>
 
-          <Field id="team-form-name" label="Name" required error={showNameError ? nameError : null}>
+          <Field id="team-form-name" label={translate("Name")} required error={showNameError ? nameError : null}>
             {({ describedBy, invalid }) => (
               <Input
                 id="team-form-name"
@@ -156,16 +156,16 @@ export function TeamFormDialog({
           </Field>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-muted">Description</span>
+            <span className="text-xs font-medium text-text-muted">{translate("Description")}</span>
             <RichTextEditor
               value={form.description}
               onChange={(value) => setForm((f) => ({ ...f, description: value }))}
-              placeholder="Responsibilities, areas of ownership…"
+              placeholder={translate("Responsibilities, areas of ownership…")}
             />
           </div>
 
           <fieldset className="flex flex-col gap-2">
-            <legend className="text-xs font-medium text-text-muted">Colour</legend>
+            <legend className="text-xs font-medium text-text-muted">{translate("Colour")}</legend>
             <div className="flex flex-wrap gap-1.5">
               {PROJECT_COLORS.map((color) => {
                 const selected = form.color === color
@@ -207,10 +207,10 @@ export function TeamFormDialog({
           setConfirmDiscard(false)
           onClose()
         }}
-        title="Discard your changes?"
-        message="This team has unsaved edits. Closing now loses them."
-        confirmLabel="Discard"
-        cancelLabel="Keep editing"
+        title={translate("Discard your changes?")}
+        message={translate("This team has unsaved edits. Closing now loses them.")}
+        confirmLabel={translate("Discard")}
+        cancelLabel={translate("Keep editing")}
       />
     </>
   )

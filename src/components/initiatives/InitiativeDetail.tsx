@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -106,11 +108,11 @@ export function InitiativeDetail({
       if (current.includes(projectId)) {
         toast({
           tone: 'info',
-          title: `${project?.name ?? 'That project'} is already in this initiative`,
+          title: translate("{0} is already in this initiative", { 0: project?.name ?? 'That project' }),
         })
         return
       }
-      await setProjects([...current, projectId], 'the projects')
+      await setProjects([...current, projectId], translate("the projects"))
     },
     [initiative, setProjects, toast],
   )
@@ -119,12 +121,12 @@ export function InitiativeDetail({
     async (project: Project) => {
       const current = projectIdsOf(initiative)
       const next = current.filter((id) => id !== project.id)
-      const ok = await setProjects(next, 'the projects')
+      const ok = await setProjects(next, translate("the projects"))
       if (!ok) return
 
       toast({
-        title: `${project.name} removed from this initiative`,
-        onUndo: () => void setProjects(current, 'the projects'),
+        title: translate("{0} removed from this initiative", { 0: project.name }),
+        onUndo: () => void setProjects(current, translate("the projects")),
       })
     },
     [initiative, setProjects, toast],
@@ -135,13 +137,13 @@ export function InitiativeDetail({
     try {
       const response = await fetch(`/api/initiatives/${initiative.id}`, { method: 'DELETE' })
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
-      toast({ title: `${initiative.name} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: initiative.name }), tone: 'info' })
       router.push('/initiatives')
       router.refresh()
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that initiative",
+        title: translate("Couldn't delete that initiative"),
         description: error instanceof Error ? error.message : undefined,
       })
       setDeleting(false)
@@ -151,14 +153,13 @@ export function InitiativeDetail({
   return (
     <div className="flex h-full flex-col">
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 pt-4 max-md:px-4">
-        <nav aria-label="Breadcrumb">
+        <nav aria-label={translate("Breadcrumb")}>
           <Link
             href="/initiatives"
             className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
           >
             <ArrowLeft className="size-3.5" aria-hidden />
-            Initiatives
-          </Link>
+            {translate("Initiatives")} </Link>
         </nav>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -167,22 +168,22 @@ export function InitiativeDetail({
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-semibold text-text">
               <InlineEdit
-                label="Initiative name"
+                label={translate("Initiative name")}
                 value={initiative.name}
-                validate={(next) => (next.trim() ? null : 'A name is required.')}
-                onCommit={(next) => patch({ name: next }, 'the name')}
+                validate={(next) => (next.trim() ? null : translate("A name is required."))}
+                onCommit={(next) => patch({ name: next }, translate("the name"))}
               />
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
               <span className="tabular">
-                {rollup.projects} {rollup.projects === 1 ? 'project' : 'projects'}
+                {rollup.projects} {rollup.projects === 1 ? translate("project") : translate("projects")}
               </span>
               <span aria-hidden>·</span>
-              <span className="tabular">{rollup.percent}% complete</span>
+              <span className="tabular">{rollup.percent}{translate("% complete")}</span>
               {initiative.targetDate && (
                 <>
                   <span aria-hidden>·</span>
-                  <span className="tabular">Target {formatDate(initiative.targetDate)}</span>
+                  <span className="tabular">{translate("Target")} {formatDate(initiative.targetDate)}</span>
                 </>
               )}
               {savingLabel && (
@@ -201,24 +202,22 @@ export function InitiativeDetail({
 
           <div className="flex items-center gap-2">
             <LinkButton variant="secondary" icon={Pencil} href={`/initiatives/${initiative.id}/edit`}>
-              Edit
-            </LinkButton>
+              {translate("Edit")} </LinkButton>
             <Button variant="ghost" icon={Trash2} onClick={() => setConfirmDelete(true)}>
-              Delete
-            </Button>
+              {translate("Delete")} </Button>
           </div>
         </div>
 
         <TabList
-          label="Initiative sections"
+          label={translate("Initiative sections")}
           idPrefix="initiative"
           value={tab}
           onChange={selectTab}
           tabs={[
-            { id: 'overview', label: 'Overview', icon: FileText },
+            { id: 'overview', label: translate("Overview"), icon: FileText },
             {
               id: 'projects',
-              label: 'Projects',
+              label: translate("Projects"),
               icon: FolderKanban,
               count: rollup.projects,
             },
@@ -231,53 +230,51 @@ export function InitiativeDetail({
           <div className="grid grid-cols-[minmax(0,1fr)_300px] gap-8 max-lg:grid-cols-1">
             <section className="flex min-w-0 flex-col gap-3">
               <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                Description
-              </h2>
+                {translate("Description")} </h2>
               <Expandable lines={10}>
                 <RichTextDisplay content={description} wide />
               </Expandable>
             </section>
 
             <aside className="flex flex-col gap-6">
-              <Field label="Status">
+              <Field label={translate("Status")}>
                 {({ id }) => (
                   <Select
                     id={id}
                     value={initiative.status}
                     options={initiativeStatusOptions()}
                     onValueChange={(next) =>
-                      patch({ status: next as InitiativeStatus }, 'the status')
+                      patch({ status: next as InitiativeStatus }, translate("the status"))
                     }
                   />
                 )}
               </Field>
 
-              <Field label="Lead">
+              <Field label={translate("Lead")}>
                 {({ id }) => (
                   <MemberSelect
                     id={id}
                     value={lead?.id ?? ''}
                     selected={lead}
-                    allLabel="No lead"
-                    onChange={(value) => patch({ lead: value || null }, 'the lead')}
+                    allLabel={translate("No lead")}
+                    onChange={(value) => patch({ lead: value || null }, translate("the lead"))}
                   />
                 )}
               </Field>
 
-              <Field label="Target date">
+              <Field label={translate("Target date")}>
                 {({ id }) => (
                   <DatePicker
                     id={id}
                     value={initiative.targetDate ?? ''}
-                    onChange={(next) => patch({ targetDate: next || null }, 'the target date')}
+                    onChange={(next) => patch({ targetDate: next || null }, translate("the target date"))}
                   />
                 )}
               </Field>
 
               <section className="flex flex-col gap-3">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Progress
-                </h2>
+                  {translate("Progress")} </h2>
 
                 <div>
                   <div
@@ -286,7 +283,7 @@ export function InitiativeDetail({
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuetext={summary}
-                    aria-label="Initiative progress"
+                    aria-label={translate("Initiative progress")}
                     className="h-2 overflow-hidden rounded-full bg-surface-hover"
                   >
                     <div
@@ -298,18 +295,18 @@ export function InitiativeDetail({
                     />
                   </div>
                   <p className="mt-1.5 text-xs text-text-muted tabular">
-                    {rollup.percent}% complete · {summary}
+                    {rollup.percent}{translate("% complete ·")} {summary}
                   </p>
                 </div>
 
                 <dl className="flex flex-col">
                   {(
                     [
-                      ['Projects', rollup.projects],
-                      ['Tickets', rollup.total],
-                      ['In progress', rollup.started],
-                      ['Done', rollup.done],
-                      ['Open', rollup.open],
+                      [translate("Projects"), rollup.projects],
+                      [translate("Tickets"), rollup.total],
+                      [translate("In progress"), rollup.started],
+                      [translate("Done"), rollup.done],
+                      [translate("Open"), rollup.open],
                     ] as const
                   ).map(([label, value]) => (
                     <div
@@ -325,13 +322,13 @@ export function InitiativeDetail({
 
               <dl className="flex flex-col gap-2 border-t border-border-subtle pt-4 text-xs text-text-muted">
                 <div className="flex justify-between gap-2">
-                  <dt>Created</dt>
+                  <dt>{translate("Created")}</dt>
                   <dd className="text-text tabular">
                     {formatDateTimeRelative(initiative.createdAt)}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>Updated</dt>
+                  <dt>{translate("Updated")}</dt>
                   <dd className="text-text tabular">
                     {formatDateTimeRelative(initiative.updatedAt)}
                   </dd>
@@ -357,14 +354,14 @@ export function InitiativeDetail({
         onClose={() => setConfirmDelete(false)}
         onConfirm={deleteInitiative}
         loading={deleting}
-        title="Delete this initiative?"
+        title={translate("Delete this initiative?")}
         message={`“${initiative.name}”`}
         consequence={
           rollup.projects > 0
-            ? `The ${rollup.projects} project${rollup.projects === 1 ? '' : 's'} inside stay where they are. Only the initiative and its grouping are removed. This cannot be undone.`
-            : 'This initiative holds no projects. This cannot be undone.'
+            ? translate("The {0} project{1} inside stay where they are. Only the initiative and its grouping are removed. This cannot be undone.", { 0: rollup.projects, 1: rollup.projects === 1 ? '' : 's' })
+            : translate("This initiative holds no projects. This cannot be undone.")
         }
-        confirmLabel="Delete initiative"
+        confirmLabel={translate("Delete initiative")}
       />
     </div>
   )

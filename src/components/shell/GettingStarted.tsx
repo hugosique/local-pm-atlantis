@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { ArrowRight, FolderKanban, LayoutDashboard, Search, Ticket, Users } from 'lucide-react'
 import { Dialog } from '@/components/ui/Dialog'
 import { LinkButton } from '@/components/ui/Button'
@@ -8,27 +10,30 @@ import { Kbd } from '@/components/ui/Kbd'
 const steps = [
   {
     icon: FolderKanban,
-    title: 'Give your work a home',
-    description:
-      'Create a project for a goal, client, or area of work. Its short prefix makes every ticket easy to recognize.',
+    get title() { return translate("Give your work a home") },
+    get description() {
+      return translate("Create a project for a goal, client, or area of work. Its short prefix makes every ticket easy to recognize.")
+    },
     href: '/projects/new',
-    action: 'Create a project',
+    get action() { return translate("Create a project") },
   },
   {
     icon: Ticket,
-    title: 'Start with one small next step',
-    description:
-      'A title and a project are all you need. Add an owner, a due date, or a checklist when they help.',
+    get title() { return translate("Start with one small next step") },
+    get description() {
+      return translate("A title and a project are all you need. Add an owner, a due date, or a checklist when they help.")
+    },
     href: '/tickets/new',
-    action: 'Create a ticket',
+    get action() { return translate("Create a ticket") },
   },
   {
     icon: LayoutDashboard,
-    title: 'Keep the next step visible',
-    description:
-      'Move tickets from Todo to In Progress to Done. Drag a card, or use its menu to move it with your keyboard.',
+    get title() { return translate("Keep the next step visible") },
+    get description() {
+      return translate("Move tickets from Todo to In Progress to Done. Drag a card, or use its menu to move it with your keyboard.")
+    },
     href: '/board',
-    action: 'Open the board',
+    get action() { return translate("Open the board") },
   },
 ]
 
@@ -37,8 +42,8 @@ export function GettingStarted({ open, onClose }: { open: boolean; onClose: () =
     <Dialog
       open={open}
       onClose={onClose}
-      title="Make room for your best work"
-      description="A small workspace. A clear next step. Start here."
+      title={translate("Make room for your best work")}
+      description={translate("A small workspace. A clear next step. Start here.")}
       size="md"
       initialFocus="heading"
     >
@@ -69,12 +74,12 @@ export function GettingStarted({ open, onClose }: { open: boolean; onClose: () =
       <div className="mt-6 flex flex-col gap-3 rounded-lg bg-bg-subtle p-4 text-sm text-text-muted">
         <p className="flex items-center gap-2">
           <Search className="size-4 shrink-0" aria-hidden />
-          <span>Find a ticket by title or key, anywhere.</span>
+          <span>{translate("Find a ticket by title or key, anywhere.")}</span>
           <Kbd keys="mod+k" className="ml-auto" />
         </p>
         <p className="flex items-center gap-2">
           <Users className="size-4 shrink-0" aria-hidden />
-          <span>Teams are optional. Start simple and organize as you grow.</span>
+          <span>{translate("Teams are optional. Start simple and organize as you grow.")}</span>
         </p>
       </div>
     </Dialog>

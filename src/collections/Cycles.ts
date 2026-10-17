@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { APIError } from 'payload'
 import type { Cycle, Project } from '@/payload-types'
@@ -25,10 +26,11 @@ async function readBody(req: PayloadRequest): Promise<Record<string, unknown>> {
 
 export const Cycles: CollectionConfig = {
   slug: 'cycles',
+  labels: { singular: translate("Cycle"), plural: translate("Cycles") },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'number', 'project', 'startsAt', 'endsAt', 'completedAt'],
-    description: 'Time-boxed cycles that incomplete work rolls out of when they end',
+    description: translate("Time-boxed cycles that incomplete work rolls out of when they end"),
   },
   access: collectionAccess,
   endpoints: [
@@ -36,7 +38,7 @@ export const Cycles: CollectionConfig = {
       path: '/reconcile',
       method: 'post',
       handler: async (req) => {
-        if (denied(req)) return json({ error: 'Not authorised' }, 403)
+        if (denied(req)) return json({ error: translate("Not authorised") }, 403)
 
         const body = (await readBody(req)) as { project?: string; force?: boolean }
 
@@ -58,7 +60,7 @@ export const Cycles: CollectionConfig = {
           })
           return json({ reports: [report] })
         } catch {
-          return json({ error: 'That project could not be found.' }, 404)
+          return json({ error: translate("That project could not be found.") }, 404)
         }
       },
     },
@@ -66,10 +68,10 @@ export const Cycles: CollectionConfig = {
       path: '/:id/burndown',
       method: 'get',
       handler: async (req) => {
-        if (denied(req)) return json({ error: 'Not authorised' }, 403)
+        if (denied(req)) return json({ error: translate("Not authorised") }, 403)
 
         const id = req.routeParams?.id
-        if (typeof id !== 'string') return json({ error: 'A cycle id is required.' }, 400)
+        if (typeof id !== 'string') return json({ error: translate("A cycle id is required.") }, 400)
 
         try {
           const cycle = (await req.payload.findByID({
@@ -99,7 +101,7 @@ export const Cycles: CollectionConfig = {
             series,
           })
         } catch {
-          return json({ error: 'That cycle could not be found.' }, 404)
+          return json({ error: translate("That cycle could not be found.") }, 404)
         }
       },
     },
@@ -107,11 +109,11 @@ export const Cycles: CollectionConfig = {
       path: '/velocity',
       method: 'get',
       handler: async (req) => {
-        if (denied(req)) return json({ error: 'Not authorised' }, 403)
+        if (denied(req)) return json({ error: translate("Not authorised") }, 403)
 
         const projectId = req.query?.project
         if (typeof projectId !== 'string' || !projectId) {
-          return json({ error: 'A project id is required.' }, 400)
+          return json({ error: translate("A project id is required.") }, 400)
         }
 
         try {
@@ -130,7 +132,7 @@ export const Cycles: CollectionConfig = {
             ...(await loadVelocity(req.payload, project, { window })),
           })
         } catch {
-          return json({ error: 'That project could not be found.' }, 404)
+          return json({ error: translate("That project could not be found.") }, 404)
         }
       },
     },
@@ -138,16 +140,16 @@ export const Cycles: CollectionConfig = {
       path: '/:id/close',
       method: 'post',
       handler: async (req) => {
-        if (denied(req)) return json({ error: 'Not authorised' }, 403)
+        if (denied(req)) return json({ error: translate("Not authorised") }, 403)
 
         const id = req.routeParams?.id
-        if (typeof id !== 'string') return json({ error: 'A cycle id is required.' }, 400)
+        if (typeof id !== 'string') return json({ error: translate("A cycle id is required.") }, 400)
 
         try {
           const report = await closeCycleNow(req.payload, id)
           return json({ report })
         } catch {
-          return json({ error: 'That cycle could not be closed.' }, 400)
+          return json({ error: translate("That cycle could not be closed.") }, 400)
         }
       },
     },
@@ -168,7 +170,7 @@ export const Cycles: CollectionConfig = {
         const endsAt = toIsoDate(data?.endsAt ?? originalDoc?.endsAt)
 
         if (startsAt && endsAt && endsAt < startsAt) {
-          throw new APIError('A cycle cannot end before it starts.', 400, undefined, true)
+          throw new APIError(translate("A cycle cannot end before it starts."), 400, undefined, true)
         }
 
         const number = data?.number ?? originalDoc?.number
@@ -197,7 +199,7 @@ export const Cycles: CollectionConfig = {
 
         if (clash.docs.length > 0) {
           throw new APIError(
-            `This project already has a cycle numbered ${number}.`,
+            translate("This project already has a cycle numbered {0}.", { 0: number }),
             400,
             undefined,
             true,
@@ -223,83 +225,92 @@ export const Cycles: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
       required: true,
       admin: {
-        description: 'Shown on the cycle page and on tickets. Defaults to the cycle number.',
+        description: translate("Shown on the cycle page and on tickets. Defaults to the cycle number."),
       },
     },
     {
       name: 'number',
+      label: translate("Number"),
       type: 'number',
       required: true,
       index: true,
       admin: {
-        description: 'Sequential within the project, starting at 1. Never reused.',
+        description: translate("Sequential within the project, starting at 1. Never reused."),
       },
     },
     {
       name: 'project',
+      label: translate("Project"),
       type: 'relationship',
       relationTo: 'projects',
       required: true,
       index: true,
       admin: {
-        description: 'The project whose workflow this cycle belongs to',
+        description: translate("The project whose workflow this cycle belongs to"),
       },
     },
     {
       name: 'startsAt',
+      label: translate("Starts at"),
       type: 'date',
       required: true,
       index: true,
       admin: {
-        description: 'First day of the cycle',
+        description: translate("First day of the cycle"),
         date: { pickerAppearance: 'dayOnly' },
       },
     },
     {
       name: 'endsAt',
+      label: translate("Ends at"),
       type: 'date',
       required: true,
       index: true,
       admin: {
-        description: 'Last day of the cycle, inclusive',
+        description: translate("Last day of the cycle, inclusive"),
         date: { pickerAppearance: 'dayOnly' },
       },
     },
     {
       name: 'goal',
+      label: translate("Goal"),
       type: 'text',
       admin: {
-        description: 'Optional one-line goal for the cycle',
+        description: translate("Optional one-line goal for the cycle"),
       },
     },
     {
       name: 'completedAt',
+      label: translate("Completed at"),
       type: 'date',
       index: true,
       admin: {
-        description: 'Set when the cycle was closed and its incomplete work rolled over',
+        description: translate("Set when the cycle was closed and its incomplete work rolled over"),
       },
     },
     {
       name: 'progressSnapshot',
+      label: translate("Progress snapshot"),
       type: 'json',
       admin: {
         readOnly: true,
         description:
-          'The burndown as it stood when the cycle closed. Frozen so the chart keeps reading the same afterwards, whatever happens to the tickets later.',
+          translate("The burndown as it stood when the cycle closed. Frozen so the chart keeps reading the same afterwards, whatever happens to the tickets later."),
       },
     },
     {
       name: 'rolledOver',
+      label: translate("Rolled over"),
       type: 'number',
       defaultValue: 0,
       admin: {
         readOnly: true,
         position: 'sidebar',
-        description: 'How many tickets moved out of this cycle when it closed',
+        description: translate("How many tickets moved out of this cycle when it closed"),
       },
     },
   ],

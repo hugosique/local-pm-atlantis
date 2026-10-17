@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { Layers, X } from 'lucide-react'
@@ -44,7 +46,7 @@ export function EpicSection({ ticket, patch }: { ticket: Ticket; patch: PatchTic
       } catch (err) {
         toast({
           tone: 'error',
-          title: `Couldn't ${epicId ? 'add' : 'remove'} ${child.ticketId ?? 'that ticket'}`,
+          title: translate("Couldn't {0} {1}", { 0: epicId ? translate("add") : translate("remove"), 1: child.ticketId ?? translate("that ticket") }),
           description: err instanceof Error ? err.message : undefined,
         })
         return false
@@ -71,7 +73,7 @@ export function EpicSection({ ticket, patch }: { ticket: Ticket; patch: PatchTic
       setBusy(false)
       if (!ok) return
       toast({
-        title: `${child.ticketId ?? child.title} removed from this epic`,
+        title: translate("{0} removed from this epic", { 0: child.ticketId ?? child.title }),
         onUndo: () => void setChildEpic(child, ticket.id),
       })
     },
@@ -80,7 +82,7 @@ export function EpicSection({ ticket, patch }: { ticket: Ticket; patch: PatchTic
 
   return (
     <Section
-      title={isEpic ? 'Epic' : 'Part of an epic'}
+      title={isEpic ? translate("Epic") : translate("Part of an epic")}
       icon={Layers}
       action={
         isEpic ? (
@@ -88,18 +90,16 @@ export function EpicSection({ ticket, patch }: { ticket: Ticket; patch: PatchTic
             size="sm"
             variant="ghost"
             disabled={busy}
-            onClick={() => void patch({ isEpic: false } as Partial<Ticket>, 'the epic flag')}
+            onClick={() => void patch({ isEpic: false } as Partial<Ticket>, translate("the epic flag"))}
           >
-            Stop being an epic
-          </Button>
+            {translate("Stop being an epic")} </Button>
         ) : parentId ? null : (
           <Button
             size="sm"
             variant="secondary"
-            onClick={() => void patch({ isEpic: true } as Partial<Ticket>, 'the epic flag')}
+            onClick={() => void patch({ isEpic: true } as Partial<Ticket>, translate("the epic flag"))}
           >
-            Make this an epic
-          </Button>
+            {translate("Make this an epic")} </Button>
         )
       }
     >
@@ -129,28 +129,27 @@ export function EpicSection({ ticket, patch }: { ticket: Ticket; patch: PatchTic
                 title={parent?.title ?? undefined}
                 className="min-w-0 flex-1 truncate rounded-sm text-base text-text hover:underline"
               >
-                {parent?.title ?? 'Open this epic'}
+                {parent?.title ?? translate("Open this epic")}
               </Link>
-              <Tooltip content="Take this ticket out of its epic" side="top">
+              <Tooltip content={translate("Take this ticket out of its epic")} side="top">
                 <Button
                   variant="ghost"
                   size="sm"
                   iconOnly
                   icon={X}
-                  aria-label="Take this ticket out of its epic"
-                  onClick={() => void patch({ epic: null } as Partial<Ticket>, 'the epic')}
+                  aria-label={translate("Take this ticket out of its epic")}
+                  onClick={() => void patch({ epic: null } as Partial<Ticket>, translate("the epic"))}
                   className="text-text-muted"
                 />
               </Tooltip>
             </div>
           ) : (
             <p className="text-base text-text-muted">
-              This ticket does not roll up into an epic.
-            </p>
+              {translate("This ticket does not roll up into an epic.")} </p>
           )}
 
           <Field
-            label={parentId ? 'Move to another epic' : 'Roll this ticket up into an epic'}
+            label={parentId ? translate("Move to another epic") : translate("Roll this ticket up into an epic")}
             optional
           >
             {({ id }) => (
@@ -158,12 +157,12 @@ export function EpicSection({ ticket, patch }: { ticket: Ticket; patch: PatchTic
                 id={id}
                 value=""
                 selected={null}
-                aria-label="Roll this ticket up into an epic"
-                placeholder="Search for an epic…"
+                aria-label={translate("Roll this ticket up into an epic")}
+                placeholder={translate("Search for an epic…")}
                 where={{ project: projectId, isEpic: 'true' }}
                 onChange={(next) => {
                   if (!next || next === ticket.id || next === parentId) return
-                  void patch({ epic: next } as Partial<Ticket>, 'the epic')
+                  void patch({ epic: next } as Partial<Ticket>, translate("the epic"))
                 }}
               />
             )}

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import { Maximize2, Pencil, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -44,10 +46,10 @@ export function TicketPanel({
         title={ticket.title}
         titleContent={
           <InlineEdit
-            label="Ticket title"
+            label={translate("Ticket title")}
             value={ticket.title}
-            validate={(next) => (next.length === 0 ? 'A title is required.' : null)}
-            onCommit={(next) => patch({ title: next } as Partial<Ticket>, 'the title')}
+            validate={(next) => (next.length === 0 ? translate("A title is required.") : null)}
+            onCommit={(next) => patch({ title: next } as Partial<Ticket>, translate("the title"))}
           />
         }
         eyebrow={
@@ -67,21 +69,21 @@ export function TicketPanel({
         }
         headerActions={
           <>
-            <Tooltip content="Open the full ticket page">
+            <Tooltip content={translate("Open the full ticket page")}>
               <LinkButton
                 variant="ghost"
                 iconOnly
                 icon={Maximize2}
-                aria-label="Open the full ticket page"
+                aria-label={translate("Open the full ticket page")}
                 href={`/tickets/${ticket.id}`}
               />
             </Tooltip>
-            <Tooltip content="Edit this ticket">
+            <Tooltip content={translate("Edit this ticket")}>
               <LinkButton
                 variant="ghost"
                 iconOnly
                 icon={Pencil}
-                aria-label="Edit this ticket"
+                aria-label={translate("Edit this ticket")}
                 href={`/tickets/${ticket.id}/edit`}
               />
             </Tooltip>
@@ -95,11 +97,9 @@ export function TicketPanel({
               className="mr-auto"
               onClick={() => setConfirmDelete(true)}
             >
-              Delete ticket
-            </Button>
+              {translate("Delete ticket")} </Button>
             <LinkButton variant="secondary" icon={Maximize2} href={`/tickets/${ticket.id}`}>
-              Full details
-            </LinkButton>
+              {translate("Full details")} </LinkButton>
           </>
         }
       >
@@ -113,10 +113,10 @@ export function TicketPanel({
           setConfirmDelete(false)
           onDelete(ticket)
         }}
-        title="Delete this ticket?"
-        message={`${ticket.ticketId ?? 'This ticket'} — “${ticket.title}” will be removed from the board.`}
-        consequence="Its subtasks, labels and dependency links go with it. This cannot be undone."
-        confirmLabel="Delete ticket"
+        title={translate("Delete this ticket?")}
+        message={translate("{0} — “{1}” will be removed from the board.", { 0: ticket.ticketId ?? 'This ticket', 1: ticket.title })}
+        consequence={translate("Its subtasks, labels and dependency links go with it. This cannot be undone.")}
+        confirmLabel={translate("Delete ticket")}
       />
     </>
   )

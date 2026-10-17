@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useId, useState } from 'react'
 import { Send } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -31,8 +33,8 @@ export function CommentComposer({
   onCancel,
   author,
   submitting,
-  submitLabel = 'Comment',
-  placeholder = 'Leave a comment…',
+  submitLabel = translate("Comment"),
+  placeholder = translate("Leave a comment…"),
   autoFocus,
   compact,
   error,
@@ -48,7 +50,7 @@ export function CommentComposer({
 
   const submit = () => {
     if (empty) {
-      setEmptyError('Write something before posting.')
+      setEmptyError(translate("Write something before posting."))
       return
     }
     setEmptyError(null)
@@ -64,7 +66,7 @@ export function CommentComposer({
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <MarkdownEditor
           id={fieldId}
-          label={reply ? 'Write a reply' : 'Write a comment'}
+          label={reply ? translate("Write a reply") : translate("Write a comment")}
           value={value}
           onChange={(next) => {
             if (emptyError) setEmptyError(null)
@@ -81,15 +83,13 @@ export function CommentComposer({
           hint={
             <p id={hintId} className="hidden items-center gap-1.5 text-xs text-text-muted sm:flex">
               <Kbd keys="mod+enter" />
-              to post
-            </p>
+              {translate("to post")} </p>
           }
           actions={
             <>
               {onCancel && (
                 <Button variant="ghost" size="sm" onClick={onCancel} disabled={submitting}>
-                  Cancel
-                </Button>
+                  {translate("Cancel")} </Button>
               )}
               <Button
                 variant="primary"

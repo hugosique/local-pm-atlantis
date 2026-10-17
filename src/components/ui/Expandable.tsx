@@ -1,13 +1,15 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 export function Expandable({
   lines = 10,
-  moreLabel = 'Read more',
-  lessLabel = 'Show less',
+  moreLabel = translate("Read more"),
+  lessLabel = translate("Show less"),
   children,
   className,
 }: {

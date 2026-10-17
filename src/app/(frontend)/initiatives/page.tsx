@@ -1,9 +1,10 @@
+import { t as translate } from '@/i18n'
 import { InitiativesList } from '@/components/initiatives/InitiativesList'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'Initiatives · local-pm' }
+export const metadata = { title: translate("Initiatives · local-pm") }
 
 const PAGE_SIZE = 20
 

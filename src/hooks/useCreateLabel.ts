@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import type { Label } from '@/payload-types'
@@ -33,9 +35,9 @@ export function useCreateLabel() {
       } catch (error) {
         toast({
           tone: 'error',
-          title: `Couldn't create the label "${trimmed}"`,
+          title: translate("Couldn't create the label \"{0}\"", { 0: trimmed }),
           description:
-            error instanceof Error ? error.message : 'The label has not been created.',
+            error instanceof Error ? error.message : translate("The label has not been created."),
         })
         return null
       } finally {

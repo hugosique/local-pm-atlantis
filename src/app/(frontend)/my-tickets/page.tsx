@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { headers as getHeaders } from 'next/headers'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -5,7 +6,7 @@ import { MyTickets, type SignedInUser } from '@/components/tickets/MyTickets'
 import type { Member } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'My tickets · local-pm' }
+export const metadata = { title: translate("My tickets · local-pm") }
 
 export default async function MyTicketsPage() {
   const payload = await getPayload({ config })

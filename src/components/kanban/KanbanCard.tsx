@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
@@ -66,7 +68,7 @@ export function KanbanCard({
     isDragging: isSortableDragging,
   } = useSortable({
     id: ticket.id,
-    data: { type: 'Ticket', ticket },
+    data: { type: translate("Ticket"), ticket },
     disabled: isOverlay,
   })
 
@@ -92,25 +94,25 @@ export function KanbanCard({
   const overdue = dueDate ? dueDate.getTime() < Date.now() && !isClosedStatus(ticket.status) : false
 
   const menuItems: MenuItem[] = [
-    ...(onOpen ? [{ id: 'open', label: 'Open ticket', shortcut: 'enter', onSelect: onOpen } as MenuItem] : []),
-    ...(onEdit ? [{ id: 'edit', label: 'Edit', icon: Pencil, shortcut: 'e', onSelect: onEdit } as MenuItem] : []),
+    ...(onOpen ? [{ id: 'open', label: translate("Open ticket"), shortcut: 'enter', onSelect: onOpen } as MenuItem] : []),
+    ...(onEdit ? [{ id: 'edit', label: translate("Edit"), icon: Pencil, shortcut: 'e', onSelect: onEdit } as MenuItem] : []),
     ...(onReorder
       ? ([
           {
             id: 'up',
-            label: 'Move up',
+            label: translate("Move up"),
             icon: ArrowUp,
             separatorBefore: true,
-            groupLabel: 'Move to',
+            groupLabel: translate("Move to"),
             onSelect: () => onReorder(-1),
           },
-          { id: 'down', label: 'Move down', icon: ArrowDown, onSelect: () => onReorder(1) },
+          { id: 'down', label: translate("Move down"), icon: ArrowDown, onSelect: () => onReorder(1) },
         ] as MenuItem[])
       : []),
     ...(onMoveToColumn
       ? moveTargets.map<MenuItem>((t) => ({
           id: `move-${t.id}`,
-          label: `Move to ${t.name}`,
+          label: translate("Move to {0}", { 0: t.name }),
           icon: statusTypeMeta(t.type).icon,
           onSelect: () => onMoveToColumn(t.id),
         }))
@@ -119,7 +121,7 @@ export function KanbanCard({
       ? [
           {
             id: 'delete',
-            label: 'Delete ticket',
+            label: translate("Delete ticket"),
             icon: Trash2,
             destructive: true,
             separatorBefore: true,
@@ -182,15 +184,14 @@ export function KanbanCard({
 
           {ticket.isEpic && (
             <Badge tone="accent" icon={Layers}>
-              Epic
-            </Badge>
+              {translate("Epic")} </Badge>
           )}
           {!ticket.isEpic && epic && (
             <Badge
               tone="neutral"
               icon={Layers}
               maxWidth="7rem"
-              title={`Epic: ${epic.title}`}
+              title={translate("Epic: {0}", { 0: epic.title })}
             >
               {epic.ticketId ?? epic.title}
             </Badge>
@@ -209,7 +210,7 @@ export function KanbanCard({
         <span className="flex flex-wrap items-center gap-2">
           {blockedCount > 0 && (
             <Badge tone={BLOCKED_META.tone} icon={BLOCKED_META.icon}>
-              Blocked · {blockedCount}
+              {translate("Blocked ·")} {blockedCount}
             </Badge>
           )}
 
@@ -221,7 +222,7 @@ export function KanbanCard({
             <span className="inline-flex items-center gap-1 text-xs text-text-muted tabular">
               <CheckSquare className="size-3.5" aria-hidden />
               {doneSubtasks}/{subtasks.length}
-              <span className="sr-only">subtasks complete</span>
+              <span className="sr-only">{translate("subtasks complete")}</span>
             </span>
           )}
 
@@ -234,7 +235,7 @@ export function KanbanCard({
             >
               <CalendarDays className="size-3.5" aria-hidden />
               {formatDateCompact(dueDate)}
-              {overdue && <span className="sr-only">(overdue)</span>}
+              {overdue && <span className="sr-only">{translate("(overdue)")}</span>}
             </span>
           )}
 
@@ -256,7 +257,7 @@ export function KanbanCard({
             'transition-opacity duration-fast',
           )}
         >
-          <Tooltip content="Drag, or press Space to lift">
+          <Tooltip content={translate("Drag, or press Space to lift")}>
             <Button
               ref={setActivatorNodeRef}
               {...attributes}
@@ -265,14 +266,14 @@ export function KanbanCard({
               size="xs"
               iconOnly
               icon={GripVertical}
-              aria-label={`Reorder ${ticket.title}`}
+              aria-label={translate("Reorder {0}", { 0: ticket.title })}
               className="cursor-grab active:cursor-grabbing"
             />
           </Tooltip>
 
           {menuItems.length > 0 && (
             <Menu
-              label={`Actions for ${ticket.title}`}
+              label={translate("Actions for {0}", { 0: ticket.title })}
               items={menuItems}
               trigger={
                 <Button
@@ -280,7 +281,7 @@ export function KanbanCard({
                   size="xs"
                   iconOnly
                   icon={MoreHorizontal}
-                  aria-label={`Actions for ${ticket.title}`}
+                  aria-label={translate("Actions for {0}", { 0: ticket.title })}
                 />
               }
             />

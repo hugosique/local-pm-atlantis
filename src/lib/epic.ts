@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { StatusType } from '@/types/enums'
 import { statusTypeOf } from '@/lib/workflow'
 import type { Ticket } from '@/payload-types'
@@ -50,11 +51,11 @@ export function rollupEpic(children: Pick<Ticket, 'status'>[]): EpicRollup {
 }
 
 export function describeRollup(rollup: EpicRollup): string {
-  if (rollup.total === 0) return 'No tickets in this epic yet'
+  if (rollup.total === 0) return translate("No tickets in this epic yet")
 
-  const parts = [`${rollup.done} of ${rollup.counted} done`]
-  if (rollup.started > 0) parts.push(`${rollup.started} in progress`)
-  if (rollup.cancelled > 0) parts.push(`${rollup.cancelled} cancelled`)
+  const parts = [translate("{0} of {1} done", { 0: rollup.done, 1: rollup.counted })]
+  if (rollup.started > 0) parts.push(translate("{0} in progress", { 0: rollup.started }))
+  if (rollup.cancelled > 0) parts.push(translate("{0} cancelled", { 0: rollup.cancelled }))
   return parts.join(', ')
 }
 

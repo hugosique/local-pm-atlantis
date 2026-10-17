@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isImage, rejectionReason, type UploadedAttachment } from '@/lib/attachments'
 
@@ -53,11 +55,11 @@ function send(
         resolve(parsed.doc)
         return
       }
-      reject(new Error(parsed?.errors?.[0]?.message || `Upload failed (${request.status})`))
+      reject(new Error(parsed?.errors?.[0]?.message || translate("Upload failed ({0})", { 0: request.status })))
     })
 
-    request.addEventListener('error', () => reject(new Error('The connection dropped.')))
-    request.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+    request.addEventListener('error', () => reject(new Error(translate("The connection dropped."))))
+    request.addEventListener('abort', () => reject(new DOMException(translate("Aborted"), 'AbortError')))
 
     request.open('POST', '/api/attachments')
     request.send(form)

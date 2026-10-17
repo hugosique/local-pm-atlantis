@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback } from 'react'
 import { cn } from '@/lib/cn'
 import { LABEL_SWATCH, labelColorOf, sortLabels } from '@/lib/labels'
@@ -11,7 +13,7 @@ import type { Label } from '@/payload-types'
 const LABEL_SORTS = [
   { value: 'name', label: 'A–Z' },
   { value: '-name', label: 'Z–A' },
-  { value: '-createdAt', label: 'Newest' },
+  { value: '-createdAt', get label() { return translate("Newest") } },
 ]
 
 export function labelOption(label: Label): EntityOption {
@@ -63,12 +65,12 @@ export function LabelSelect({
       onChange={(_value, label) => add(label)}
       selectedOption={null}
       onCreate={async (name) => add(await createLabel(name))}
-      createLabel={(name) => `Create label “${name}”`}
-      searchPlaceholder="Search or create a label"
-      placeholder="Add a label"
+      createLabel={(name) => translate("Create label “{0}”", { 0: name })}
+      searchPlaceholder={translate("Search or create a label")}
+      placeholder={translate("Add a label")}
       disabled={disabled}
       className={className}
-      aria-label="Add a label"
+      aria-label={translate("Add a label")}
       aria-describedby={describedBy}
     />
   )
@@ -95,7 +97,7 @@ export function LabelChips({
           maxWidth="12rem"
           title={label.name}
           onRemove={() => onRemove(label)}
-          removeLabel={`Remove label ${label.name}`}
+          removeLabel={translate("Remove label {0}", { 0: label.name })}
         >
           {label.name}
         </Chip>

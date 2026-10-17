@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -44,10 +46,10 @@ const EMPTY: FormState = {
 }
 
 function validateField(name: FieldName, form: FormState): string | null {
-  if (name === 'name') return form.name.trim() ? null : 'Enter a name for this project.'
+  if (name === 'name') return form.name.trim() ? null : translate("Enter a name for this project.")
   if (name === 'prefix') {
-    if (!form.prefix.trim()) return 'Enter a 2–6 letter prefix, used for ticket IDs like ABC-12.'
-    if (form.prefix.length < 2) return 'The prefix needs at least 2 letters.'
+    if (!form.prefix.trim()) return translate("Enter a 2–6 letter prefix, used for ticket IDs like ABC-12.")
+    if (form.prefix.length < 2) return translate("The prefix needs at least 2 letters.")
   }
   if (name === 'targetDate') return dateOrderError(form.startDate, form.targetDate, PROJECT_DATES)
   return null
@@ -132,18 +134,18 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
       })
       if (!response.ok) {
         const payload = await response.json().catch(() => null)
-        throw new Error(payload?.errors?.[0]?.message || `Saving failed (${response.status}).`)
+        throw new Error(payload?.errors?.[0]?.message || translate("Saving failed ({0}).", { 0: response.status }))
       }
       const saved = ((await response.json()).doc ?? {}) as Project
       toast({
         tone: 'success',
-        title: project ? 'Changes saved' : `${saved.name ?? 'Project'} created`,
+        title: project ? translate("Changes saved") : translate("{0} created", { 0: saved.name ?? translate("Project") }),
       })
       leave(returnTo ?? `/projects/${saved.id ?? project?.id}`)
     } catch (error) {
       setSubmitting(false)
       setFormError(
-        error instanceof Error ? error.message : 'Something went wrong saving this project.',
+        error instanceof Error ? error.message : translate("Something went wrong saving this project."),
       )
       requestAnimationFrame(() => summaryRef.current?.focus())
     }
@@ -167,7 +169,7 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
         <header className="sticky top-0 z-20 border-b border-border-subtle bg-bg">
           <div className="mx-auto flex max-w-[960px] flex-wrap items-center gap-3 px-6 py-4 max-md:px-4">
             <div className="min-w-0 flex-1">
-              <nav aria-label="Breadcrumb">
+              <nav aria-label={translate("Breadcrumb")}>
                 <Link
                   href={cancelHref}
                   onClick={(event) => {
@@ -179,11 +181,11 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
                   className="inline-flex items-center gap-1.5 rounded-sm text-xs text-text-muted transition-colors duration-micro hover:text-text"
                 >
                   <ArrowLeft className="size-3.5" aria-hidden />
-                  {project ? project.name : 'Projects'}
+                  {project ? project.name : translate("Projects")}
                 </Link>
               </nav>
               <h1 className="mt-1 text-xl font-semibold text-text">
-                {project ? 'Edit project' : 'New project'}
+                {project ? translate("Edit project") : translate("New project")}
               </h1>
             </div>
 
@@ -193,10 +195,9 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
                 disabled={submitting}
                 onClick={() => (dirty ? setConfirmDiscard(true) : leave(cancelHref))}
               >
-                Cancel
-              </Button>
+                {translate("Cancel")} </Button>
               <Button type="submit" form="project-form" variant="primary" loading={submitting}>
-                {project ? 'Save changes' : 'Create project'}
+                {project ? translate("Save changes") : translate("Create project")}
               </Button>
             </div>
           </div>
@@ -221,13 +222,13 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
           <div className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-4 py-3">
             <EntityMark icon={Icon} color={form.color} size="lg" />
             <p className="text-base text-text-muted">
-              Tickets in this project will be numbered{' '}
+              {translate("Tickets in this project will be numbered")}{' '}
               <span className="text-text tabular">{form.prefix || 'ABC'}-1</span>.
             </p>
           </div>
 
           <div className="grid grid-cols-[1fr_9rem] gap-4 max-sm:grid-cols-1">
-            <Field id="project-form-name" label="Name" required error={errorFor('name')}>
+            <Field id="project-form-name" label={translate("Name")} required error={errorFor('name')}>
               {({ describedBy, invalid }) => (
                 <Input
                   ref={nameRef}
@@ -244,10 +245,10 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
 
             <Field
               id="project-form-prefix"
-              label="Prefix"
+              label={translate("Prefix")}
               required
               error={errorFor('prefix')}
-              hint={project ? 'Fixed once tickets exist.' : '2–6 letters.'}
+              hint={project ? translate("Fixed once tickets exist.") : '2–6 letters.'}
             >
               {({ describedBy, invalid }) => (
                 <Input
@@ -275,7 +276,7 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
             </Field>
           </div>
 
-          <Field label="Status">
+          <Field label={translate("Status")}>
             {({ id }) => (
               <Select
                 id={id}
@@ -288,11 +289,11 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
           </Field>
 
           <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-            <Field label="Start date" optional hint="Type YYYY-MM-DD, or pick a day.">
+            <Field label={translate("Start date")} optional hint={translate("Type YYYY-MM-DD, or pick a day.")}>
               {({ id, describedBy }) => (
                 <DatePicker
                   id={id}
-                  label="Start date"
+                  label={translate("Start date")}
                   aria-describedby={describedBy}
                   value={form.startDate}
                   onChange={(next) => {
@@ -305,15 +306,15 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
 
             <Field
               id="project-form-targetDate"
-              label="Target date"
+              label={translate("Target date")}
               optional
-              hint="When this project is aiming to finish."
+              hint={translate("When this project is aiming to finish.")}
               error={errorFor('targetDate')}
             >
               {({ id, describedBy, invalid }) => (
                 <DatePicker
                   id={id}
-                  label="Target date"
+                  label={translate("Target date")}
                   aria-describedby={describedBy}
                   invalid={invalid}
                   value={form.targetDate}
@@ -327,16 +328,16 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-muted">Description</span>
+            <span className="text-xs font-medium text-text-muted">{translate("Description")}</span>
             <RichTextEditor
               value={form.description}
               onChange={(value) => set('description', value)}
-              placeholder="Goals, scope, anything worth knowing…"
+              placeholder={translate("Goals, scope, anything worth knowing…")}
             />
           </div>
 
           <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-            <legend className="text-xs font-medium text-text-muted">Icon</legend>
+            <legend className="text-xs font-medium text-text-muted">{translate("Icon")}</legend>
             <div className="flex flex-wrap gap-1">
               {PROJECT_ICONS.map((name) => {
                 const Option = projectIcon(name)
@@ -370,7 +371,7 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
           </fieldset>
 
           <fieldset className="flex flex-col gap-2 border-t border-border-subtle pt-5">
-            <legend className="text-xs font-medium text-text-muted">Colour</legend>
+            <legend className="text-xs font-medium text-text-muted">{translate("Colour")}</legend>
             <div className="flex flex-wrap gap-2">
               {PROJECT_COLORS.map((color) => {
                 const selected = form.color === color
@@ -413,10 +414,10 @@ export function ProjectForm({ project, returnTo }: { project: Project | null; re
           setConfirmDiscard(false)
           leave(cancelHref)
         }}
-        title="Discard your changes?"
-        message="This project has unsaved edits. Leaving now loses them."
-        confirmLabel="Discard"
-        cancelLabel="Keep editing"
+        title={translate("Discard your changes?")}
+        message={translate("This project has unsaved edits. Leaving now loses them.")}
+        confirmLabel={translate("Discard")}
+        cancelLabel={translate("Keep editing")}
       />
     </div>
   )

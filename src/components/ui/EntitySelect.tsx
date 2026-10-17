@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import * as Popover from '@radix-ui/react-popover'
 import { AlertCircle, ArrowDownUp, Check, ChevronDown, Loader2, Plus, Search, X } from 'lucide-react'
@@ -107,8 +109,8 @@ export function EntitySelect<T extends { id: string }>({
   emptyOption,
   where,
   depth = 0,
-  placeholder = 'Select...',
-  searchPlaceholder = 'Search...',
+  placeholder = translate("Select..."),
+  searchPlaceholder = translate("Search..."),
   disabled,
   invalid,
   required,
@@ -160,7 +162,7 @@ export function EntitySelect<T extends { id: string }>({
       {
         option: {
           value: `__create__:${pending}`,
-          label: createLabel ? createLabel(pending) : `Create “${pending}”`,
+          label: createLabel ? createLabel(pending) : translate("Create “{0}”", { 0: pending }),
           icon: Plus,
         } as EntityOption,
         doc: null as T | null,
@@ -340,7 +342,7 @@ export function EntitySelect<T extends { id: string }>({
               <button
                 type="button"
                 onClick={() => setQuery('')}
-                aria-label="Clear the search"
+                aria-label={translate("Clear the search")}
                 className="inline-flex size-5 shrink-0 items-center justify-center rounded-xs text-text-muted transition-colors duration-micro hover:bg-surface-hover hover:text-text"
               >
                 <X className="size-4" aria-hidden />
@@ -355,8 +357,7 @@ export function EntitySelect<T extends { id: string }>({
             <div className="flex flex-none items-center gap-1.5 border-b border-border-subtle px-2.5 py-1.5">
               <ArrowDownUp className="size-3.5 shrink-0 text-text-muted" aria-hidden />
               <span className="sr-only" id={`${listboxId}-sort`}>
-                Sort the list
-              </span>
+                {translate("Sort the list")} </span>
               <div
                 role="group"
                 aria-labelledby={`${listboxId}-sort`}
@@ -401,21 +402,20 @@ export function EntitySelect<T extends { id: string }>({
               <li className="flex flex-col items-start gap-2 p-3">
                 <p className="flex items-start gap-1.5 text-xs text-danger-text">
                   <AlertCircle className="mt-px size-3.5 shrink-0" aria-hidden />
-                  Couldn&rsquo;t load these. {error}
+                  {translate("Couldn’t load these.")} {error}
                 </p>
                 <button
                   type="button"
                   onClick={retry}
                   className="rounded-xs text-xs font-medium text-accent-text hover:underline"
                 >
-                  Retry
-                </button>
+                  {translate("Retry")} </button>
               </li>
             )}
 
             {!loading && !error && options.length === 0 && (
               <li className="px-3 py-6 text-center text-xs text-text-muted">
-                {query ? `Nothing matches "${query}".` : 'Nothing here yet.'}
+                {query ? translate("Nothing matches \"{0}\".", { 0: query }) : translate("Nothing here yet.")}
               </li>
             )}
 
@@ -453,12 +453,10 @@ export function EntitySelect<T extends { id: string }>({
                 {loadingMore ? (
                   <>
                     <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                    Loading more...
-                  </>
+                    {translate("Loading more...")} </>
                 ) : (
                   <button type="button" onClick={loadMore} className="rounded-xs hover:underline">
-                    Load more
-                  </button>
+                    {translate("Load more")} </button>
                 )}
               </li>
             )}
@@ -469,10 +467,10 @@ export function EntitySelect<T extends { id: string }>({
             aria-live="polite"
           >
             {loading && options.length === 0
-              ? 'Searching...'
+              ? translate("Searching...")
               : query
-                ? `${totalDocs} ${totalDocs === 1 ? 'match' : 'matches'}`
-                : `${docs.length} of ${totalDocs} shown`}
+                ? `${totalDocs} ${totalDocs === 1 ? translate("match") : translate("matches")}`
+                : translate("{0} of {1} shown", { 0: docs.length, 1: totalDocs })}
           </p>
         </Popover.Content>
       </Popover.Portal>

@@ -256,10 +256,16 @@ logged-in user for every operation, set:
 LOCAL_PM_REQUIRE_AUTH=true
 ```
 
-Bootstrap the first account over REST:
+Open `/admin` on the deployed application, sign in, then select **Projects**
+and **Create New** to start managing projects. The project workspace is also
+available at `/projects`; use the same hostname so the browser sends the
+Payload login cookie to `/api/projects`.
+
+For API-only setup, the first account can be registered through
+`POST /api/users/first-register` while no account exists:
 
 ```bash
-curl -X POST http://localhost:3010/api/users \
+curl -X POST http://localhost:3010/api/users/first-register \
   -H 'Content-Type: application/json' \
   -d '{"email":"you@example.com","password":"a-strong-password","role":"admin"}'
 ```
@@ -294,13 +300,6 @@ enable `LOCAL_PM_REQUIRE_AUTH` when that address is reachable by other users.
 Secrets (`PAYLOAD_SECRET`, `DATABASE_URI`) are passed at runtime only, never as
 Docker build args, since build args are baked into image layers and readable
 through `docker history`.
-
-### Known issue
-
-The Payload admin panel at `/admin` currently returns 500 (`Cannot destructure
-property 'config'` from `@payloadcms/ui`). This is pre-existing and unrelated to
-access control — create the first account over REST as shown above. Everything
-else, including the whole REST API, is unaffected.
 
 ## Testing
 

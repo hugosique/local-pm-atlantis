@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { TeamDetail } from '@/components/teams/TeamDetail'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: TeamPageProps) {
     const team = await payload.findByID({ collection: 'teams', id, depth: 0 })
     return { title: `${team.name} · local-pm` }
   } catch {
-    return { title: 'Team · local-pm' }
+    return { title: translate("Team · local-pm") }
   }
 }
 

@@ -1,5 +1,14 @@
 'use client'
 
+import {
+  DEFAULT_LOCALE,
+  LOCALE_CHANGE_EVENT,
+  readLocale,
+  setLocale,
+  t as translate,
+  type Locale,
+} from '@/i18n'
+
 import Link from 'next/link'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { usePathname, useRouter } from 'next/navigation'
@@ -11,6 +20,7 @@ import { Button } from '@/components/ui/Button'
 import { Kbd } from '@/components/ui/Kbd'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { NAV_ITEMS, Sidebar } from './Sidebar'
+import { LanguageToggle } from './LanguageToggle'
 import { ThemeToggle } from './ThemeToggle'
 import { CommandPalette } from './CommandPalette'
 import { ShortcutHelp } from './ShortcutHelp'
@@ -26,11 +36,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [guideOpen, setGuideOpen] = useState(false)
+  const [currentLocale, setCurrentLocale] = useState<Locale>(DEFAULT_LOCALE)
 
   useEffect(() => {
     try {
       setCollapsed(localStorage.getItem(COLLAPSED_KEY) === '1')
     } catch {}
+  }, [])
+
+  useEffect(() => {
+    const syncLocale = () => {
+      const next = readLocale()
+      setLocale(next)
+      setCurrentLocale(next)
+    }
+    syncLocale()
+    window.addEventListener(LOCALE_CHANGE_EVENT, syncLocale)
+    return () => window.removeEventListener(LOCALE_CHANGE_EVENT, syncLocale)
   }, [])
 
   const toggleCollapsed = () => {
@@ -48,8 +70,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useShortcut({
     id: 'shell.toggleSidebar',
     keys: 'mod+backslash',
-    description: 'Toggle the sidebar',
-    group: 'Global',
+    description: translate("Toggle the sidebar"),
+    group: translate("Global"),
     scope: 'global',
     allowInInput: true,
     run: toggleCollapsed,
@@ -58,56 +80,56 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useShortcut({
     id: 'nav.board',
     keys: 'g v',
-    description: 'Go to Board',
-    group: 'Navigate',
+    description: translate("Go to Board"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/board'),
   })
   useShortcut({
     id: 'nav.myTickets',
     keys: 'g m',
-    description: 'Go to My tickets',
-    group: 'Navigate',
+    description: translate("Go to My tickets"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/my-tickets'),
   })
   useShortcut({
     id: 'nav.cycles',
     keys: 'g c',
-    description: 'Go to Cycles',
-    group: 'Navigate',
+    description: translate("Go to Cycles"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/cycles'),
   })
   useShortcut({
     id: 'nav.projects',
     keys: 'g p',
-    description: 'Go to Projects',
-    group: 'Navigate',
+    description: translate("Go to Projects"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/projects'),
   })
   useShortcut({
     id: 'nav.initiatives',
     keys: 'g n',
-    description: 'Go to Initiatives',
-    group: 'Navigate',
+    description: translate("Go to Initiatives"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/initiatives'),
   })
   useShortcut({
     id: 'nav.teams',
     keys: 'g t',
-    description: 'Go to Teams',
-    group: 'Navigate',
+    description: translate("Go to Teams"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/teams'),
   })
   useShortcut({
     id: 'nav.backlog',
     keys: 'g b',
-    description: 'Go to Backlog (Todo column)',
-    group: 'Navigate',
+    description: translate("Go to Backlog (Todo column)"),
+    group: translate("Navigate"),
     scope: 'global',
     run: () => router.push('/board?status=TODO'),
   })
@@ -115,17 +137,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useShortcut({
     id: 'shell.createTicket',
     keys: 'mod+alt+n',
-    description: 'Create a ticket from anywhere',
-    group: 'Global',
+    description: translate("Create a ticket from anywhere"),
+    group: translate("Global"),
     scope: 'global',
     run: () => router.push('/tickets/new'),
   })
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-bg">
+    <div key={currentLocale} className="flex h-dvh flex-col overflow-hidden bg-bg">
       <a href="#main" className="sr-only-focusable">
-        Skip to main content
-      </a>
+        {translate("Skip to main content")} </a>
 
       <OfflineBanner />
 
@@ -152,7 +173,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 document.getElementById('open-navigation')?.focus()
               }}
             >
-              <DialogPrimitive.Title className="sr-only">Navigation</DialogPrimitive.Title>
+              <DialogPrimitive.Title className="sr-only">{translate("Navigation")}</DialogPrimitive.Title>
               <Sidebar
                 collapsed={false}
                 mobile
@@ -171,7 +192,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               iconOnly
               icon={MenuIcon}
               id="open-navigation"
-              aria-label="Open navigation"
+              aria-label={translate("Open navigation")}
               aria-expanded={drawerOpen}
               onClick={() => setDrawerOpen(true)}
               className="md:hidden"
@@ -184,10 +205,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 variant="ghost"
                 icon={BookOpen}
                 onClick={() => setGuideOpen(true)}
-                aria-label="Getting started"
+                aria-label={translate("Getting started")}
               >
-                <span className="max-sm:hidden">Getting started</span>
+                <span className="max-sm:hidden">{translate("Getting started")}</span>
               </Button>
+              <LanguageToggle />
               <ThemeToggle />
             </div>
           </header>
@@ -197,7 +219,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             tabIndex={-1}
             className="min-h-0 flex-1 overflow-hidden mobile-main-inset"
           >
-            <ErrorBoundary region="This page">{children}</ErrorBoundary>
+            <ErrorBoundary region={translate("This page")}>{children}</ErrorBoundary>
           </main>
         </div>
       </div>
@@ -223,7 +245,7 @@ function PaletteTrigger({ onClick }: { onClick: () => void }) {
       )}
     >
       <Search className="size-4 shrink-0" aria-hidden />
-      <span className="truncate">Search or jump to…</span>
+      <span className="truncate">{translate("Search or jump to…")}</span>
       <Kbd keys="mod+k" className="ml-auto max-sm:hidden" />
     </button>
   )
@@ -234,7 +256,7 @@ function MobileNav() {
 
   return (
     <nav
-      aria-label="Primary"
+      aria-label={translate("Primary")}
       className="fixed inset-x-0 bottom-0 z-40 mobile-nav-height flex border-t border-border-subtle bg-bg-subtle pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       {NAV_ITEMS.map((item) => {

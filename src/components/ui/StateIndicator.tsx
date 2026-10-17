@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { cn } from '@/lib/cn'
 import {
   TONE_TEXT,
@@ -110,13 +112,13 @@ export function PriorityIndicator({
   return (
     <span
       className={cn('inline-flex items-center gap-1.5', className)}
-      title={showLabel ? undefined : `Priority: ${meta.label}`}
+      title={showLabel ? undefined : translate("Priority: {0}", { 0: meta.label })}
     >
       <Icon className={cn('size-4 shrink-0', TONE_TEXT[meta.tone])} />
       {showLabel ? (
         <span className="text-base">{meta.label}</span>
       ) : (
-        <span className="sr-only">Priority: {meta.label}</span>
+        <span className="sr-only">{translate("Priority:")} {meta.label}</span>
       )}
     </span>
   )

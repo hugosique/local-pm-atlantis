@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useId, useState } from 'react'
 import { Table2 } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -90,7 +92,7 @@ export function ChartFrame({
           aria-controls={tableId}
           onClick={() => setShowTable((open) => !open)}
         >
-          {showTable ? 'Hide data' : 'Show data'}
+          {showTable ? translate("Hide data") : translate("Show data")}
         </Button>
       </div>
 

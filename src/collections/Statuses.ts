@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
 import { StatusType, STATUS_TYPE_OPTIONS } from '@/types/enums'
@@ -6,10 +7,11 @@ import { slugifyKey } from '@/lib/workflow'
 
 export const Statuses: CollectionConfig = {
   slug: 'statuses',
+  labels: { singular: translate("Status"), plural: translate("Statuses") },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'key', 'type', 'project', 'order'],
-    description: 'Workflow states a ticket can occupy, globally or per project',
+    description: translate("Workflow states a ticket can occupy, globally or per project"),
   },
   access: collectionAccess,
   hooks: {
@@ -45,7 +47,7 @@ export const Statuses: CollectionConfig = {
 
         if (clash.docs.length > 0) {
           throw new APIError(
-            `A status with the key "${key}" already exists in this workflow.`,
+            translate("A status with the key \"{0}\" already exists in this workflow.", { 0: key }),
             400,
             undefined,
             true,
@@ -59,23 +61,26 @@ export const Statuses: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
       required: true,
       admin: {
-        description: 'The label shown on the board column and on tickets',
+        description: translate("The label shown on the board column and on tickets"),
       },
     },
     {
       name: 'key',
+      label: translate("Key"),
       type: 'text',
       required: true,
       index: true,
       admin: {
-        description: 'Stable identifier used by the API and the MCP server. Derived from the name.',
+        description: translate("Stable identifier used by the API and the MCP server. Derived from the name."),
       },
     },
     {
       name: 'type',
+      label: translate("Type"),
       type: 'select',
       options: STATUS_TYPE_OPTIONS,
       defaultValue: StatusType.UNSTARTED,
@@ -83,32 +88,35 @@ export const Statuses: CollectionConfig = {
       index: true,
       admin: {
         description:
-          'The semantic category. Drives the icon, the tone, and whether a ticket counts as open or closed.',
+          translate("The semantic category. Drives the icon, the tone, and whether a ticket counts as open or closed."),
       },
     },
     {
       name: 'order',
+      label: translate("Order"),
       type: 'number',
       required: true,
       defaultValue: 1000,
       admin: {
-        description: 'Column position, ascending. Gaps are intentional so a status can be inserted.',
+        description: translate("Column position, ascending. Gaps are intentional so a status can be inserted."),
       },
     },
     {
       name: 'project',
+      label: translate("Project"),
       type: 'relationship',
       relationTo: 'projects',
       index: true,
       admin: {
-        description: 'Leave empty for a workspace-wide status. Set it to scope the status to one project.',
+        description: translate("Leave empty for a workspace-wide status. Set it to scope the status to one project."),
       },
     },
     {
       name: 'description',
+      label: translate("Description"),
       type: 'text',
       admin: {
-        description: 'Optional hint shown when picking this status',
+        description: translate("Optional hint shown when picking this status"),
       },
     },
   ],

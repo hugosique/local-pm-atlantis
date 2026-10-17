@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { Check, ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -62,7 +64,7 @@ export function Select({
   value,
   onValueChange,
   options,
-  placeholder = 'Select…',
+  placeholder = translate("Select…"),
   disabled,
   invalid,
   required,

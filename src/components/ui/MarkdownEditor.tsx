@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import {
   AlertCircle,
@@ -42,8 +44,8 @@ import { Button } from './Button'
 import { Tooltip } from './Tooltip'
 
 const MODES: TabItem[] = [
-  { id: 'write', label: 'Write' },
-  { id: 'preview', label: 'Preview' },
+  { id: 'write', get label() { return translate("Write") } },
+  { id: 'preview', get label() { return translate("Preview") } },
 ]
 
 interface Command {
@@ -58,44 +60,44 @@ interface Command {
 const COMMANDS: Command[] = [
   {
     id: 'heading',
-    label: 'Heading',
+    get label() { return translate("Heading") },
     icon: Heading,
     group: 0,
     edit: (t, s, e) => prefixLines(t, s, e, '### '),
   },
   {
     id: 'bold',
-    label: 'Bold',
+    get label() { return translate("Bold") },
     icon: Bold,
     shortcut: 'mod+b',
     group: 0,
-    edit: (t, s, e) => wrapSelection(t, s, e, '**', '**', 'bold text'),
+    edit: (t, s, e) => wrapSelection(t, s, e, '**', '**', translate("bold text")),
   },
   {
     id: 'italic',
-    label: 'Italic',
+    get label() { return translate("Italic") },
     icon: Italic,
     shortcut: 'mod+i',
     group: 0,
-    edit: (t, s, e) => wrapSelection(t, s, e, '_', '_', 'italic text'),
+    edit: (t, s, e) => wrapSelection(t, s, e, '_', '_', translate("italic text")),
   },
   {
     id: 'strike',
-    label: 'Strikethrough',
+    get label() { return translate("Strikethrough") },
     icon: Strikethrough,
     group: 0,
-    edit: (t, s, e) => wrapSelection(t, s, e, '~~', '~~', 'struck text'),
+    edit: (t, s, e) => wrapSelection(t, s, e, '~~', '~~', translate("struck text")),
   },
   {
     id: 'quote',
-    label: 'Quote',
+    get label() { return translate("Quote") },
     icon: TextQuote,
     group: 1,
     edit: (t, s, e) => prefixLines(t, s, e, '> '),
   },
   {
     id: 'code',
-    label: 'Code',
+    get label() { return translate("Code") },
     icon: Code,
     group: 1,
     edit: (t, s, e) =>
@@ -105,29 +107,29 @@ const COMMANDS: Command[] = [
   },
   {
     id: 'link',
-    label: 'Link',
+    get label() { return translate("Link") },
     icon: Link2,
     shortcut: 'mod+k',
     group: 1,
-    edit: (t, s, e) => wrapSelection(t, s, e, '[', '](https://)', 'link text'),
+    edit: (t, s, e) => wrapSelection(t, s, e, '[', '](https://)', translate("link text")),
   },
   {
     id: 'bullets',
-    label: 'Bulleted list',
+    get label() { return translate("Bulleted list") },
     icon: List,
     group: 2,
     edit: (t, s, e) => prefixLines(t, s, e, '- '),
   },
   {
     id: 'numbers',
-    label: 'Numbered list',
+    get label() { return translate("Numbered list") },
     icon: ListOrdered,
     group: 2,
     edit: (t, s, e) => prefixLines(t, s, e, '1. ', true),
   },
   {
     id: 'mention',
-    label: 'Mention someone',
+    get label() { return translate("Mention someone") },
     icon: AtSign,
     group: 3,
     edit: (t, s, e) => replaceRange(t, s, e, s === 0 || /\s/.test(t[s - 1]) ? '@' : ' @'),
@@ -283,12 +285,12 @@ export function MarkdownEditor({
         className,
       )}
       onDragEnter={(event) => {
-        if (!event.dataTransfer.types.includes('Files')) return
+        if (!event.dataTransfer.types.includes(translate("Files"))) return
         dragDepth.current += 1
         setDragging(true)
       }}
       onDragOver={(event) => {
-        if (!event.dataTransfer.types.includes('Files')) return
+        if (!event.dataTransfer.types.includes(translate("Files"))) return
         event.preventDefault()
         event.dataTransfer.dropEffect = 'copy'
       }}
@@ -297,7 +299,7 @@ export function MarkdownEditor({
         if (dragDepth.current === 0) setDragging(false)
       }}
       onDrop={(event) => {
-        if (!event.dataTransfer.types.includes('Files')) return
+        if (!event.dataTransfer.types.includes(translate("Files"))) return
         event.preventDefault()
         dragDepth.current = 0
         setDragging(false)
@@ -310,7 +312,7 @@ export function MarkdownEditor({
 
       <div className="flex items-center gap-2 rounded-t-md border-b border-border-subtle bg-bg-subtle px-2">
         <TabList
-          label="Editor mode"
+          label={translate("Editor mode")}
           idPrefix={modePrefix}
           tabs={MODES}
           value={preview ? 'preview' : 'write'}
@@ -322,7 +324,7 @@ export function MarkdownEditor({
         <div
           ref={toolbar}
           role="toolbar"
-          aria-label="Formatting"
+          aria-label={translate("Formatting")}
           aria-controls={fieldId}
           onKeyDown={onToolbarKeyDown}
           className="no-scrollbar flex items-center gap-0.5 overflow-x-auto border-b border-border-subtle px-1.5 py-1"
@@ -351,7 +353,7 @@ export function MarkdownEditor({
 
           <span className="mx-1 h-4 w-px shrink-0 bg-border-subtle" aria-hidden />
           <ToolbarButton
-            label="Attach files"
+            label={translate("Attach files")}
             icon={Paperclip}
             tabIndex={-1}
             disabled={disabled}
@@ -388,7 +390,7 @@ export function MarkdownEditor({
             {value.trim() ? (
               renderPreview(value)
             ) : (
-              <p className="text-base text-text-muted">Nothing to preview yet.</p>
+              <p className="text-base text-text-muted">{translate("Nothing to preview yet.")}</p>
             )}
           </div>
         </TabPanel>
@@ -401,7 +403,7 @@ export function MarkdownEditor({
             )}
           >
             <Upload className="size-6 text-accent-text" aria-hidden />
-            <p className="text-base font-medium text-accent-text">Drop to attach</p>
+            <p className="text-base font-medium text-accent-text">{translate("Drop to attach")}</p>
           </div>
         )}
       </div>
@@ -417,7 +419,7 @@ export function MarkdownEditor({
               <span className="shrink-0 tabular">{Math.round(upload.progress * 100)}%</span>
               <span
                 role="progressbar"
-                aria-label={`Uploading ${upload.name}`}
+                aria-label={translate("Uploading {0}", { 0: upload.name })}
                 aria-valuenow={Math.round(upload.progress * 100)}
                 aria-valuemin={0}
                 aria-valuemax={100}
@@ -448,7 +450,7 @@ export function MarkdownEditor({
                 size="xs"
                 iconOnly
                 icon={X}
-                aria-label={`Dismiss the error for ${failure.name}`}
+                aria-label={translate("Dismiss the error for {0}", { 0: failure.name })}
                 onClick={() => uploads.dismiss(failure.token)}
               />
             </li>
@@ -460,7 +462,7 @@ export function MarkdownEditor({
         <button
           type="button"
           disabled={disabled}
-          title={`Images, PDFs, archives and text files, up to ${formatBytes(MAX_ATTACHMENT_BYTES)} each`}
+          title={translate("Images, PDFs, archives and text files, up to {0} each", { 0: formatBytes(MAX_ATTACHMENT_BYTES) })}
           onClick={() => fileInput.current?.click()}
           className={cn(
             'flex min-w-0 items-center gap-1.5 rounded-sm px-1.5 py-1 text-xs text-text-muted',
@@ -469,7 +471,7 @@ export function MarkdownEditor({
           )}
         >
           <Paperclip className="size-3.5 shrink-0" aria-hidden />
-          <span className="truncate">Attach by dropping, pasting, or selecting files</span>
+          <span className="truncate">{translate("Attach by dropping, pasting, or selecting files")}</span>
         </button>
 
         {hint}
@@ -493,7 +495,7 @@ export function MarkdownEditor({
 
       <span className="sr-only" role="status">
         {uploads.pending.length > 0
-          ? `Uploading ${uploads.pending.length} ${uploads.pending.length === 1 ? 'file' : 'files'}.`
+          ? translate("Uploading {0} {1}.", { 0: uploads.pending.length, 1: uploads.pending.length === 1 ? translate("file") : translate("files") })
           : ''}
       </span>
     </div>

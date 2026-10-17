@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { TicketForm } from '@/components/tickets/TicketForm'
@@ -5,7 +6,7 @@ import { resolveWorkflow } from '@/lib/workflow'
 import type { Cycle, Project, Team, Member } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'New ticket · local-pm' }
+export const metadata = { title: translate("New ticket · local-pm") }
 
 interface NewTicketPageProps {
   searchParams: Promise<{

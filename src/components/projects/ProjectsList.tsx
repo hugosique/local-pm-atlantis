@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -170,7 +172,7 @@ export function ProjectsList({
         })
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(err instanceof Error ? err.message : 'The request failed.')
+        setError(err instanceof Error ? err.message : translate("The request failed."))
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -186,16 +188,16 @@ export function ProjectsList({
   useShortcut({
     id: 'projects.search',
     keys: 'slash',
-    description: 'Focus the project search',
-    group: 'Projects',
+    description: translate("Focus the project search"),
+    group: translate("Projects"),
     scope: 'list',
     run: () => searchRef.current?.focus(),
   })
   useShortcut({
     id: 'projects.create',
     keys: 'c',
-    description: 'Create a project',
-    group: 'Projects',
+    description: translate("Create a project"),
+    group: translate("Projects"),
     scope: 'list',
     run: () => router.push('/projects/new'),
   })
@@ -204,14 +206,14 @@ export function ProjectsList({
   const activeSortLabel = useMemo(
     () =>
       ({
-        name: 'Name A–Z',
-        '-name': 'Name Z–A',
-        createdAt: 'Oldest first',
-        '-createdAt': 'Newest first',
-        prefix: 'Prefix A–Z',
-        '-prefix': 'Prefix Z–A',
-        targetDate: 'Target date, soonest first',
-        '-targetDate': 'Target date, latest first',
+        name: translate("Name A–Z"),
+        '-name': translate("Name Z–A"),
+        createdAt: translate("Oldest first"),
+        '-createdAt': translate("Newest first"),
+        prefix: translate("Prefix A–Z"),
+        '-prefix': translate("Prefix Z–A"),
+        targetDate: translate("Target date, soonest first"),
+        '-targetDate': translate("Target date, latest first"),
       })[sort],
     [sort],
   )
@@ -256,7 +258,7 @@ export function ProjectsList({
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't load more projects",
+        title: translate("Couldn't load more projects"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -296,11 +298,11 @@ export function ProjectsList({
       setProjects((prev) => prev.filter((p) => p.id !== project.id))
       setPagination((p) => ({ ...p, totalDocs: Math.max(0, p.totalDocs - 1) }))
       setPendingDelete(null)
-      toast({ title: `${project.name} deleted`, tone: 'info' })
+      toast({ title: translate("{0} deleted", { 0: project.name }), tone: 'info' })
     } catch (err) {
       toast({
         tone: 'error',
-        title: "Couldn't delete that project",
+        title: translate("Couldn't delete that project"),
         description: err instanceof Error ? err.message : undefined,
       })
     } finally {
@@ -311,9 +313,9 @@ export function ProjectsList({
   const deleteConsequence = () => {
     if (!pendingDelete) return undefined
     const { ticketCount } = pendingDelete
-    if (ticketCount < 0) return 'Any tickets in this project will be permanently deleted too.'
-    if (ticketCount === 0) return 'This project has no tickets. This cannot be undone.'
-    return `Permanently deletes ${ticketCount} ticket${ticketCount === 1 ? '' : 's'} and their history. This cannot be undone.`
+    if (ticketCount < 0) return translate("Any tickets in this project will be permanently deleted too.")
+    if (ticketCount === 0) return translate("This project has no tickets. This cannot be undone.")
+    return translate("Permanently deletes {0} ticket{1} and their history. This cannot be undone.", { 0: ticketCount, 1: ticketCount === 1 ? '' : 's' })
   }
 
   return (
@@ -321,15 +323,14 @@ export function ProjectsList({
       <header className="flex flex-none flex-col gap-3 border-b border-border-subtle px-6 py-4 max-md:px-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="mr-4 min-w-0 max-sm:w-full">
-            <h1 className="text-2xl font-semibold text-text">Projects</h1>
+            <h1 className="text-2xl font-semibold text-text">{translate("Projects")}</h1>
             <p className="mt-1 text-sm text-text-muted">
-              Give every goal a home and a clear path forward.
-            </p>
+              {translate("Give every goal a home and a clear path forward.")} </p>
           </div>
 
           <label className="relative flex h-8 min-w-44 flex-1 items-center gap-2 rounded-sm border border-border bg-surface px-2.5 md:max-w-72">
             <Search className="size-4 shrink-0 text-text-muted" aria-hidden />
-            <span className="sr-only">Search projects by name</span>
+            <span className="sr-only">{translate("Search projects by name")}</span>
             <input
               ref={searchRef}
               type="search"
@@ -338,7 +339,7 @@ export function ProjectsList({
               }}
               value={query}
               onChange={(e) => setFilters({ q: e.target.value }, false)}
-              placeholder="Search projects"
+              placeholder={translate("Search projects")}
               className="min-w-0 flex-1 bg-transparent text-base text-text outline-none max-sm:text-md"
             />
             <Kbd raw="/" className="max-sm:hidden" />
@@ -346,12 +347,12 @@ export function ProjectsList({
 
           <Select
             id="projects-status-filter"
-            aria-label="Filter by status"
+            aria-label={translate("Filter by status")}
             value={status}
             onValueChange={(next) => setFilters({ status: next as ProjectStatus | '' })}
             className="w-44 max-sm:w-full"
             options={[
-              { value: '', label: 'All statuses', icon: ListFilter },
+              { value: '', label: translate("All statuses"), icon: ListFilter },
               ...projectStatusOptions(),
             ]}
           />
@@ -362,14 +363,13 @@ export function ProjectsList({
             href="/projects/new"
             className="ml-auto max-sm:w-full"
           >
-            New project
-            <Kbd keys="c" tone="inverse" className="ml-1.5" />
+            {translate("New project")} <Kbd keys="c" tone="inverse" className="ml-1.5" />
           </LinkButton>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-text-muted tabular" aria-live="polite">
-            {pagination.totalDocs} {pagination.totalDocs === 1 ? 'project' : 'projects'} ·{' '}
+            {pagination.totalDocs} {pagination.totalDocs === 1 ? translate("project") : translate("projects")} ·{' '}
             {activeSortLabel}
           </span>
 
@@ -377,18 +377,18 @@ export function ProjectsList({
             <Chip
               tone="accent"
               onRemove={() => setFilters({ status: '' })}
-              removeLabel="Remove status filter"
+              removeLabel={translate("Remove status filter")}
             >
-              Status: {PROJECT_STATUS_OPTIONS.find((o) => o.value === status)?.label}
+              {translate("Status:")} {PROJECT_STATUS_OPTIONS.find((o) => o.value === status)?.label}
             </Chip>
           )}
           {query && (
             <Chip
               tone="accent"
               onRemove={() => setFilters({ q: '' })}
-              removeLabel="Clear the search"
+              removeLabel={translate("Clear the search")}
             >
-              Search: {query}
+              {translate("Search:")} {query}
             </Chip>
           )}
           {hasFilters && (
@@ -398,8 +398,7 @@ export function ProjectsList({
               icon={X}
               onClick={() => setFilters({ q: '', status: '' })}
             >
-              Clear all
-            </Button>
+              {translate("Clear all")} </Button>
           )}
         </div>
       </header>
@@ -408,9 +407,9 @@ export function ProjectsList({
         {error ? (
           <EmptyState
             kind="error"
-            title="Couldn't load projects"
+            title={translate("Couldn't load projects")}
             description={error}
-            action={{ label: 'Retry', onClick: () => setRetry((value) => value + 1) }}
+            action={{ label: translate("Retry"), onClick: () => setRetry((value) => value + 1) }}
             className="m-6"
           />
         ) : showSkeleton && projects.length === 0 ? (
@@ -418,20 +417,20 @@ export function ProjectsList({
         ) : projects.length === 0 && hasFilters ? (
           <EmptyState
             kind="no-match"
-            title="No projects match"
-            description="Nothing here fits the current search and status. The project you want may still exist."
-            action={{ label: 'Clear filters', onClick: () => setFilters({ q: '', status: '' }) }}
+            title={translate("No projects match")}
+            description={translate("Nothing here fits the current search and status. The project you want may still exist.")}
+            action={{ label: translate("Clear filters"), onClick: () => setFilters({ q: '', status: '' }) }}
           />
         ) : projects.length === 0 ? (
           <EmptyState
             kind="no-data"
-            title="No projects yet"
-            description="A project groups tickets and gives them their key, like ABC-12. Create the first one to get started."
-            action={{ label: 'Create project', onClick: () => router.push('/projects/new') }}
+            title={translate("No projects yet")}
+            description={translate("A project groups tickets and gives them their key, like ABC-12. Create the first one to get started.")}
+            action={{ label: translate("Create project"), onClick: () => router.push('/projects/new') }}
           />
         ) : (
           <>
-            <Table caption="Projects, with their prefix, status and ticket count">
+            <Table caption={translate("Projects, with their prefix, status and ticket count")}>
               <thead>
                 <tr>
                   <Th
@@ -439,38 +438,33 @@ export function ProjectsList({
                     sortDirection={sortDirection('name')}
                     onSort={() => toggleSort('name')}
                   >
-                    Project
-                  </Th>
+                    {translate("Project")} </Th>
                   <Th
                     sortable
                     sortDirection={sortDirection('prefix')}
                     onSort={() => toggleSort('prefix')}
                     width="8rem"
                   >
-                    Prefix
-                  </Th>
-                  <Th width="10rem">Status</Th>
+                    {translate("Prefix")} </Th>
+                  <Th width="10rem">{translate("Status")}</Th>
                   <Th align="right" width="8rem">
-                    Tickets
-                  </Th>
+                    {translate("Tickets")} </Th>
                   <Th
                     sortable
                     sortDirection={sortDirection('createdAt')}
                     onSort={() => toggleSort('createdAt')}
                     width="13rem"
                   >
-                    Created
-                  </Th>
+                    {translate("Created")} </Th>
                   <Th
                     sortable
                     sortDirection={sortDirection('targetDate')}
                     onSort={() => toggleSort('targetDate')}
                     width="11rem"
                   >
-                    Target
-                  </Th>
+                    {translate("Target")} </Th>
                   <Th width="4rem">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{translate("Actions")}</span>
                   </Th>
                 </tr>
               </thead>
@@ -520,17 +514,17 @@ export function ProjectsList({
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Menu
-                          label={`Actions for ${project.name}`}
+                          label={translate("Actions for {0}", { 0: project.name })}
                           items={[
                             {
                               id: 'edit',
-                              label: 'Edit project',
+                              label: translate("Edit project"),
                               icon: Pencil,
                               onSelect: () => router.push(`/projects/${project.id}/edit`),
                             },
                             {
                               id: 'delete',
-                              label: 'Delete project',
+                              label: translate("Delete project"),
                               icon: Trash2,
                               destructive: true,
                               separatorBefore: true,
@@ -543,7 +537,7 @@ export function ProjectsList({
                               size="sm"
                               iconOnly
                               icon={MoreHorizontal}
-                              aria-label={`Actions for ${project.name}`}
+                              aria-label={translate("Actions for {0}", { 0: project.name })}
                             />
                           }
                         />
@@ -557,7 +551,7 @@ export function ProjectsList({
             {pagination.hasNextPage && (
               <div className="flex justify-center p-4">
                 <Button variant="secondary" loading={loadingMore} onClick={loadMore}>
-                  Load more ({projects.length} of {pagination.totalDocs})
+                  {translate("Load more ({0} of {1})", { 0: projects.length, 1: pagination.totalDocs })}
                 </Button>
               </div>
             )}
@@ -570,7 +564,7 @@ export function ProjectsList({
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
         loading={deleting}
-        title="Delete this project?"
+        title={translate("Delete this project?")}
         message={
           pendingDelete ? `“${pendingDelete.project.name}” (${pendingDelete.project.prefix})` : ''
         }
@@ -578,7 +572,7 @@ export function ProjectsList({
         confirmPhrase={
           pendingDelete && pendingDelete.ticketCount > 0 ? pendingDelete.project.name : undefined
         }
-        confirmLabel="Delete project"
+        confirmLabel={translate("Delete project")}
       />
     </div>
   )

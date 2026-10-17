@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
 
 export const ATTACHMENT_MIME_TYPES = [
@@ -48,16 +49,16 @@ export function attachmentMarkdown(file: UploadedAttachment, name = file.filenam
 }
 
 export function uploadPlaceholder(token: string, name: string, image: boolean): string {
-  const label = `Uploading ${name.replace(/[[\]()\n]/g, ' ').trim()}…`
+  const label = translate("Uploading {0}…", { 0: name.replace(/[[\]()\n]/g, ' ').trim() })
   return `${image ? '!' : ''}[${label}](upload:${token})`
 }
 
 export function rejectionReason(file: { name: string; size: number; type: string }): string | null {
   if (file.size > MAX_ATTACHMENT_BYTES) {
-    return `${file.name} is ${formatBytes(file.size)}. The limit is ${formatBytes(MAX_ATTACHMENT_BYTES)}.`
+    return translate("{0} is {1}. The limit is {2}.", { 0: file.name, 1: formatBytes(file.size), 2: formatBytes(MAX_ATTACHMENT_BYTES) })
   }
   if (!accepts(file.type)) {
-    return `${file.name} is not a file type this app accepts.`
+    return translate("{0} is not a file type this app accepts.", { 0: file.name })
   }
   return null
 }

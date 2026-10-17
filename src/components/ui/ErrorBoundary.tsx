@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { RefreshCw } from 'lucide-react'
 import { Button } from './Button'
@@ -33,12 +35,12 @@ export class ErrorBoundary extends Component<Props, State> {
       <div className="p-6">
         <EmptyState
           kind="error"
-          title={`${this.props.region} couldn't load`}
-          description="Something went wrong rendering this part of the page. Nothing you entered elsewhere has been lost."
-          action={{ label: 'Try again', onClick: () => this.setState({ error: null }) }}
+          title={translate("{0} couldn't load", { 0: this.props.region })}
+          description={translate("Something went wrong rendering this part of the page. Nothing you entered elsewhere has been lost.")}
+          action={{ label: translate("Try again"), onClick: () => this.setState({ error: null }) }}
         >
           <details className="w-full max-w-[60ch] text-left">
-            <summary className="cursor-pointer text-xs text-danger-text">Details</summary>
+            <summary className="cursor-pointer text-xs text-danger-text">{translate("Details")}</summary>
             <pre className="mt-2 max-h-40 overflow-auto rounded-sm bg-surface p-2 text-xs text-text-muted">
               {error.message}
             </pre>
@@ -49,8 +51,7 @@ export class ErrorBoundary extends Component<Props, State> {
               className="mt-2"
               onClick={() => navigator.clipboard?.writeText(`${error.message}\n${error.stack ?? ''}`)}
             >
-              Copy error
-            </Button>
+              {translate("Copy error")} </Button>
           </details>
         </EmptyState>
       </div>

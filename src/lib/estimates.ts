@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import { EstimateScale } from '@/types/enums'
 
 export interface EstimatePoint {
@@ -20,11 +21,11 @@ const FIBONACCI: number[] = [1, 2, 3, 5, 8, 13]
 const EXPONENTIAL: number[] = [1, 2, 4, 8, 16]
 
 const TSHIRT: EstimatePoint[] = [
-  { value: 1, label: 'XS' },
-  { value: 2, label: 'S' },
-  { value: 3, label: 'M' },
-  { value: 5, label: 'L' },
-  { value: 8, label: 'XL' },
+  { value: 1, get label() { return translate("XS") } },
+  { value: 2, get label() { return translate("S") } },
+  { value: 3, get label() { return translate("M") } },
+  { value: 5, get label() { return translate("L") } },
+  { value: 8, get label() { return translate("XL") } },
 ]
 
 const NUMERIC_SCALES: Record<string, number[]> = {
@@ -50,7 +51,7 @@ export function normalizeScale(value: unknown): EstimateScale {
 
 export function estimatePoints(scale: unknown): EstimatePoint[] {
   const resolved = normalizeScale(scale)
-  if (resolved === EstimateScale.TSHIRT) return TSHIRT
+  if (resolved === EstimateScale.TSHIRT) return TSHIRT.map((point) => ({ value: point.value, label: point.label }))
   return NUMERIC_SCALES[resolved].map((value) => ({ value, label: String(value) }))
 }
 
@@ -74,8 +75,8 @@ export function estimateDescription(scale: unknown, value: unknown): string | nu
   const points = normalizeEstimate(value)
   if (points === null) return null
   const label = estimateLabel(scale, points)
-  if (label === String(points)) return `${points} ${points === 1 ? 'point' : 'points'}`
-  return `${label} — ${points} ${points === 1 ? 'point' : 'points'}`
+  if (label === String(points)) return `${points} ${points === 1 ? translate("point") : translate("points")}`
+  return `${label} — ${points} ${points === 1 ? translate("point") : translate("points")}`
 }
 
 export function estimateSettingsOf(
@@ -93,8 +94,8 @@ export function unitFor(settings: Pick<EstimateSettings, 'enabled'>): EstimateUn
 }
 
 export function unitNoun(unit: EstimateUnit, count: number): string {
-  if (unit === 'points') return count === 1 ? 'point' : 'points'
-  return count === 1 ? 'ticket' : 'tickets'
+  if (unit === 'points') return count === 1 ? translate("point") : translate("points")
+  return count === 1 ? translate("ticket") : translate("tickets")
 }
 
 export function weightOf(unit: EstimateUnit, estimate: unknown): number {

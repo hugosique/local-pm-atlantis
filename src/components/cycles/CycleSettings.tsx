@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Repeat } from 'lucide-react'
@@ -35,7 +37,7 @@ interface CycleConfig {
 
 const UPCOMING_OPTIONS = Array.from({ length: MAX_UPCOMING_CYCLES + 1 }, (_, value) => ({
   value: String(value),
-  label: value === 1 ? '1 cycle ahead' : `${value} cycles ahead`,
+  label: value === 1 ? translate("1 cycle ahead") : translate("{0} cycles ahead", { 0: value }),
 }))
 
 function configOf(project: Project): CycleConfig {
@@ -85,7 +87,7 @@ export function CycleSettings({ project: initialProject }: { project: Project })
     } catch (error) {
       toast({
         tone: 'error',
-        title: "Couldn't set up the cycles",
+        title: translate("Couldn't set up the cycles"),
         description: error instanceof Error ? error.message : undefined,
       })
     } finally {
@@ -100,15 +102,13 @@ export function CycleSettings({ project: initialProject }: { project: Project })
           <input
             type="checkbox"
             checked={config.enabled}
-            onChange={(e) => update({ enabled: e.target.checked }, 'the cycle setting')}
+            onChange={(e) => update({ enabled: e.target.checked }, translate("the cycle setting"))}
             className="mt-0.5 size-4 shrink-0 accent-accent"
           />
           <span className="flex flex-col gap-1">
-            <span className="text-base font-medium text-text">Run cycles on this project</span>
+            <span className="text-base font-medium text-text">{translate("Run cycles on this project")}</span>
             <span className="text-sm text-text-muted">
-              Cycles are fixed time boxes. The active cycle and the next few are created for you, and
-              unfinished work moves on when a cycle ends.
-            </span>
+              {translate("Cycles are fixed time boxes. The active cycle and the next few are created for you, and unfinished work moves on when a cycle ends.")} </span>
           </span>
         </label>
 
@@ -126,8 +126,8 @@ export function CycleSettings({ project: initialProject }: { project: Project })
         <>
           <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
             <Field
-              label="Cycle length"
-              hint="Applies to cycles created from now on. Existing cycles keep their dates."
+              label={translate("Cycle length")}
+              hint={translate("Applies to cycles created from now on. Existing cycles keep their dates.")}
             >
               {({ id, describedBy }) => (
                 <Select
@@ -138,12 +138,12 @@ export function CycleSettings({ project: initialProject }: { project: Project })
                     value: String(o.value),
                     label: o.label,
                   }))}
-                  onValueChange={(next) => update({ lengthWeeks: Number(next) }, 'the cycle length')}
+                  onValueChange={(next) => update({ lengthWeeks: Number(next) }, translate("the cycle length"))}
                 />
               )}
             </Field>
 
-            <Field label="Cycles start on" hint="Only used to place the very first cycle.">
+            <Field label={translate("Cycles start on")} hint={translate("Only used to place the very first cycle.")}>
               {({ id, describedBy }) => (
                 <Select
                   id={id}
@@ -153,14 +153,14 @@ export function CycleSettings({ project: initialProject }: { project: Project })
                     value: String(o.value),
                     label: o.label,
                   }))}
-                  onValueChange={(next) => update({ startDay: Number(next) }, 'the start day')}
+                  onValueChange={(next) => update({ startDay: Number(next) }, translate("the start day"))}
                 />
               )}
             </Field>
 
             <Field
-              label="Unfinished work"
-              hint="What happens to tickets that are still open when a cycle closes."
+              label={translate("Unfinished work")}
+              hint={translate("What happens to tickets that are still open when a cycle closes.")}
             >
               {({ id, describedBy }) => (
                 <Select
@@ -172,15 +172,15 @@ export function CycleSettings({ project: initialProject }: { project: Project })
                     label: o.label,
                   }))}
                   onValueChange={(next) =>
-                    update({ rollover: next as CycleRollover }, 'the rollover setting')
+                    update({ rollover: next as CycleRollover }, translate("the rollover setting"))
                   }
                 />
               )}
             </Field>
 
             <Field
-              label="Closing a cycle"
-              hint="Automatic closes elapsed cycles on the server every hour, whether or not anyone is using the app."
+              label={translate("Closing a cycle")}
+              hint={translate("Automatic closes elapsed cycles on the server every hour, whether or not anyone is using the app.")}
             >
               {({ id, describedBy }) => (
                 <Select
@@ -192,13 +192,13 @@ export function CycleSettings({ project: initialProject }: { project: Project })
                     label: o.label,
                   }))}
                   onValueChange={(next) =>
-                    update({ automation: next as CycleAutomation }, 'the automation setting')
+                    update({ automation: next as CycleAutomation }, translate("the automation setting"))
                   }
                 />
               )}
             </Field>
 
-            <Field label="Keep provisioned" hint="How many future cycles exist ahead of the active one.">
+            <Field label={translate("Keep provisioned")} hint={translate("How many future cycles exist ahead of the active one.")}>
               {({ id, describedBy }) => (
                 <Select
                   id={id}
@@ -206,7 +206,7 @@ export function CycleSettings({ project: initialProject }: { project: Project })
                   value={String(config.upcomingCount)}
                   options={UPCOMING_OPTIONS}
                   onValueChange={(next) =>
-                    update({ upcomingCount: Number(next) }, 'the number of upcoming cycles')
+                    update({ upcomingCount: Number(next) }, translate("the number of upcoming cycles"))
                   }
                 />
               )}
@@ -215,11 +215,9 @@ export function CycleSettings({ project: initialProject }: { project: Project })
 
           <div className="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-4">
             <LinkButton variant="secondary" icon={Repeat} href={`/cycles?project=${project.id}`}>
-              View cycles
-            </LinkButton>
+              {translate("View cycles")} </LinkButton>
             <Button variant="ghost" onClick={reconcile} loading={provisioning}>
-              Check for missing cycles
-            </Button>
+              {translate("Check for missing cycles")} </Button>
           </div>
         </>
       )}

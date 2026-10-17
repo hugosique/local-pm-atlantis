@@ -1,3 +1,4 @@
+import { t as translate } from '@/i18n'
 import type { Payload } from 'payload'
 import type { Cycle, Project } from '@/payload-types'
 import { CycleAutomation, CycleRollover } from '@/types/enums'
@@ -89,7 +90,7 @@ export async function reconcileProjectCycles(
   const settings = cycleSettingsOf(project)
   const report = emptyReport(projectId)
 
-  if (!settings.enabled) return emptyReport(projectId, 'cycles are not enabled for this project')
+  if (!settings.enabled) return emptyReport(projectId, translate("cycles are not enabled for this project"))
 
   const now = options.now ?? new Date()
   const today = toIsoDate(now) as IsoDate
@@ -123,7 +124,7 @@ export async function reconcileProjectCycles(
 
   const shouldClose = settings.automation === CycleAutomation.AUTOMATIC || options.force === true
   if (!shouldClose) {
-    report.skipped = 'rollover is set to manual'
+    report.skipped = translate("rollover is set to manual")
     return report
   }
 
@@ -156,7 +157,7 @@ export async function closeCycleNow(
   const projectId = String(typeof cycle.project === 'object' ? cycle.project.id : cycle.project)
   const report = emptyReport(projectId)
 
-  if (cycle.completedAt) return emptyReport(projectId, 'this cycle is already closed')
+  if (cycle.completedAt) return emptyReport(projectId, translate("this cycle is already closed"))
 
   const project = (await payload.findByID({
     collection: 'projects',
@@ -178,7 +179,7 @@ export async function closeCycleNow(
   })) as Cycle
 
   if (current.completedAt) {
-    return { ...emptyReport(projectId, 'this cycle was already closed'), closed: 1 }
+    return { ...emptyReport(projectId, translate("this cycle was already closed")), closed: 1 }
   }
 
   report.rolledOver = await closeCycleDoc(payload, current, settings, now)

@@ -1,5 +1,7 @@
 'use client'
 
+import { t as translate } from '@/i18n'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useToast } from '@/components/ui/Toast'
 
@@ -58,8 +60,8 @@ export function useOptimisticPatch<T extends { id: string }>({
         setState('error')
         toast({
           tone: 'error',
-          title: `Couldn't save ${label}`,
-          description: error instanceof Error ? error.message : 'The change has been undone.',
+          title: translate("Couldn't save {0}", { 0: label }),
+          description: error instanceof Error ? error.message : translate("The change has been undone."),
         })
         return false
       }
@@ -71,8 +73,8 @@ export function useOptimisticPatch<T extends { id: string }>({
 }
 
 export function saveStateLabel(state: SaveState): string | null {
-  if (state === 'saving') return 'Saving…'
-  if (state === 'saved') return 'Saved'
-  if (state === 'error') return 'Not saved'
+  if (state === 'saving') return translate("Saving…")
+  if (state === 'saved') return translate("Saved")
+  if (state === 'error') return translate("Not saved")
   return null
 }

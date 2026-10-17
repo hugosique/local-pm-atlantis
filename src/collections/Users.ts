@@ -1,8 +1,10 @@
+import { t as translate } from '@/i18n'
 import type { CollectionConfig } from 'payload'
 import { requireAuthEnabled } from '@/lib/access'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: { singular: translate("User"), plural: translate("Users") },
   auth: {
     useAPIKey: true,
   },
@@ -10,7 +12,7 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'role'],
     description:
-      'Login accounts and API keys. These are credentials, not assignable people — tickets are assigned to a team.',
+      translate("Login accounts and API keys. These are credentials, not assignable people — tickets are assigned to a team."),
   },
   access: {
     read: ({ req }) => (requireAuthEnabled() ? Boolean(req.user) : true),
@@ -33,22 +35,24 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: translate("Name"),
       type: 'text',
-      admin: { description: 'Display name for this account' },
+      admin: { description: translate("Display name for this account") },
     },
     {
       name: 'role',
+      label: translate("Role"),
       type: 'select',
       required: true,
       defaultValue: 'admin',
       options: [
-        { label: 'Admin', value: 'admin' },
-        { label: 'Member', value: 'member' },
-        { label: 'Agent', value: 'agent' },
+        { label: translate("Admin"), value: 'admin' },
+        { label: translate("Member"), value: 'member' },
+        { label: translate("Agent"), value: 'agent' },
       ],
       admin: {
         description:
-          'admin may delete records and manage accounts; member may read and write; agent is an automated caller and should hold an API key rather than a password. Defaults to admin so the first account created can administer the install.',
+          translate("admin may delete records and manage accounts; member may read and write; agent is an automated caller and should hold an API key rather than a password. Defaults to admin so the first account created can administer the install."),
       },
     },
   ],
