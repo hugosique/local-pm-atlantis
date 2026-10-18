@@ -11,6 +11,7 @@ import { WorkflowProvider } from '@/components/shell/WorkflowProvider'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { sortStatuses } from '@/lib/workflow'
+import { ensureDefaultStatuses } from '@/migrations/configurable-statuses'
 import type { Status } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
@@ -48,6 +49,10 @@ export const viewport: Viewport = {
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
   const payload = await getPayload({ config })
+  // Existing installs may not have run the status migration yet. Keep the
+  // frontend usable by ensuring the default workflow exists before exposing it
+  // to forms, boards, and filters.
+  await ensureDefaultStatuses(payload)
   const statusResult = await payload.find({ collection: 'statuses', limit: 200, depth: 0 })
   const statuses = sortStatuses(statusResult.docs as Status[])
 

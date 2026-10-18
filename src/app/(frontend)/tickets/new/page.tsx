@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { TicketForm } from '@/components/tickets/TicketForm'
 import { resolveWorkflow } from '@/lib/workflow'
+import { ensureDefaultStatuses } from '@/migrations/configurable-statuses'
 import type { Cycle, Project, Team, Member } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
@@ -23,6 +24,7 @@ export default async function NewTicketPage({ searchParams }: NewTicketPageProps
   const params = await searchParams
   const projectId = params.project || null
   const payload = await getPayload({ config })
+  await ensureDefaultStatuses(payload)
   const workflow = await resolveWorkflow(payload, projectId)
   const requested = params.status ?? ''
   const status =
