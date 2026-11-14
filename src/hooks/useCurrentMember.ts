@@ -11,6 +11,10 @@ export interface Viewer {
 
 let cache: Promise<Member | null | 'anonymous'> | null = null
 
+export function clearCurrentMemberCache(): void {
+  cache = null
+}
+
 async function resolve(): Promise<Member | null | 'anonymous'> {
   const meResponse = await fetch('/api/users/me')
   if (!meResponse.ok) return 'anonymous'

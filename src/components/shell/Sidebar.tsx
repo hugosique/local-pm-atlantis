@@ -3,24 +3,39 @@
 import { t as translate } from '@/i18n'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
+  ChevronsUpDown,
   FolderKanban,
   LayoutDashboard,
+  LogIn,
+  LogOut,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
   Repeat,
+  Shield,
   Target,
   UserRound,
   Users,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { Kbd } from '@/components/ui/Kbd'
 import { Logo, LogoMark } from '@/components/ui/Logo'
+import { Menu, type MenuItem } from '@/components/ui/Menu'
+import { useToast } from '@/components/ui/Toast'
 import { Tooltip } from '@/components/ui/Tooltip'
+import { clearCurrentMemberCache } from '@/hooks/useCurrentMember'
+
+export interface ShellViewer {
+  id: string
+  name: string | null
+  email: string | null
+  role: string | null
+}
 
 export const SIDEBAR_DEFAULT = 256
 export const SIDEBAR_MIN = 200
@@ -46,15 +61,21 @@ function clampWidth(value: number): number {
 export function Sidebar({
   collapsed,
   mobile = false,
+  viewer = null,
+  authRequired = false,
   onNavigate,
   onToggleCollapsed,
 }: {
   collapsed: boolean
   mobile?: boolean
+  viewer?: ShellViewer | null
+  authRequired?: boolean
   onNavigate?: () => void
   onToggleCollapsed: () => void
 }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { toast } = useToast()
   const [width, setWidth] = useState(SIDEBAR_DEFAULT)
   const [dragging, setDragging] = useState(false)
   const navRef = useRef<HTMLUListElement>(null)
@@ -258,8 +279,35 @@ export function Sidebar({
       </nav>
 
       <div
-        className={cn('flex-none border-t border-border-subtle py-2', collapsed ? 'px-2' : 'px-3')}
+        className={cn(
+          'flex flex-none flex-col gap-1 border-t border-border-subtle py-2',
+          collapsed ? 'px-2' : 'px-3',
+        )}
       >
+        <SidebarAccountMenu
+          collapsed={collapsed}
+          viewer={viewer}
+          authRequired={authRequired}
+          onNavigate={onNavigate}
+          onSignOut={async () => {
+            try {
+              const res = await fetch('/api/users/logout', { method: 'POST' })
+              if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
+              clearCurrentMemberCache()
+              toast({ tone: 'success', title: translate("Signed out") })
+              onNavigate?.()
+              router.push('/login')
+              router.refresh()
+            } catch (error) {
+              toast({
+                tone: 'error',
+                title: translate("Couldn't sign out"),
+                description: error instanceof Error ? error.message : undefined,
+              })
+            }
+          }}
+        />
+
         {collapsed ? (
           <Tooltip content={translate("Keyboard shortcuts")} side="right">
             <button
@@ -308,5 +356,96 @@ export function Sidebar({
         />
       )}
     </div>
+  )
+}
+
+function SidebarAccountMenu({
+  collapsed,
+  viewer,
+  authRequired,
+  onNavigate,
+  onSignOut,
+}: {
+  collapsed: boolean
+  viewer: ShellViewer | null
+  authRequired: boolean
+  onNavigate?: () => void
+  onSignOut: () => void
+}) {
+  const router = useRouter()
+  const canAccessAdmin = !authRequired || viewer?.role === 'admin'
+  const displayName = viewer?.name || viewer?.email || null
+  const label = displayName ?? translate("Account & admin")
+
+  const items: MenuItem[] = []
+
+  if (canAccessAdmin) {
+    items.push({
+      id: 'admin-panel',
+      label: translate("Admin panel"),
+      icon: Shield,
+      onSelect: () => {
+        onNavigate?.()
+        window.location.assign('/admin')
+      },
+    })
+  }
+
+  if (viewer) {
+    items.push({
+      id: 'sign-out',
+      label: translate("Sign out"),
+      icon: LogOut,
+      separatorBefore: items.length > 0,
+      onSelect: onSignOut,
+    })
+  } else {
+    items.push({
+      id: 'sign-in',
+      label: translate("Sign in"),
+      icon: LogIn,
+      separatorBefore: items.length > 0,
+      onSelect: () => {
+        onNavigate?.()
+        router.push('/login')
+      },
+    })
+  }
+
+  return (
+    <Menu
+      label={label}
+      align="start"
+      items={items}
+      trigger={
+        collapsed ? (
+          <button
+            type="button"
+            data-testid="sidebar-account-menu"
+            aria-label={label}
+            title={label}
+            className="flex h-9 w-full items-center justify-center rounded-sm text-text-muted transition-colors duration-micro hover:bg-surface-hover hover:text-text"
+          >
+            <Avatar name={displayName} seed={viewer?.id} size="sm" decorative />
+          </button>
+        ) : (
+          <button
+            type="button"
+            data-testid="sidebar-account-menu"
+            aria-label={label}
+            className={cn(
+              'flex h-9 w-full items-center gap-2 rounded-sm px-2.5 text-left text-xs',
+              'text-text transition-colors duration-micro hover:bg-surface-hover',
+            )}
+          >
+            <Avatar name={displayName} seed={viewer?.id} size="sm" decorative />
+            <span className="min-w-0 flex-1 truncate font-medium">
+              {displayName ?? translate("Account & admin")}
+            </span>
+            <ChevronsUpDown className="size-3.5 shrink-0 text-text-muted" aria-hidden />
+          </button>
+        )
+      }
+    />
   )
 }

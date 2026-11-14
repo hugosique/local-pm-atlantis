@@ -7,6 +7,7 @@ export const Users: CollectionConfig = {
   labels: { singular: translate("User"), plural: translate("Users") },
   auth: {
     useAPIKey: true,
+    tokenExpiration: 60 * 60 * 24 * 7,
   },
   admin: {
     useAsTitle: 'email',

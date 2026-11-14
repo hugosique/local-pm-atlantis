@@ -19,7 +19,7 @@ import { useShortcut } from '@/lib/shortcuts'
 import { Button } from '@/components/ui/Button'
 import { Kbd } from '@/components/ui/Kbd'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
-import { NAV_ITEMS, Sidebar } from './Sidebar'
+import { NAV_ITEMS, Sidebar, type ShellViewer } from './Sidebar'
 import { LanguageToggle } from './LanguageToggle'
 import { ThemeToggle } from './ThemeToggle'
 import { CommandPalette } from './CommandPalette'
@@ -29,7 +29,15 @@ import { GettingStarted } from './GettingStarted'
 
 const COLLAPSED_KEY = 'local-pm:sidebar-collapsed'
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  viewer = null,
+  authRequired = false,
+}: {
+  children: React.ReactNode
+  viewer?: ShellViewer | null
+  authRequired?: boolean
+}) {
   const pathname = usePathname()
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
@@ -152,7 +160,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-h-0 flex-1">
         <div className="max-md:hidden">
-          <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
+          <Sidebar
+            collapsed={collapsed}
+            viewer={viewer}
+            authRequired={authRequired}
+            onToggleCollapsed={toggleCollapsed}
+          />
         </div>
 
         <DialogPrimitive.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
@@ -177,6 +190,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Sidebar
                 collapsed={false}
                 mobile
+                viewer={viewer}
+                authRequired={authRequired}
                 onNavigate={() => setDrawerOpen(false)}
                 onToggleCollapsed={() => setDrawerOpen(false)}
               />

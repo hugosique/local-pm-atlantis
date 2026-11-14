@@ -77,7 +77,7 @@ export function MyTickets({
             title={translate("Sign in to see your tickets")}
             description={translate("This view shows the tickets assigned to you, so it needs to know who you are. Sign in and it fills up.")}
           >
-            <LinkButton variant="primary" size="lg" icon={LogIn} href="/admin">
+            <LinkButton variant="primary" size="lg" icon={LogIn} href="/login?next=/my-tickets">
               {translate("Sign in")} </LinkButton>
           </EmptyState>
         ) : !member ? (

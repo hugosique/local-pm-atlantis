@@ -1,15 +1,19 @@
 import { t as translate } from '@/i18n'
 import type { Metadata, Viewport } from 'next'
+import { headers as getHeaders } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { Inter } from 'next/font/google'
 import '../globals.css'
 import { THEME_INIT_SCRIPT } from '@/lib/theme'
 import { AppShell } from '@/components/shell/AppShell'
+import type { ShellViewer } from '@/components/shell/Sidebar'
 import { ShortcutProvider } from '@/lib/shortcuts'
 import { ToastProvider } from '@/components/ui/Toast'
 import { TooltipProvider } from '@/components/ui/Tooltip'
 import { WorkflowProvider } from '@/components/shell/WorkflowProvider'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAuthEnabled } from '@/lib/access'
 import { sortStatuses } from '@/lib/workflow'
 import { ensureDefaultStatuses } from '@/migrations/configurable-statuses'
 import type { Status } from '@/payload-types'
@@ -49,6 +53,20 @@ export const viewport: Viewport = {
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
   const payload = await getPayload({ config })
+  const authRequired = requireAuthEnabled()
+  const { user } = await payload.auth({ headers: await getHeaders() })
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const viewer: ShellViewer = {
+    id: String(user.id),
+    name: (user as { name?: string | null }).name ?? null,
+    email: user.email ?? null,
+    role: (user as { role?: string | null }).role ?? null,
+  }
+
   // Existing installs may not have run the status migration yet. Keep the
   // frontend usable by ensuring the default workflow exists before exposing it
   // to forms, boards, and filters.
@@ -66,7 +84,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           <ToastProvider>
             <TooltipProvider>
               <WorkflowProvider statuses={statuses}>
-                <AppShell>{children}</AppShell>
+                <AppShell viewer={viewer} authRequired={authRequired}>
+                  {children}
+                </AppShell>
               </WorkflowProvider>
             </TooltipProvider>
           </ToastProvider>
